@@ -1,0 +1,112 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0px;
+    padding: 0px;
+}
+
+h2 {
+    color: #333;
+}
+
+label, input, button, textarea {
+    margin: 5px 0;
+    display: block;
+}
+
+main {
+    /* display: flex; */
+    /* flex-direction: column; */
+    height: 100vh;
+}
+
+#battle-screen {
+    border: red solid 1px;
+    height: 40%;
+    display: flex;
+    justify-content: space-around;
+}
+
+#battle-screen #sect1 {
+    border: rgb(9, 172, 247) solid 1px;
+    flex: 2;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#battle-screen #sect2 {
+    border: rgb(19, 223, 53) solid 1px;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#battle-screen #sect3 {
+    border: rgb(188, 23, 222) solid 1px;
+    flex: 2;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+img#player-avatar{
+    width: 150px;
+    height: auto;
+    aspect-ratio: 1;
+}
+
+#study-zone {
+    border: blue solid 1px;
+    height: 60%;
+    display: flex;
+}
+
+#study-zone > * {
+    padding: 1.5rem;
+}
+
+#quests {
+    border: rgb(255, 217, 0) solid 1px;
+    flex: 2;
+    overflow: hidden;
+    padding-bottom: 5rem;
+}
+
+#quest-list {
+    max-height: 80%;
+    overflow-y: scroll;
+    margin-bottom: 1rem;
+}
+
+#quest-list li {
+    display: flex; /* Use flexbox for better alignment */
+    align-items: center; /* Vertically align items */
+  }
+  
+#quest-list li input[type="checkbox"] {
+    margin-right: 10px; /* Add some spacing between the checkbox and the text */
+}
+
+#quest-list li.checked{
+    text-decoration: line-through;
+}
+
+.input-group {
+    display: flex;
+    width: 100%;
+}
+
+#quest-text-input {
+    flex: 1
+}
+
+#notes {
+    border: rgb(0, 255, 195) solid 1px;
+    flex: 1
+}
+
+#flashcards {
+    border: rgb(255, 0, 0) solid 1px;
+    flex: 1
+}

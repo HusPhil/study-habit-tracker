@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Habit Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <main>
+        <div id="battle-screen">
+            
+            <div id="sect1">
+                <div class="stats">
+                    <p><strong>Name: </strong>Sung Jin-Woo</p>
+                    <p><strong>Title: </strong>Shadow Monarch</p>
+                    <p><strong>Level: </strong>777777</p>
+                    <p><strong>Exp: </strong>7777777</p>
+                </div>
+                <div id="player-display">
+                    <img id="player-avatar" src="https://i.pinimg.com/736x/fb/7e/c1/fb7ec1c340c75820d03934cfaa947cfb.jpg" alt="player avatar">
+                </div>    
+            </div>
+            
+            <div id="sect2">
+                <button>Start Session</button>
+            </div>
+            
+            <div id="sect3">
+                <div id="subject">
+                    <h1>Mathematics</h1>
+                    <select id="subjects" name="subjects">
+                        <option value="math">Mathematics</option>
+                        <option value="science">Science</option>
+                        <option value="history">History</option>
+                        <option value="english">English</option>
+                        <option value="computer_science">Computer Science</option>
+                        <option value="art">Art</option>
+                        <option value="music">Music</option>
+                        <option value="physics">Physics</option>
+                        <option value="chemistry">Chemistry</option>
+                        <option value="biology">Biology</option>
+                      </select>
+                </div>
+                <div id="stats">
+                    <p><strong>Difficulty: </strong>⭐⭐⭐⭐</p>
+                    <p><strong>Quests: </strong>123</p>
+                    <p><strong>Battles: </strong>5678</p>
+                </div>
+            </div>
+        
+        </div>
+        <div id="study-zone">
+            <div id="quests">
+                <h1>Quests</h1>
+                <div class="input-group">                
+                    <input type="text" name="newQuest" id="quest-text-input" placeholder="Add new Quest">
+                    <button>Add</button>
+                </div>
+                <ul id="quest-list">
+                    <li><input type="checkbox"> Review basic arithmetic operations (addition, subtraction, multiplication, division).</li>
+                    <li><input type="checkbox"> Practice solving algebraic equations (linear, quadratic).</li>
+                    <li><input type="checkbox"> Study and apply geometric formulas (area, perimeter, volume).</li>
+                    <li><input type="checkbox"> Work on trigonometric identities and problems.</li>
+                    <li><input type="checkbox"> Learn and apply calculus concepts (derivatives, integrals).</li>
+                    <li><input type="checkbox"> Practice solving word problems involving mathematical concepts.</li>
+                    <li><input type="checkbox"> Study and apply statistical methods (mean, median, mode, standard deviation).</li>
+                    <li><input type="checkbox"> Review and practice working with fractions, decimals, and percentages.</li>
+                    <li><input type="checkbox"> Graph functions and analyze their properties.</li>
+                    <li><input type="checkbox"> Study and apply theorems related to geometry (Pythagorean theorem, etc.).</li>
+                    <li><input type="checkbox"> Practice solving problems using matrices and vectors.</li>
+                    <li><input type="checkbox"> Learn about and apply probability concepts.</li>
+                    <li><input type="checkbox"> Study and apply logarithmic and exponential functions.</li>
+                    <li><input type="checkbox"> Work on proofs related to various mathematical concepts.</li>
+                    <li><input type="checkbox"> Practice mental math exercises.</li>
+                    <li><input type="checkbox"> Review and practice unit conversions.</li>
+                    <li><input type="checkbox"> Practice solving inequalities.</li>
+                    <li><input type="checkbox"> Study and apply concepts of sequences and series.</li>
+                    <li><input type="checkbox"> Use mathematical software or calculators to solve complex problems.</li>
+                    <li><input type="checkbox"> Review and practice mathematical notation and symbols.</li>
+                  </ul>
+            </div>
+            <div id="notes">
+                <h1>Notes</h1>
+                <div class="input-group">                
+                    <input type="text" name="newNotes" id="note-text-input" placeholder="Add new Note Link">
+                    <button>Add</button>
+                </div>
+            </div>
+            <div id="flashcards">
+                <h1>Flashcards</h1>
+                <div class="input-group">                
+                    <input type="text" name="newFlashcard" id="flashcard" placeholder="Add new Flashcard Link">
+                    <button>Add</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
