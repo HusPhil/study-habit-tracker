@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from typing import Dict
 
+
 study_routes = Blueprint("study_routes", __name__)  # ✅ Define Blueprint
 
 # ✅ Start Session Route
@@ -13,6 +14,15 @@ def start_session():
         return jsonify({
             "message": "Session started successfully",
             "data": data  # ✅ Send parsed data back as JSON
+        })
+    except Exception as e:
+        return jsonify({"error": f"Invalid request: {str(e)}"}), 400
+
+@study_routes.route("/get_subject", methods=["GET"])
+def get_subject():
+    try:
+        return jsonify({
+            "subject": "Mathematics"
         })
     except Exception as e:
         return jsonify({"error": f"Invalid request: {str(e)}"}), 400

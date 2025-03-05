@@ -2,6 +2,7 @@
 let selectedSubject = null;
 
 function selectOpponent(subjectId) {
+    console.log(subjectId);
     selectedSubject = subjectId;
     document.querySelectorAll('.subject-card').forEach(card => {
         card.classList.remove('selected');
@@ -31,11 +32,24 @@ function openBattlePopup() {
         alert('Please select a subject first!');
         return;
     }
-    document.getElementById('battle-popup').style.display = 'flex';
+    const popup = document.getElementById('battle-popup');
+    popup.classList.add('active');
+    // Add fade-in animation
+    popup.style.opacity = '0';
+    popup.style.display = 'flex';
+    setTimeout(() => {
+        popup.style.opacity = '1';
+    }, 10);
 }
 
 function closePopup() {
-    document.getElementById('battle-popup').style.display = 'none';
+    const popup = document.getElementById('battle-popup');
+    // Add fade-out animation
+    popup.style.opacity = '0';
+    setTimeout(() => {
+        popup.style.display = 'none';
+        popup.classList.remove('active');
+    }, 300);
 }
 
 function startBattle() {
@@ -62,6 +76,10 @@ function startBattle() {
     .then(data => {
         // Handle battle start response
         window.location.href = `/battle/${data.battleId}`;
+    })
+    .catch(error => {
+        console.error('Error starting battle:', error);
+        alert('Failed to start battle. Please try again.');
     });
 }
 
@@ -71,4 +89,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (battleBtn) {
         battleBtn.addEventListener('click', openBattlePopup);
     }
+
+    // Close popup when clicking outside
+    const popup = document.getElementById('battle-popup');
+    if (popup) {
+        popup.addEventListener('click', (e) => {
+            if (e.target === popup) {
+                closePopup();
+            }
+        });
+    }
+
+    // Handle escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && popup.classList.contains('active')) {
+            closePopup();
+        }
+    });
 });

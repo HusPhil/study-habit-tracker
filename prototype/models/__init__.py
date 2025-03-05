@@ -2,6 +2,7 @@
 from .user import User
 from .player import Player
 from .subject import Subject
+from .quest import Quest
 # from .session import Session
 # from .battle_record import BattleRecord
 

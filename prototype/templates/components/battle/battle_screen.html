@@ -2,12 +2,16 @@
     <div class="player-box">
         <div class="stats">
             <h2 class="banner">{{ player.title }}</h2>
-            <p><strong>Name:</strong> {{ player.username }}</p>
-            <p><strong>Level:</strong> {{ player.level }}</p>
-            <p><strong>Experience:</strong> {{ player.exp }}</p>
-        </div>
-        <div id="player-avatar">
-            <img src="{{ url_for('static', filename='assets/images/avatar_icons/players/con1.png') }}" alt="Player Avatar">
+            <div class="player-info">
+                <div id="player-avatar">
+                    <img id="player-avatar-img" src="{{ url_for('static', filename='assets/images/avatar_icons/players/con1.png') }}" alt="Player Avatar">
+                </div>
+                <div>
+                    <p><strong>Name:</strong> {{ player.username }}</p>
+                    <p><strong>Level:</strong> {{ player.level }}</p>
+                    <p><strong>Experience:</strong> {{ player.exp }}</p>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -19,7 +23,27 @@
         {% for subject in subjects %}
         <div class="subject-card" onclick="selectOpponent('{{ subject.id }}')">
             <div class="subject-name">{{ subject.name }}</div>
-            <div class="subject-stats">{{ "⭐" * subject.difficulty }}</div>
+            <div class="difficulty-stars">{{ "⭐" * subject.difficulty }}</div>
+            <div class="subject-stats">
+                <div class="stat-row">
+                    <span class="stat-label">Notes</span>
+                    <span class="stat-value">{{ subject.notes|length }}</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Flashcards</span>
+                    <span class="stat-value">{{ subject.flashcards|length }}</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Quests</span>
+                    <span class="stat-value">{{ subject.quests|length }}</span>
+                </div>
+                {% if subject.last_battle %}
+                <div class="stat-row">
+                    <span class="stat-label">Last Battle</span>
+                    <span class="stat-value">{{ subject.last_battle.strftime('%Y-%m-%d') }}</span>
+                </div>
+                {% endif %}
+            </div>
         </div>
         {% endfor %}
     </div>

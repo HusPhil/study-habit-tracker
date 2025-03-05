@@ -8,7 +8,7 @@
         <ul id="quest-list">
             {% for quest in active_quests %}
             <li>
-                <input type="checkbox" id="quest-{{ quest.id }}" {% if quest.completed %}checked{% endif %}>
+                <input type="checkbox" id="quest-{{ quest.id }}" {% if quest.status %}checked{% endif %}>
                 <span>{{ quest.description }}</span>
             </li>
             {% endfor %}

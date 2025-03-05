@@ -41,32 +41,8 @@ class Subject:
         """Remove a flashcard from the subject"""
         initial_length = len(self.flashcards)
         self.flashcards = [f for f in self.flashcards if f.id != flashcard_id]
-        return len(self.flashcards) < initial_length
+        return len(self.flashcards) < initial_length    
 
-    def get_active_quests(self) -> list:
-        """Get all uncompleted quests"""
-        return [quest for quest in self.quests if not quest.completed]
-
-    def get_completed_quests(self) -> list:
-        """Get all completed quests"""
-        return [quest for quest in self.quests if quest.completed]
-
-    def record_battle(self, won: bool) -> None:
-        """Record the result of a battle"""
-        if won:
-            self.wins += 1
-        else:
-            self.losses += 1
-        self.last_battle = datetime.now()
-
-    def get_win_rate(self) -> float:
-        """Calculate the win rate percentage"""
-        total_battles = self.wins + self.losses
-        return (self.wins / total_battles * 100) if total_battles > 0 else 0
-
-    def get_total_exp_earned(self) -> int:
-        """Calculate total experience earned from completed quests"""
-        return sum(quest.exp_reward for quest in self.get_completed_quests())
 
     def to_dict(self) -> dict:
         """Convert the subject to a dictionary for JSON serialization"""
@@ -74,10 +50,6 @@ class Subject:
             'id': self.id,
             'name': self.name,
             'difficulty': self.difficulty,
-            'wins': self.wins,
-            'losses': self.losses,
-            'win_rate': self.get_win_rate(),
-            'total_exp_earned': self.get_total_exp_earned(),
             'quests': [quest.to_dict() for quest in self.quests],
             'notes': [note.to_dict() for note in self.notes],
             'flashcards': [flashcard.to_dict() for flashcard in self.flashcards],
