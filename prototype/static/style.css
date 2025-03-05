@@ -20,14 +20,20 @@ main {
 }
 
 #battle-screen {
-    border: red solid 1px;
+    /* border: red solid 1px; */
+    /* background-image: url(assets/images/bg1.jpg); */
+    /* background-image: url("https://i.pinimg.com/1200x/97/7d/b1/977db161db198f22ed9b8c297d4fcc5b.jpg"); */
+    /* background-position: center; */
+    /* background-repeat: no-repeat; */
+    /* background-size: cover; */
+    /* background-clip: content-box; */
     height: 40%;
     display: flex;
     justify-content: space-around;
 }
 
 #battle-screen #sect1 {
-    border: rgb(9, 172, 247) solid 1px;
+    /* border: rgb(9, 172, 247) solid 1px; */
     flex: 2;
     display: flex;
     justify-content: space-around;
@@ -35,7 +41,7 @@ main {
 }
 
 #battle-screen #sect2 {
-    border: rgb(19, 223, 53) solid 1px;
+    /* border: rgb(19, 223, 53) solid 1px; */
     flex: 1;
     display: flex;
     justify-content: center;
@@ -43,7 +49,7 @@ main {
 }
 
 #battle-screen #sect3 {
-    border: rgb(188, 23, 222) solid 1px;
+    /* border: rgb(188, 23, 222) solid 1px; */
     flex: 2;
     display: flex;
     justify-content: space-around;
@@ -57,18 +63,20 @@ img#player-avatar{
 }
 
 #study-zone {
-    border: blue solid 1px;
+    /* border: blue solid 1px; */
     height: 60%;
     display: flex;
 }
 
 #study-zone > * {
     padding: 1.5rem;
+    overflow: auto;
+    resize: horizontal; /* Allows resizing */
 }
 
 #quests {
     border: rgb(255, 217, 0) solid 1px;
-    flex: 2;
+    flex-grow: 1;
     overflow: hidden;
     padding-bottom: 5rem;
 }
@@ -103,10 +111,10 @@ img#player-avatar{
 
 #notes {
     border: rgb(0, 255, 195) solid 1px;
-    flex: 1
+    flex-grow: 1
 }
 
 #flashcards {
     border: rgb(255, 0, 0) solid 1px;
-    flex: 1
+    flex-grow: 1
 }
