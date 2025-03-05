@@ -1,0 +1,173 @@
+/* Battle Screen Layout */
+#battle-screen {
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Player Box Styles */
+.player-box {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 20px;
+    border: 2px solid var(--border-color);
+}
+
+.stats {
+    display: grid;
+    gap: 10px;
+}
+
+.stats p {
+    margin: 0;
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.stats strong {
+    color: var(--accent-color);
+}
+
+/* Banner Styles */
+.banner {
+    background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+    padding: 20px;
+    border-radius: 10px;
+    border: 2px solid var(--border-color);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    box-shadow: 0 0 15px rgba(231, 76, 60, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    animation: shimmer 2s infinite;
+}
+
+/* Subject Cards */
+#subject-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    padding: 20px;
+    background: var(--card-bg);
+    border-radius: 10px;
+    border: 2px solid var(--border-color);
+}
+
+.subject-card {
+    background: linear-gradient(135deg, var(--primary-color), var(--border-color));
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.subject-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+    border-color: var(--hover-color);
+}
+
+.subject-name {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 0;
+    color: var(--text-color);
+}
+
+/* Battle Button */
+.battle-btn {
+    background: linear-gradient(45deg, var(--accent-color), #c0392b);
+    color: var(--text-color);
+    padding: 15px 30px;
+    border-radius: 8px;
+    border: 2px solid #c0392b;
+    cursor: pointer;
+    font-size: 1.2em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    margin: 20px auto;
+    display: inline-block;
+}
+
+.battle-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(231, 76, 60, 0.5);
+}
+
+.battle-btn:active {
+    transform: scale(0.95);
+}
+
+/* Battle Popup */
+.popup-form {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-content {
+    background: var(--card-bg);
+    color: var(--text-color);
+    border: 2px solid var(--border-color);
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: var(--text-color);
+    font-size: 24px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+    color: var(--accent-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .player-box {
+        grid-template-columns: 1fr;
+    }
+    
+    #subject-cards {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+}

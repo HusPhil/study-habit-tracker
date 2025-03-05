@@ -1,0 +1,47 @@
+<div id="study-zone">
+    <div class="quest-section">
+        <h1>Active Quests</h1>
+        <div class="input-group">
+            <input type="text" id="quest-text-input" placeholder="Begin a new quest...">
+            <button onclick="addQuest()">Accept Quest</button>
+        </div>
+        <ul id="quest-list">
+            {% for quest in active_quests %}
+            <li>
+                <input type="checkbox" id="quest-{{ quest.id }}" {% if quest.completed %}checked{% endif %}>
+                <span>{{ quest.description }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="quest-section">
+        <h1>Spell Tomes</h1>
+        <div class="input-group">
+            <input type="text" id="note-text-input" placeholder="Add new tome reference...">
+            <button onclick="addTome()">Add Tome</button>
+        </div>
+        <ul id="tomes-list">
+            {% for tome in tomes %}
+            <li>
+                <a href="{{ tome.url }}" target="_blank">{{ tome.title }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="quest-section">
+        <h1>Memory Crystals</h1>
+        <div class="input-group">
+            <input type="text" id="flashcard" placeholder="Create new memory crystal...">
+            <button onclick="addCrystal()">Forge Crystal</button>
+        </div>
+        <ul id="crystals-list">
+            {% for crystal in crystals %}
+            <li>
+                <a href="{{ crystal.url }}" target="_blank">{{ crystal.title }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>

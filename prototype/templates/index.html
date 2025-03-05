@@ -3,103 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Study Habit Tracker</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Study Quest: The RPG Learning Adventure</title>
+    <!-- Styles -->
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/battle.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/study.css') }}">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --text-color: #ecf0f1;
+            --border-color: #34495e;
+            --hover-color: #3498db;
+            --success-color: #2ecc71;
+            --card-bg: rgba(44, 62, 80, 0.9);
+        }
 
+        body {
+            background: url('../static/assets/images/rpg-background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text-color);
+            font-family: 'MedievalSharp', cursive;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Battle Screen Styles */
+        #battle-screen {
+            display: grid;
+            grid-template-rows: auto auto 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .banner {
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .player-box {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 20px;
+            border: 2px solid var(--border-color);
+        }
+
+        .stats {
+            display: grid;
+            gap: 10px;
+        }
+
+        .stats p {
+            margin: 0;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats strong {
+            color: var(--accent-color);
+        }
+
+        /* Subject Cards */
+        #subject-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+        }
+
+        .subject-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--border-color));
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+            border-color: var(--hover-color);
+        }
+
+        .subject-card .subject-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        /* Battle Button */
+        .battle-btn {
+            background: linear-gradient(45deg, var(--accent-color), #c0392b);
+            color: var(--text-color);
+            padding: 15px 30px;
+            border-radius: 8px;
+            border: 2px solid #c0392b;
+            cursor: pointer;
+            font-size: 1.2em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin: 20px auto;
+            display: inline-block;
+        }
+
+        .battle-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.5);
+        }
+
+        .battle-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Study Zone */
+        #study-zone {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .quest-section {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid var(--border-color);
+        }
+
+        .quest-section h1 {
+            color: var(--accent-color);
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: 2px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+        }
+
+        .input-group button {
+            padding: 10px 20px;
+            background: var(--accent-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .input-group button:hover {
+            background: #c0392b;
+        }
+
+        /* Quest List */
+        #quest-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #quest-list li {
+            padding: 10px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #quest-list li input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        /* Popup Styles */
+        .popup-form {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .popup-content {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: var(--text-color);
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--accent-color);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .player-box {
+                grid-template-columns: 1fr;
+            }
+
+            #study-zone {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-
     <main>
-        <div id="battle-screen">
-            
-            <div id="sect1">
-                <!-- <div class="stats">
-                    <p><strong>Name: </strong>Sung Jin-Woo</p>
-                    <p><strong>Title: </strong>Shadow Monarch</p>
-                    <p><strong>Level: </strong>777777</p>
-                    <p><strong>Exp: </strong>7777777</p>
-                </div>
-                <div id="player-display">
-                    <img id="player-avatar" src="https://i.pinimg.com/736x/fb/7e/c1/fb7ec1c340c75820d03934cfaa947cfb.jpg" alt="player avatar">
-                </div>     -->
-            </div>
-            
-            <div id="sect2">
-                <!-- <button id="session-btn">Start Session</button> -->
-            </div>
-            
-            <div id="sect3">
-                <!-- <div id="subject">
-                    <h1>Mathematics</h1>
-                    <select id="select-subject" name="subjects">
-                        <option value="math">Mathematics</option>
-                        <option value="science">Science</option>
-                        <option value="history">History</option>
-                        <option value="english">English</option>
-                        <option value="computer_science">Computer Science</option>
-                        <option value="art">Art</option>
-                        <option value="music">Music</option>
-                        <option value="physics">Physics</option>
-                        <option value="chemistry">Chemistry</option>
-                        <option value="biology">Biology</option>
-                      </select>
-                </div>
-                <div id="stats">
-                    <p><strong>Difficulty: </strong>⭐⭐⭐⭐</p>
-                    <p><strong>Quests: </strong>123</p>
-                    <p><strong>Battles: </strong>5678</p>
-                </div> -->
-            </div>
-        
-        </div>
-        <div id="study-zone">
-            <div id="quests">
-                <h1>Quests</h1>
-                <div class="input-group">                
-                    <input type="text" name="newQuest" id="quest-text-input" placeholder="Add new Quest">
-                    <button>Add</button>
-                </div>
-                <ul id="quest-list">
-                    <li><input type="checkbox"> Review basic arithmetic operations (addition, subtraction, multiplication, division).</li>
-                    <li><input type="checkbox"> Practice solving algebraic equations (linear, quadratic).</li>
-                    <li><input type="checkbox"> Study and apply geometric formulas (area, perimeter, volume).</li>
-                    <li><input type="checkbox"> Work on trigonometric identities and problems.</li>
-                    <li><input type="checkbox"> Learn and apply calculus concepts (derivatives, integrals).</li>
-                    <li><input type="checkbox"> Practice solving word problems involving mathematical concepts.</li>
-                    <li><input type="checkbox"> Study and apply statistical methods (mean, median, mode, standard deviation).</li>
-                    <li><input type="checkbox"> Review and practice working with fractions, decimals, and percentages.</li>
-                    <li><input type="checkbox"> Graph functions and analyze their properties.</li>
-                    <li><input type="checkbox"> Study and apply theorems related to geometry (Pythagorean theorem, etc.).</li>
-                    <li><input type="checkbox"> Practice solving problems using matrices and vectors.</li>
-                    <li><input type="checkbox"> Learn about and apply probability concepts.</li>
-                    <li><input type="checkbox"> Study and apply logarithmic and exponential functions.</li>
-                    <li><input type="checkbox"> Work on proofs related to various mathematical concepts.</li>
-                    <li><input type="checkbox"> Practice mental math exercises.</li>
-                    <li><input type="checkbox"> Review and practice unit conversions.</li>
-                    <li><input type="checkbox"> Practice solving inequalities.</li>
-                    <li><input type="checkbox"> Study and apply concepts of sequences and series.</li>
-                    <li><input type="checkbox"> Use mathematical software or calculators to solve complex problems.</li>
-                    <li><input type="checkbox"> Review and practice mathematical notation and symbols.</li>
-                  </ul>
-            </div>
-            <div id="notes">
-                <h1>Notes</h1>
-                <div class="input-group">                
-                    <input type="text" name="newNotes" id="note-text-input" placeholder="Add new Note Link">
-                    <button>Add</button>
-                </div>
-            </div>
-            <div id="flashcards">
-                <h1>Flashcards</h1>
-                <div class="input-group">                
-                    <input type="text" name="newFlashcard" id="flashcard" placeholder="Add new Flashcard Link">
-                    <button>Add</button>
-                </div>
-            </div>
-        </div>
+        {% include 'components/battle/battle_screen.html' %}
+        {% include 'components/study/study_zone.html' %}
+        {% include 'components/battle/battle_popup.html' %}
     </main>
 
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <!-- Scripts -->
+    <script>
+        // Global variables and utility functions
+        const API_ENDPOINTS = {
+            subject: '/api/subject',
+            battle: '/api/battle',
+            quests: '/api/quests',
+            tomes: '/api/tomes',
+            crystals: '/api/crystals'
+        };
 
+        function showError(message) {
+            alert(message); // You can replace this with a better error handling UI
+        }
+
+        function showSuccess(message) {
+            console.log(message); // You can replace this with a better success handling UI
+        }
+    </script>
+    <script src="{{ url_for('static', filename='js/battle.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/study.js') }}"></script>
 </body>
 </html>

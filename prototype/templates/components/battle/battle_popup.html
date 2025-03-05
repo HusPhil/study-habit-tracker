@@ -1,0 +1,16 @@
+<div id="battle-popup" class="popup-form">
+    <div class="popup-content">
+        <span class="close-btn" onclick="closePopup()">&times;</span>
+        <h2>Battle Preparation</h2>
+        <p>Choose your quests for this battle!</p>
+        <ul id="quest-list-select">
+            {% for quest in quests %}
+            <li>
+                <input type="checkbox" id="quest-{{ quest.id }}" value="{{ quest.id }}">
+                <label for="quest-{{ quest.id }}">{{ quest.description }}</label>
+            </li>
+            {% endfor %}
+        </ul>
+        <button onclick="startBattle()" class="battle-btn">Begin Battle</button>
+    </div>
+</div>
