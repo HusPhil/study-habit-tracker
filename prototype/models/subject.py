@@ -1,16 +1,74 @@
 from datetime import datetime
-from .db import db
+from .db import db, DatabaseError
 from .quest import Quest
 
 class Subject:
-    def __init__(self, id: str, name: str, difficulty: int = 1, user_id: int = None):
+    def __init__(self, id: str, code_name: str, difficulty: int = 1, user_id: int = None):
         self.id = id
         self.user_id = user_id
-        self.name = name
+        self.code_name = code_name
         self.difficulty = min(max(difficulty, 1), 5)  # Ensure difficulty is between 1-5
         self.quests = []
         self.notes = []  # Study notes
         self.flashcards = [] 
+
+    @staticmethod
+    def create(code_name: str, description: str, difficulty: int, user_id: int) -> 'Subject':
+        """Create a new subject in database"""
+        try:
+            # Insert the subject data
+            db.execute(
+                "INSERT INTO subjects (code_name, description, difficulty, user_id) VALUES (?, ?, ?, ?)",
+                (code_name, description, difficulty, user_id)
+            )
+            
+            # Get the created subject
+            result = db.execute("SELECT * FROM subjects WHERE code_name = ?", (code_name,))
+            if result:
+                data = result[0]
+                return Subject(
+                    id=data['subject_id'],
+                    code_name=data['code_name'],
+                    difficulty=data['difficulty'],
+                    user_id=data['user_id']
+                )
+            raise DatabaseError("Failed to create subject")
+        except DatabaseError as e:
+            raise DatabaseError(f"Error creating subject: {str(e)}")
+
+    @staticmethod
+    def get(subject_id: int) -> 'Subject':
+        """Get a subject by ID"""
+        try:
+            result = db.execute("SELECT * FROM subjects WHERE subject_id = ?", (subject_id,))
+            if result:
+                data = result[0]
+                return Subject(
+                    id=data['subject_id'],
+                    code_name=data['code_name'],
+                    difficulty=data['difficulty'],
+                    user_id=data['user_id']
+                )
+            raise DatabaseError("Subject not found")
+        except DatabaseError as e:
+            raise DatabaseError(f"Error getting subject: {str(e)}")
+
+    @staticmethod
+    def get_all(user_id: int) -> list:
+        """Get all subjects for a user"""
+        try:
+            results = db.execute("SELECT * FROM subjects WHERE user_id = ?", (user_id,))
+            subjects = []
+            for result in results:
+                subjects.append(Subject(
+                    id=result['subject_id'],
+                    code_name=result['code_name'],
+                    difficulty=result['difficulty'],
+                    user_id=result['user_id']
+                ))
+            return subjects
+        except DatabaseError as e:
+            raise DatabaseError(f"Error getting subjects: {str(e)}")
 
     def add_quest(self, quest) -> None:
         """Add a quest to the subject"""
@@ -88,14 +146,10 @@ class Subject:
         """Convert the subject to a dictionary for JSON serialization"""
         return {
             'id': self.id,
-            'name': self.name,
+            'code_name': self.code_name,
             'difficulty': self.difficulty,
             'quests': [quest.to_dict() for quest in self.quests],
             'notes': [note.to_dict() for note in self.notes],
             'flashcards': [flashcard.to_dict() for flashcard in self.flashcards],
-            'wins': self.wins,
-            'losses': self.losses,
-            'created_at': self.created_at.isoformat(),
-            'last_battle': self.last_battle.isoformat() if self.last_battle else None,
             'user_id': self.user_id
         }

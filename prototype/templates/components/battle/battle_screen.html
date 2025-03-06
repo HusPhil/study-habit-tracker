@@ -21,8 +21,8 @@
     
     <div id="subject-cards">
         {% for subject in subjects %}
-        <div class="subject-card" onclick="selectOpponent('{{ subject.id }}')">
-            <div class="subject-name">{{ subject.name }}</div>
+        <div class="subject-card" data-subject-id="{{ subject.id }}" onclick="selectOpponent('{{ subject.id }}')">
+            <div class="subject-name">{{ subject.code_name }}</div>
             <div class="difficulty-stars">{{ "⭐" * subject.difficulty }}</div>
             <div class="subject-stats">
                 <div class="stat-row">
@@ -46,11 +46,36 @@
             </div>
         </div>
         {% endfor %}
-        <div class="subject-card add-subject-card">
+        <div class="subject-card add-subject-card" data-dialog-target="addSubjectModal">
             <div class="add-icon">
-                <i class="fas fa-plus-circle"></i>
+                <i class="fas fa-scroll"></i>
             </div>
-            <div class="subject-name">Add New Subject</div>
+            <div class="subject-name">New Subject</div>
         </div>
     </div>
 </div>
+
+
+{% from "components/modal.html" import modal %}
+{% call modal('addSubjectModal', 'Add new Subject') %}
+    <form id="addSubjectForm" method="POST" action="{{ url_for('study_routes.create_subject') }}">
+        <input type="text" name="user_id" value="{{ session['user_id'] }}" hidden>
+        <div class="form-group">
+            <label>Subject Code Name</label>
+            <input type="text" name="code_name" required placeholder="SoftEng">
+        </div>
+        <div class="form-group">
+            <label>Subject Description</label>
+            <input type="text" name="description" required placeholder="Software Engineering">
+        </div>
+        <div class="form-group">
+            <label>Difficulty</label>
+            {% from "components/utils/star_rating.html" import star_rating %}
+            {{ star_rating(name="subjectDifficulty", size="medium") }}
+        </div>
+        <div class="form-actions">
+            <button type="button" class="btn-secondary">Cancel</button>
+            <button type="submit" class="btn-primary">Create</button>
+        </div>
+    </form>
+{% endcall %}

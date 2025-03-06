@@ -267,7 +267,7 @@
     <main>
         {% include 'components/battle/battle_screen.html' %}
         {% include 'components/study/study_zone.html' %}
-        {% include 'components/battle/battle_popup.html' %}
+        
     </main>
 
     <!-- Scripts -->
@@ -280,6 +280,19 @@
             tomes: '/api/tomes',
             crystals: '/api/crystals'
         };
+        
+        let selectedSubject = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("subjectId");
+            const firstSubjectCard = document.querySelector('.subject-card');
+            firstSubjectCard.classList.add('selected');
+            selectedSubject = firstSubjectCard.getAttribute('data-subject-id');
+            
+            window.dispatchEvent(new CustomEvent("subjectSelected", { "detail": {
+                "subjectId": selectedSubject, 
+            } })); 
+        });
 
         function showError(message) {
             alert(message); // You can replace this with a better error handling UI
@@ -291,5 +304,6 @@
     </script>
     <script src="{{ url_for('static', filename='js/battle.js') }}"></script>
     <script src="{{ url_for('static', filename='js/study.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
 </body>
 </html>

@@ -1,0 +1,13 @@
+{% macro modal(id, title) %}
+<dialog id="{{ id }}" class="rpg-dialog">
+    <div class="dialog-content">
+        <div class="dialog-header">
+            <h2>{{ title }}</h2>
+            <button class="close-btn" type="button">&times;</button>
+        </div>
+        <div class="dialog-body">
+            {{ caller() }}
+        </div>
+    </div>
+</dialog>
+{% endmacro %}

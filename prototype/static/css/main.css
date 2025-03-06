@@ -182,6 +182,192 @@ main {
     background: rgba(52, 152, 219, 0.2);
 }
 
+/* Modal System */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(44, 62, 80, 0.8);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.active {
+    opacity: 1;
+}
+
+.modal-content {
+    position: relative;
+    margin: 10% auto;
+    padding: 20px;
+    width: 70%;
+    max-width: 500px;
+    background: var(--primary-color);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-color);
+    font-family: 'MedievalSharp', cursive;
+    transform: translateY(-20px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.modal.active .modal-content {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: var(--gold);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.close {
+    color: var(--text-color);
+    font-size: 28px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close:hover {
+    color: var(--hover-color);
+    transform: scale(1.1);
+}
+
+.modal-body {
+    padding: 10px 0;
+}
+
+/* Dialog Modal System */
+.rpg-dialog {
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+    background: transparent;
+    color: var(--text-color);
+    font-family: 'MedievalSharp', cursive;
+}
+
+/* Backdrop customization */
+.rpg-dialog::backdrop {
+    background: rgba(44, 62, 80, 0.8);
+    backdrop-filter: blur(3px);
+}
+
+/* Animation styles */
+.rpg-dialog {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+    transition: opacity 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: opacity, transform;
+}
+
+.rpg-dialog.active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.dialog-content {
+    position: relative;
+    padding: 20px;
+    background: var(--primary-color);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.dialog-header h2 {
+    margin: 0;
+    color: var(--gold);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    font-size: 1.5rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 1.8rem;
+    line-height: 1;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.close-btn:hover {
+    color: var(--hover-color);
+    transform: scale(1.1);
+}
+
+.dialog-body {
+    padding: 10px 0;
+}
+
+.rpg-dialog .form-group {
+    margin-bottom: 15px;
+}
+
+.rpg-dialog .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--gold);
+    text-transform: capitalize;
+}
+
+.rpg-dialog input,
+.rpg-dialog textarea,
+.rpg-dialog select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--text-color);
+    border-radius: 4px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.rpg-dialog textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.rpg-dialog .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
 /* Utility Classes */
 .text-center { text-align: center; }
 .mt-1 { margin-top: 0.5rem; }

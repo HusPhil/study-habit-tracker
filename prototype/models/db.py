@@ -51,6 +51,7 @@ class Database:
             self.initialized = True
 
     def setup_database(self):
+        print("natawag ang DB setup")
         with self.pool.get_connection() as conn:
             c = conn.cursor()
             
@@ -75,13 +76,27 @@ class Database:
             c.execute('''
                 CREATE TABLE IF NOT EXISTS subjects (
                     subject_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL,
+                    code_name TEXT NOT NULL,
+                    description TEXT NOT NULL,
                     difficulty INTEGER DEFAULT 1,
                     user_id INTEGER,
                     FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
                 )
             ''')
             c.execute('CREATE INDEX IF NOT EXISTS idx_subjects_user ON subjects(user_id)')
+                
+            # Quests table with indexes
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS quests (
+                    quest_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    description TEXT NOT NULL,
+                    difficulty INTEGER DEFAULT 1,
+                    status INTEGER DEFAULT 0,
+                    subject_id INTEGER,
+                    FOREIGN KEY (subject_id) REFERENCES subjects (subject_id) ON DELETE CASCADE
+                )
+            ''')
+            c.execute('CREATE INDEX IF NOT EXISTS idx_quests_subject ON quests(subject_id)')
 
     def execute(self, query: str, params: tuple = ()) -> List[sqlite3.Row]:
         """Execute a query with thread-safe connection handling"""

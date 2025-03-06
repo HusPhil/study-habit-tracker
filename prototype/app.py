@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 import json
 from datetime import datetime
+
 from models.player import Player
 from models.subject import Subject
 from routes.study_routes import study_routes
@@ -21,11 +22,19 @@ def index():
     if not player:
         return redirect(url_for('auth.login'))
         
-    subjects = []
+    subjects = Subject.get_all(session['user_id'])
     return render_template("index.html",
         player=player,
         subjects=subjects
     )
+
+@app.route('/route_tester', methods=['POST'])
+def route_tester():
+    print(request.form)
+    return jsonify({
+        'message': 'Route tester endpoint'
+    })
     
 if __name__ == "__main__":
+
     app.run(debug=True)

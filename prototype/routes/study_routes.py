@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, redirect, url_for
 from typing import Dict
 from models import Subject, Quest  # Import the Subject model
 
@@ -39,20 +39,14 @@ def get_subject():
 @study_routes.route("/subject/create", methods=["POST"])
 def create_subject():
     try:
-        data: Dict = request.get_json()
-        
-        if not all(key in data for key in ["name", "description"]):
-            return jsonify({"error": "Missing required fields"}), 400
-
         newSubject = Subject.create(
-            name=data["name"],
-            description=data["description"]
+            user_id=request.form["user_id"],
+            code_name=request.form["code_name"],
+            description=request.form["description"],
+            difficulty=request.form["subjectDifficulty"]
         )
+        return redirect(url_for('index'))
 
-        return jsonify({
-            "message": "Subject created successfully",
-            "data": newSubject.to_dict()
-        })
     except Exception as e:
         return jsonify({"error": f"Invalid request: {str(e)}"}), 400
 

@@ -1,0 +1,121 @@
+{% macro star_rating(name="difficulty", default_value=3, size="medium") %}
+<div class="star-rating" data-size="{{ size }}">
+    <input type="radio" id="{{ name }}5" name="{{ name }}" value="5" {% if default_value == 5 %}checked{% endif %}/>
+    <label for="{{ name }}5" title="Challenging">⭐</label>
+    
+    <input type="radio" id="{{ name }}4" name="{{ name }}" value="4" {% if default_value == 4 %}checked{% endif %} />
+    <label for="{{ name }}4" title="Tough">⭐</label>
+    
+    <input type="radio" id="{{ name }}3" name="{{ name }}" value="3" {% if default_value == 3 %}checked{% endif %} />
+    <label for="{{ name }}3" title="Hard">⭐</label>
+    
+    <input type="radio" id="{{ name }}2" name="{{ name }}" value="2" {% if default_value == 2 %}checked{% endif %} />
+    <label for="{{ name }}2" title="Normal">⭐</label>
+    
+    <input type="radio" id="{{ name }}1" name="{{ name }}" value="1" {% if default_value == 1 %}checked{% endif %} />
+    <label for="{{ name }}1" title="Easy">⭐</label>
+</div>
+
+<style>
+.star-rating {
+    --star-base-size: 1em;
+    --star-color: var(--gold);
+    --star-shadow: 0 0 5px var(--accent-color);
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row-reverse;
+    gap: clamp(0.25em, 2%, 0.5em);
+    margin-top: 5px;
+    width: 100%;
+    padding: 0.5em;
+    border-radius: 4px;
+}
+
+/* Size variants */
+.star-rating[data-size="small"] { --star-base-size: 0.5em; }
+.star-rating[data-size="medium"] { --star-base-size: 0.8em; }
+.star-rating[data-size="large"] { --star-base-size: 1.2em; }
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    cursor: pointer;
+    font-size: calc(var(--star-base-size) * 1.5);
+    opacity: 0.5;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-shadow: var(--star-shadow);
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.2em;
+    aspect-ratio: 1;
+    position: relative;
+}
+
+.star-rating label::after {
+    content: attr(title);
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    color: var(--text-color);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    opacity: 0;
+    transition: all 0.2s ease;
+    pointer-events: none;
+    font-family: 'MedievalSharp', cursive;
+    white-space: nowrap;
+}
+
+.star-rating label:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+.star-rating input:checked + label {
+    opacity: 1;
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 5px var(--gold));
+    color: var(--gold);
+}
+
+.star-rating input:checked + label ~ label {
+    opacity: 1;
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 3px var(--gold));
+    color: var(--gold);
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    opacity: 0.8;
+    transform: scale(1.1);
+    color: var(--hover-color);
+    filter: drop-shadow(0 0 3px var(--hover-color));
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .star-rating {
+        --star-base-size: 0.9em;
+        padding: 0.4em;
+    }
+    
+    .star-rating label::after {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .star-rating {
+        --star-base-size: 0.8em;
+        padding: 0.3em;
+    }
+}
+</style>
+{% endmacro %}
