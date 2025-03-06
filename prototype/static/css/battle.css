@@ -22,15 +22,11 @@
 .player-info {
     display: flex;
     align-items: center;
-    /* justify-content: center; */
     gap: 20px;
     padding: 15px;
-    /* background: linear-gradient(to right, rgba(44, 62, 80, 0.8), rgba(52, 152, 219, 0.4)); */
     border-radius: 10px;
-    /* border: 1px solid rgba(255, 215, 0, 0.3); */
     width: auto;
 }
-
 
 .player-info strong {
     color: #ffd700;
@@ -173,7 +169,6 @@
     font-size: 1.4em;
     font-weight: bold;
     color: #ffd700;
-    /* border: red solid 5px; */
     padding-bottom: 1rem;
     font-family: 'MedievalSharp', cursive;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
@@ -261,101 +256,26 @@
     box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
 }
 
-/* Battle Popup */
-.popup-form {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-}
-
-.popup-content {
-    background: linear-gradient(135deg, #2c3e50, #34495e);
-    border: 2px solid #ffd700;
-    border-radius: 15px;
-    padding: 30px;
-    max-width: 500px;
-    width: 90%;
-    position: relative;
-    color: white;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-}
-
-.popup-content h2 {
-    color: #ffd700;
-    text-align: center;
-    font-family: 'MedievalSharp', cursive;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.popup-content p {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #ecf0f1;
-}
-
-#quest-list-select {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 20px 0;
-}
-
-#quest-list-select li {
-    padding: 10px;
-    margin: 5px 0;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
-    transition: background 0.3s ease;
-}
-
-#quest-list-select li:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-#quest-list-select input[type="checkbox"] {
-    margin-right: 10px;
-    cursor: pointer;
-}
-
-#quest-list-select label {
-    cursor: pointer;
-    color: #ecf0f1;
-}
-
-.close-btn {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    color: #ffd700;
-    cursor: pointer;
-    transition: color 0.3s ease;
-    width: 30px;
-    height: 30px;
+/* Add Subject Card */
+.add-subject-card {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.2s;
+    background: rgba(44, 62, 80, 0.7);
 }
 
-.close-btn:hover {
-    color: #e74c3c;
-    background: rgba(0, 0, 0, 0.4);
+.add-subject-card:hover {
+    background: rgba(52, 152, 219, 0.7);
+    transform: translateY(-5px);
 }
 
-/* Show popup when active */
-.popup-form.active {
-    display: flex;
+.add-icon {
+    font-size: 2.5rem;
+    color: #ecf0f1;
+    margin-bottom: 1rem;
 }
 
 /* Responsive Design */
@@ -369,7 +289,8 @@
         text-align: center;
     }
     
-    #player-avatar {
-        margin-top: 15px;
+    .player-info {
+        flex-direction: column;
+        gap: 10px;
     }
 }

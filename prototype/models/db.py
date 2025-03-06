@@ -1,62 +1,110 @@
-# models/db.py
 import sqlite3
-from typing import Dict, List, Any
-from datetime import datetime
+from typing import Any, List
+from contextlib import contextmanager
+import threading
+from queue import Queue
+import os
+
+class ConnectionPool:
+    def __init__(self, db_path: str, max_connections: int = 5):
+        self.db_path = db_path
+        self.max_connections = max_connections
+        self._local = threading.local()
+        self.lock = threading.Lock()
+    
+    def _create_connection(self):
+        """Create a new database connection"""
+        conn = sqlite3.connect(self.db_path)
+        conn.row_factory = sqlite3.Row
+        return conn
+
+    @contextmanager
+    def get_connection(self):
+        """Get a connection from the pool or create a new one if needed"""
+        if not hasattr(self._local, 'connection'):
+            self._local.connection = self._create_connection()
+        
+        try:
+            yield self._local.connection
+        except Exception as e:
+            self._local.connection.rollback()
+            raise e
+        finally:
+            self._local.connection.commit()
 
 class Database:
-    def __init__(self, db_name: str = "study_quest.db"):
-        self.db_name = db_name
-        self.setup_database()
+    _instance = None
+    _lock = threading.Lock()
+    
+    def __new__(cls):
+        with cls._lock:
+            if cls._instance is None:
+                cls._instance = super().__new__(cls)
+                cls._instance.initialized = False
+            return cls._instance
 
-    def get_connection(self):
-        return sqlite3.connect(self.db_name)
+    def __init__(self):
+        if not self.initialized:
+            db_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'study_quest.db')
+            self.pool = ConnectionPool(db_path)
+            self.setup_database()
+            self.initialized = True
 
     def setup_database(self):
-        conn = self.get_connection()
-        c = conn.cursor()
-        
-        # Create users table
-        c.execute('''
-            CREATE TABLE IF NOT EXISTS users (
-                user_id INTEGER PRIMARY KEY,
-                email TEXT UNIQUE NOT NULL,
-                username TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL,
-                type TEXT NOT NULL,
-                title TEXT,
-                level INTEGER,
-                exp INTEGER,
-                study_streak INTEGER,
-                last_study_session TEXT
-            )
-        ''')
-        
-        # Create subjects table
-        c.execute('''
-            CREATE TABLE IF NOT EXISTS subjects (
-                id INTEGER PRIMARY KEY,
-                name TEXT NOT NULL,
-                difficulty INTEGER,
-                wins INTEGER DEFAULT 0,
-                losses INTEGER DEFAULT 0,
-                user_id INTEGER,
-                FOREIGN KEY (user_id) REFERENCES users (user_id)
-            )
-        ''')
-        
-        conn.commit()
-        conn.close()
+        with self.pool.get_connection() as conn:
+            c = conn.cursor()
+            
+            # Users table with indexes
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS users (
+                    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    email TEXT UNIQUE NOT NULL,
+                    username TEXT UNIQUE NOT NULL,
+                    password TEXT NOT NULL,
+                    level INTEGER DEFAULT 1,
+                    exp INTEGER DEFAULT 0,
+                    title TEXT DEFAULT 'Noobie'
+                )
+            ''')
+            
+            # Create indexes for frequent queries
+            c.execute('CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)')
+            c.execute('CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)')
+            
+            # Subjects table with indexes
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS subjects (
+                    subject_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    difficulty INTEGER DEFAULT 1,
+                    user_id INTEGER,
+                    FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE
+                )
+            ''')
+            c.execute('CREATE INDEX IF NOT EXISTS idx_subjects_user ON subjects(user_id)')
 
-    def execute(self, query: str, params: tuple = None) -> Any:
-        conn = self.get_connection()
-        c = conn.cursor()
-        if params:
-            c.execute(query, params)
-        else:
-            c.execute(query)
-        result = c.fetchall()
-        conn.commit()
-        conn.close()
-        return result
+    def execute(self, query: str, params: tuple = ()) -> List[sqlite3.Row]:
+        """Execute a query with thread-safe connection handling"""
+        with self.pool.get_connection() as conn:
+            try:
+                c = conn.cursor()
+                c.execute(query, params)
+                return c.fetchall()
+            except sqlite3.Error as e:
+                raise DatabaseError(f"Database error: {str(e)}")
 
+    def execute_many(self, query: str, params_list: List[tuple]) -> None:
+        """Execute many queries with thread-safe connection handling"""
+        with self.pool.get_connection() as conn:
+            try:
+                c = conn.cursor()
+                c.executemany(query, params_list)
+            except sqlite3.Error as e:
+                raise DatabaseError(f"Database error: {str(e)}")
+
+class DatabaseError(Exception):
+    """Custom exception for database errors"""
+    pass
+
+# Global database instance
 db = Database()

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Quest - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --text-color: #ecf0f1;
+            --border-color: #34495e;
+            --hover-color: #3498db;
+            --success-color: #2ecc71;
+            --card-bg: rgba(44, 62, 80, 0.9);
+        }
+
+        body {
+            background: url('../static/assets/images/rpg-background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text-color);
+            font-family: 'MedievalSharp', cursive;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: var(--card-bg);
+            border-radius: 15px;
+            border: 2px solid var(--border-color);
+            padding: 2.5rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner {
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.3);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .banner h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            font-size: 1.1em;
+        }
+
+        .form-control {
+            width: calc(100% - 3.3rem);
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-family: inherit;
+        }
+
+        .form-group i {
+            position: absolute;
+            left: 1rem;
+            top: 2.3rem;
+            color: var(--accent-color);
+        }
+
+        .form-control:focus {
+            border-color: var(--hover-color);
+            outline: none;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, var(--accent-color), #c0392b);
+            color: var(--text-color);
+            padding: 0.8rem;
+            border-radius: 8px;
+            border: 2px solid #c0392b;
+            cursor: pointer;
+            font-size: 1.2em;
+            width: 100%;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.5);
+        }
+
+        .submit-btn:active {
+            transform: translateY(1px);
+        }
+
+        .register-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 0.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .register-link:hover {
+            color: var(--hover-color);
+        }
+
+        ::placeholder {
+            color: rgba(236, 240, 241, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="banner">
+            <h1>Login</h1>
+        </div>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert" style="
+                        background: rgba(231, 76, 60, 0.2);
+                        border: 1px solid var(--accent-color);
+                        color: var(--text-color);
+                        padding: 10px;
+                        margin-bottom: 15px;
+                        border-radius: 5px;
+                        text-align: center;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="POST" action="{{ url_for('auth.login') }}">
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <i class="fas fa-user"></i>
+                <input type="text" class="form-control" name="username" required placeholder="Enter username">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <i class="fas fa-lock"></i>
+                <input type="password" class="form-control" name="password" required placeholder="Enter password">
+            </div>
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-sign-in-alt"></i>
+                Login
+            </button>
+            <a href="{{ url_for('auth.register') }}" class="register-link">
+                Don't have an account? Register here
+            </a>
+        </form>
+    </div>
+</body>
+</html>

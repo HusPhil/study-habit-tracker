@@ -1,47 +1,80 @@
 <div id="study-zone">
     <div class="quest-section">
-        <h1>Active Quests</h1>
-        <div class="input-group">
-            <input type="text" id="quest-text-input" placeholder="Begin a new quest...">
-            <button onclick="addQuest()">Accept Quest</button>
+        <div class="section-header">
+            <div class="title-area">
+                <div class="title-text">
+                    <h1>Active Quests</h1>
+                </div>
+            </div>
         </div>
-        <ul id="quest-list">
-            {% for quest in active_quests %}
-            <li>
-                <input type="checkbox" id="quest-{{ quest.id }}" {% if quest.status %}checked{% endif %}>
-                <span>{{ quest.description }}</span>
-            </li>
-            {% endfor %}
-        </ul>
+        
+        <div class="input-group">
+            <button onclick="addQuest()" class="add-quest-btn">
+                New Quest
+            </button>
+        </div>
+        <div class="quest-list-container">
+            <ul id="quest-list">
+                <!-- Quests will be dynamically populated by JavaScript -->
+            </ul>
+            <div class="empty-state" id="empty-quest-list">
+                <i class="fas fa-book-open"></i>
+                <p>No active quests. Begin your journey!</p>
+            </div>
+        </div>
     </div>
 
     <div class="quest-section">
-        <h1>Spell Tomes</h1>
+        <div class="section-header">
+            <div class="title-area">
+                <div class="title-text">
+                    <h1>Spell Tomes</h1>
+                </div>
+            </div>
+        </div>
         <div class="input-group">
             <input type="text" id="note-text-input" placeholder="Add new tome reference...">
             <button onclick="addTome()">Add Tome</button>
         </div>
-        <ul id="tomes-list">
-            {% for tome in tomes %}
-            <li>
-                <a href="{{ tome.url }}" target="_blank">{{ tome.title }}</a>
-            </li>
-            {% endfor %}
-        </ul>
+        <div class="quest-list-container">
+            <ul id="tomes-list">
+                {% for tome in tomes %}
+                <li>
+                    <a href="{{ tome.url }}" target="_blank">{{ tome.title }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="empty-state" id="empty-tomes-list">
+                <i class="fas fa-book-open"></i>
+                <p>No spell tomes. Discover new knowledge!</p>
+            </div>
+        </div>
     </div>
 
     <div class="quest-section">
-        <h1>Memory Crystals</h1>
+        <div class="section-header">
+            <div class="title-area">
+                <div class="title-text">
+                    <h1>Flashcards</h1>
+                </div>
+            </div>
+        </div>
         <div class="input-group">
             <input type="text" id="flashcard" placeholder="Create new memory crystal...">
             <button onclick="addCrystal()">Forge Crystal</button>
         </div>
-        <ul id="crystals-list">
-            {% for crystal in crystals %}
-            <li>
-                <a href="{{ crystal.url }}" target="_blank">{{ crystal.title }}</a>
-            </li>
-            {% endfor %}
-        </ul>
+        <div class="quest-list-container">
+            <ul id="crystals-list">
+                {% for crystal in crystals %}
+                <li>
+                    <a href="{{ crystal.url }}" target="_blank">{{ crystal.title }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="empty-state" id="empty-crystals-list">
+                <i class="fas fa-book-open"></i>
+                <p>No memory crystals. Create new ones!</p>
+            </div>
+        </div>
     </div>
 </div>

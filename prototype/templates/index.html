@@ -177,21 +177,6 @@
             margin-top: 20px;
         }
 
-        .quest-section {
-            background: var(--card-bg);
-            border-radius: 10px;
-            padding: 20px;
-            border: 2px solid var(--border-color);
-        }
-
-        .quest-section h1 {
-            color: var(--accent-color);
-            text-align: center;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
         .input-group {
             display: flex;
             gap: 10px;
@@ -221,27 +206,14 @@
             background: #c0392b;
         }
 
-        /* Quest List */
-        #quest-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
+        .input-group button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(45deg, #c0392b, var(--accent-color));
         }
 
-        #quest-list li {
-            padding: 10px;
-            margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        #quest-list li input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
+        .input-group button:active {
+            transform: translateY(0);
         }
 
         /* Popup Styles */
