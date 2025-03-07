@@ -81,9 +81,10 @@
 {% endcall %}
 
 {% call modal('startBattleModal', 'Start Battle') %}
-    <form id="startBattleForm" method="POST" action="{{ url_for('study_routes.create_subject') }}">
+    <form id="startBattleForm" method="POST">
         <input type="text" name="user_id" value="{{ session['user_id'] }}" hidden>
-        <div class="form-group">
+        <input type="text" name="target_url" value="{{ url_for('study_routes.start_session') }}" hidden>
+        <div class="form-group">            
             <label id="opponent-title">Subject</label>
             <div class="quest-list-container">
                 <ul id="battle-quest-list" class="scrollable-list">
@@ -95,10 +96,33 @@
                 </div>
             </div>
         </div>
+        <div class="form-group duration-input">
+            <label for="battle_duration">Battle Duration (minutes):</label>
+            <input type="number" min="1" max="60" name="battle_duration" value="30" class="duration-input">
+        </div>
+
+        <style>
+        .duration-input {
+            width: 60px; /* Adjust width as needed */
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            appearance: textfield; /* For consistent number input styling */
+            -moz-appearance: textfield; /* Firefox */
+        }
+
+        /* Remove number input spinner arrows */
+        .duration-input::-webkit-inner-spin-button,
+        .duration-input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        </style>
 
         <div class="form-actions">
             <button type="button" class="btn-secondary">Retreat</button>
-            <button type="submit" class="btn-primary">Start Battle</button>
+            <button type="submit" class="btn-primary" onclick="startBattle(event)">Start Battle</button>
         </div>
     </form>
 {% endcall %}

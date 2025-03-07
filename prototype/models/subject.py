@@ -1,6 +1,10 @@
 from datetime import datetime
+import random
+from typing import List
 from .db import db, DatabaseError
 from .quest import Quest
+from .enemy import Enemy, EnemyType
+
 
 class Subject:
     def __init__(self, id: str, code_name: str, difficulty: int = 1, user_id: int = None):
@@ -12,6 +16,12 @@ class Subject:
         self._quests = None  
         self._notes = None
         self._flashcards = None
+
+    def spawnEnemy(self, enemy_count: int) -> List[Enemy]:
+        all_enemy_types = list(EnemyType)
+        chosen_enemies = random.choices(all_enemy_types, k=enemy_count)
+        return chosen_enemies
+
 
     @staticmethod
     def create(code_name: str, description: str, difficulty: int, user_id: int) -> 'Subject':

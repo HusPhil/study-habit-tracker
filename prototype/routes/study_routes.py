@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, redirect, url_for
 from typing import Dict
 from models import Subject, Quest  # Import the Subject model
-
+from models.enemy import EnemyType
 
 study_routes = Blueprint("study_routes", __name__)  # Define Blueprint
 
@@ -9,13 +9,15 @@ study_routes = Blueprint("study_routes", __name__)  # Define Blueprint
 @study_routes.route("/start_session", methods=["POST"])
 def start_session():
     try:
-        data: Dict = request.get_json()
-        print("Received Data:", data)
+        data = request.json
+        subject = Subject.get(data["subject_id"])
+        selected_quests: list = data["selected_quests"]
+        enemies: list[EnemyType] = subject.spawnEnemy(len(selected_quests))
 
-        return jsonify({
-            "message": "Session started successfully",
-            "data": data
-        })
+        for enemy in enemies:
+            print(f"Enemy: {enemy.value}")
+
+        return jsonify({"message": "Session started successfully"})
     except Exception as e:
         return jsonify({"error": f"Invalid request: {str(e)}"}), 400
 

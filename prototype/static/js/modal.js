@@ -21,7 +21,7 @@ const modalSystem = {
         dialog.classList.remove('active');
         document.body.classList.remove("modal-open");
         setTimeout(() => {
-            dialog.close();
+            dialog.close();  
             dialog.dispatchEvent(new CustomEvent('dialog:close'));
         }, 100); 
         

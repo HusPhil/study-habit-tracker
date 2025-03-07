@@ -288,6 +288,29 @@
         let selectedSubjectId = null;
         let selectedSubjectQuests = [];
 
+
+        // Battle-related functionality
+        function selectOpponent(subjectId) {
+            console.log("selecting opponent");
+            selectedSubjectId = subjectId;
+            document.querySelectorAll('.subject-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            selectedSubjectCard = document.querySelector(`[data-subject-id="${selectedSubjectId}"]`);
+            
+            if(selectedSubjectCard == null) {
+                console.error("Document to be selected not found!")
+                return
+            }
+            selectedSubjectCard.classList.add('selected');
+            selectedSubjectCodeName = selectedSubjectCard.getAttribute('data-subject-code-name');
+            document.getElementById('opponent-title').textContent = `[ ${selectedSubjectCodeName} ] - Select Goals`;
+
+            updateQuestsUI(selectedSubjectId);
+
+            document.getElementById('modal-indicator-subject-id').value = selectedSubjectId;
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             modalSystem.init();
             // pre-select the first subject card

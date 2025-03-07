@@ -54,7 +54,6 @@ async function updateQuestsUI(subjectId) {
                 }
 
                 quests.reverse().forEach(quest => {
-                console.log(quest);
                     const li = document.createElement('li');
                     li.className = 'quest-item';
                     li.style.cssText = `
