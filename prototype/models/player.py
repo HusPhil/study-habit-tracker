@@ -101,7 +101,7 @@ class Player(User):
         self.save()
             
     def level_up(self) -> None:
-        """Level up the player and adjust exp"""
+        """Level up the player and adjust exp points"""
         self.level += 1
         self.exp -= self.get_exp_threshold()
         
