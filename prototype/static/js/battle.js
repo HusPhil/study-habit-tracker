@@ -1,15 +1,20 @@
 // Battle-related functionality
 function selectOpponent(subjectId) {
-    console.log("prevSelectedId", selectedSubjectId);
-
+    console.log("selecting opponent");
     selectedSubjectId = subjectId;
     document.querySelectorAll('.subject-card').forEach(card => {
         card.classList.remove('selected');
     });
-    event.currentTarget.classList.add('selected');
-    selectedSubjectCodeName = event.currentTarget.getAttribute('data-subject-code-name');
+    selectedSubjectCard = document.querySelector(`[data-subject-id="${selectedSubjectId}"]`);
     
-    console.log("selectedSubjectCodeName", selectedSubjectCodeName);
+    if(selectedSubjectCard == null) {
+        console.error("Document to be selected not found!")
+        return
+    }
+    selectedSubjectCard.classList.add('selected');
+    selectedSubjectCodeName = selectedSubjectCard.getAttribute('data-subject-code-name');
+    document.getElementById('opponent-title').textContent = `A battle against [${selectedSubjectCodeName}]`;
+
     updateQuestsUI(selectedSubjectId);
 
     document.getElementById('modal-indicator-subject-id').value = selectedSubjectId;

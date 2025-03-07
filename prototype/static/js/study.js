@@ -2,8 +2,8 @@
 function addQuest(event) {
     event.preventDefault();
     const form = document.getElementById('addQuestModalForm');
-    const formData = new FormData(form); // Gather form data
-
+    const formData = new FormData(form);
+    const prevSelectedId = formData.get("subject_id")
     // Send POST request
     fetch('/api/quest/create', { // Replace with your actual endpoint
         method: 'POST',
@@ -19,8 +19,13 @@ function addQuest(event) {
         console.log('Success:', data);
         updateQuestsUI(data.subject_id);
         updateSubjectsUI();
-        form.reset();
+        selectOpponent(prevSelectedId);
+        // ✅ Wait for UI updates before re-selecting subject
+        waitForElementUpdate('#subject-cards', () => {
+            selectOpponent(prevSelectedId);
+        });
         modalSystem.hide('addQuestModal');
+        form.reset();
     })
     .catch((error) => {
         alert('Failed to create quest');
@@ -29,38 +34,30 @@ function addQuest(event) {
     });
 }
 
-function closeModal() {
-    const modal = document.getElementById('addQuestModal'); // Replace with your modal ID
-    modal.style.display = 'none'; // Hide the modal
-    // Optionally, reset the form
-    document.getElementById('addQuestModalForm').reset();
-}
-
 async function updateQuestsUI(subjectId) {
     try {
-        // ✅ Correctly pass subject_id as a query parameter
         const response = await fetch(`/api/subject/get_quests?subject_id=${encodeURIComponent(subjectId)}`);
-        
         if (!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`);
 
         const quests = await response.json();
-        console.log("Loaded quests:", quests);
-
         const questList = document.getElementById('quest-list');
-        
-        // ✅ Avoid unnecessary re-rendering by using DocumentFragment
+        selectedSubjectQuests = quests;
         const fragment = document.createDocumentFragment();
         
         quests.reverse().forEach(quest => {
             const li = document.createElement('li');
+            li.className = 'quest-item';
             li.innerHTML = `
-                <input type="checkbox" id="quest-${quest.id}" ${quest.status ? 'checked' : ''}> 
-                ${quest.description}
+                <div class="quest-content">
+                    <button class="quest-menu-btn" aria-label="Quest options">
+                        <i class="fas fa-ellipsis-vertical"></i>
+                    </button>
+                    <span class="quest-text">${quest.description}</span>
+                </div>
             `;
             fragment.appendChild(li);
         });
 
-        // ✅ Replace only changed content
         questList.innerHTML = '';
         questList.appendChild(fragment);
 
@@ -68,6 +65,29 @@ async function updateQuestsUI(subjectId) {
         console.error("Failed to load quests:", error);
         alert("Failed to load quests. Please try again.");
     }
+}
+
+function loadBattleModalQuests() {
+    console.log(`Loading battle modal quests:  ${selectedSubjectQuests}` );
+    const questList = document.getElementById('battle-quest-list');
+    const fragment = document.createDocumentFragment();
+    
+    selectedSubjectQuests.reverse().forEach(quest => {
+        const li = document.createElement('li');
+        li.className = 'quest-item';
+        li.innerHTML = `
+            <div class="quest-content">
+                <button class="quest-menu-btn" aria-label="Quest options">
+                    <i class="fas fa-ellipsis-vertical"></i>
+                </button>
+                <span class="quest-text">${quest.description}</span>
+            </div>
+        `;
+        fragment.appendChild(li);
+    });
+
+    questList.innerHTML = '';
+    questList.appendChild(fragment);
 }
 
 async function updateSubjectsUI() {
@@ -167,7 +187,22 @@ async function updateSubjectsUI() {
 
 
 
+function waitForElementUpdate(selector, callback) {
+    const targetNode = document.querySelector(selector);
 
+    if (!targetNode) {
+        console.warn(`❌ Element not found: ${selector}`);
+        return;
+    }
+
+    const observer = new MutationObserver((mutationsList, observer) => {
+        console.log("✅ DOM changes detected!");
+        observer.disconnect(); // Stop observing once changes are detected
+        callback(); // Execute the callback function
+    });
+
+    observer.observe(targetNode, { childList: true, subtree: true });
+}
 
 
 function addCrystal() {

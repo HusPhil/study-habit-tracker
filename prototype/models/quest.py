@@ -16,7 +16,7 @@ class Quest(TrackableContent):
     def create(description: str, difficulty: int, subject_id: int) -> 'Quest':
         """Create a new quest in database"""
         try:
-            existing_quest = db.execute("SELECT * FROM quests WHERE description = ?", (description,))
+            existing_quest = db.execute("SELECT * FROM quests WHERE description = ? AND subject_id == ?", (description, subject_id))
             if existing_quest:
                 # If it exists, return the existing quest
                 data = existing_quest[0]

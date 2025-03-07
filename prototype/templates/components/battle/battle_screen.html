@@ -16,7 +16,7 @@
     </div>
     
     <div style="text-align: center;">
-        <button class="battle-btn">Initiate Battle</button>
+        <button class="battle-btn" data-dialog-target="startBattleModal" onclick="loadBattleModalQuests()">Initiate Battle</button>
     </div>
     
     <div id="subject-cards">
@@ -73,6 +73,29 @@
             {% from "components/utils/star_rating.html" import star_rating %}
             {{ star_rating(name="subjectDifficulty", size="medium") }}
         </div>
+        <div class="form-actions">
+            <button type="button" class="btn-secondary">Cancel</button>
+            <button type="submit" class="btn-primary">Create</button>
+        </div>
+    </form>
+{% endcall %}
+
+{% call modal('startBattleModal', 'Start Battle') %}
+    <form id="startBattleForm" method="POST" action="{{ url_for('study_routes.create_subject') }}">
+        <input type="text" name="user_id" value="{{ session['user_id'] }}" hidden>
+        <div class="form-group">
+            <label id="opponent-title">Subject</label>
+            <div class="quest-list-container">
+                <ul id="battle-quest-list" class="scrollable-list">
+                    <!-- Quests will be dynamically populated by JavaScript -->
+                </ul>
+                <div class="empty-state" id="empty-quests-list">
+                    <i class="fas fa-scroll"></i>
+                    <p>No active quests</p>
+                </div>
+            </div>
+        </div>
+
         <div class="form-actions">
             <button type="button" class="btn-secondary">Cancel</button>
             <button type="submit" class="btn-primary">Create</button>

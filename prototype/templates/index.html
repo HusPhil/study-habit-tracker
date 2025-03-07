@@ -6,6 +6,7 @@
     <title>Study Quest: The RPG Learning Adventure</title>
     <!-- Styles -->
     <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/battle.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/study.css') }}">
@@ -193,6 +194,7 @@
         }
 
         .input-group button {
+            font-family: 'MedievalSharp', cursive;
             padding: 10px 20px;
             background: var(--accent-color);
             color: var(--text-color);
@@ -283,17 +285,17 @@
         };
         
         let selectedSubjectCodeName = null;
+        let selectedSubjectId = null;
+        let selectedSubjectQuests = [];
 
         document.addEventListener('DOMContentLoaded', () => {
-            
+            modalSystem.init();
             // pre-select the first subject card
             const firstSubjectCard = document.querySelector('.subject-card');
-            firstSubjectCard.classList.add('selected');
+            
             selectedSubjectId = firstSubjectCard.getAttribute('data-subject-id');
             selectedSubjectCodeName = firstSubjectCard.getAttribute('data-subject-code-name');
-            
-            document.getElementById('modal-indicator-subject-id').value = selectedSubjectId;
-            updateQuestsUI(selectedSubjectId);
+            selectOpponent(selectedSubjectId);
         });
 
         function showError(message) {

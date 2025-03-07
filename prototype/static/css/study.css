@@ -83,13 +83,33 @@
 }
 
 .quest-list-container {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(24, 39, 55, 0.314);
+    border: 2px solid #34495e;
     border-radius: 8px;
     padding: 15px;
     min-height: 200px;
-    max-height: 400px;
+    max-height: 250px;
     overflow-y: auto;
     position: relative;
+}
+
+.quest-list-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.quest-list-container::-webkit-scrollbar-track {
+    background: rgba(52, 73, 94, 0.5);
+    border-radius: 6px;
+}
+
+.quest-list-container::-webkit-scrollbar-thumb {
+    background: #305066;
+    border-radius: 6px;
+    border: 2px solid #2c3e50;
+}
+
+.quest-list-container::-webkit-scrollbar-thumb:hover {
+    background: #e74c3c;
 }
 
 #quest-list {
@@ -101,8 +121,51 @@
     gap: 10px;
 }
 
-#quest-list:empty + .empty-state {
+.quest-item {
+    padding: 12px 15px;
+    background: rgba(44, 62, 80, 0.7);
+    border: 1px solid #34495e;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.quest-item:hover {
+    background: rgba(52, 152, 219, 0.2);
+    border-color: #3498db;
+}
+
+.quest-content {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.quest-text {
+    color: #ecf0f1;
+    font-family: 'MedievalSharp', cursive;
+    flex-grow: 1;
+}
+
+.quest-menu-btn {
+    background: none;
+    border: none;
+    color: #ecf0f1;
+    padding: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+    align-self: flex-start
+}
+
+.quest-menu-btn:hover {
+    color: #3498db;
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.quest-menu-btn i {
+    font-size: 1.2rem;
 }
 
 .empty-state {
@@ -117,90 +180,18 @@
     transform: translate(-50%, -50%);
     width: 100%;
     text-align: center;
-    color: var(--text-color);
+    color: #ecf0f1;
     opacity: 0.6;
 }
 
 .empty-state i {
     font-size: 2.5rem;
     margin-bottom: 10px;
+    color: #e74c3c;
 }
 
-.empty-state p {
-    margin: 0;
-    font-style: italic;
-}
-
-#quest-list li {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    align-items: center;
-    gap: 15px;
-    padding: 12px 15px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 6px;
-    transition: all 0.2s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-#quest-list li:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateX(2px);
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-.quest-description {
-    color: #fff;
-    font-size: 0.95rem;
-}
-
-.quest-difficulty {
-    color: #f1c40f;
-    font-size: 0.9rem;
-    padding: 4px 8px;
-    background: rgba(241, 196, 15, 0.1);
-    border-radius: 4px;
+#quest-list:empty + .empty-state {
     display: flex;
-    align-items: center;
-    gap: 2px;
-}
-
-.quest-actions {
-    display: flex;
-    gap: 6px;
-}
-
-.quest-actions button {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.edit-btn {
-    background: #3498db;
-    color: white;
-}
-
-.edit-btn:hover {
-    background: #2980b9;
-    transform: translateY(-1px);
-}
-
-.delete-btn {
-    background: #e74c3c;
-    color: white;
-}
-
-.delete-btn:hover {
-    background: #c0392b;
-    transform: translateY(-1px);
 }
 
 /* Quest Creation Popup */
@@ -362,8 +353,6 @@
 .styled-select:hover {
     background-color: #3498db; /* Bright blue on hover */
 }
-
-
 
 /* Responsive Design */
 @media (max-width: 768px) {
