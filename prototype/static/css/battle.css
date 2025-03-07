@@ -170,6 +170,7 @@
     font-weight: bold;
     color: #ffd700;
     padding-bottom: 1rem;
+    padding-top: 0.3rem;
     font-family: 'MedievalSharp', cursive;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }

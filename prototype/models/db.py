@@ -98,6 +98,8 @@ class Database:
             ''')
             c.execute('CREATE INDEX IF NOT EXISTS idx_quests_subject ON quests(subject_id)')
 
+            
+
     def execute(self, query: str, params: tuple = ()) -> List[sqlite3.Row]:
         """Execute a query with thread-safe connection handling"""
         with self.pool.get_connection() as conn:

@@ -264,6 +264,7 @@
     </style>
 </head>
 <body>
+    <input id="current_user_id" value="{{ player.user_id }}" hidden>
     <main>
         {% include 'components/battle/battle_screen.html' %}
         {% include 'components/study/study_zone.html' %}
@@ -281,17 +282,18 @@
             crystals: '/api/crystals'
         };
         
-        let selectedSubject = null;
+        let selectedSubjectCodeName = null;
 
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("subjectId");
+            
+            // pre-select the first subject card
             const firstSubjectCard = document.querySelector('.subject-card');
             firstSubjectCard.classList.add('selected');
-            selectedSubject = firstSubjectCard.getAttribute('data-subject-id');
+            selectedSubjectId = firstSubjectCard.getAttribute('data-subject-id');
+            selectedSubjectCodeName = firstSubjectCard.getAttribute('data-subject-code-name');
             
-            window.dispatchEvent(new CustomEvent("subjectSelected", { "detail": {
-                "subjectId": selectedSubject, 
-            } })); 
+            document.getElementById('modal-indicator-subject-id').value = selectedSubjectId;
+            updateQuestsUI(selectedSubjectId);
         });
 
         function showError(message) {

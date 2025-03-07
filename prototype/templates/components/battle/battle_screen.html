@@ -21,7 +21,7 @@
     
     <div id="subject-cards">
         {% for subject in subjects %}
-        <div class="subject-card" data-subject-id="{{ subject.id }}" onclick="selectOpponent('{{ subject.id }}')">
+        <div class="subject-card" data-subject-id="{{ subject.id }}" data-subject-code-name="{{ subject.code_name }}" onclick="selectOpponent('{{ subject.id }}')">
             <div class="subject-name">{{ subject.code_name }}</div>
             <div class="difficulty-stars">{{ "⭐" * subject.difficulty }}</div>
             <div class="subject-stats">

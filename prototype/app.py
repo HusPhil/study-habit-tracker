@@ -1,3 +1,4 @@
+from sqlite3 import DatabaseError
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 import json
 from datetime import datetime
@@ -7,6 +8,7 @@ from models.subject import Subject
 from routes.study_routes import study_routes
 from routes.authentication_routes import auth_routes
 import os
+from models.db import db
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # For session management
@@ -23,6 +25,7 @@ def index():
         return redirect(url_for('auth.login'))
         
     subjects = Subject.get_all(session['user_id'])
+    
     return render_template("index.html",
         player=player,
         subjects=subjects
@@ -36,5 +39,4 @@ def route_tester():
     })
     
 if __name__ == "__main__":
-
     app.run(debug=True)

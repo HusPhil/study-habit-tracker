@@ -20,6 +20,19 @@ class Player(User):
     def create(email: str, username: str, password: str) -> 'Player':
         """Create a new player in database"""
         try:
+            existing_player = db.execute("SELECT * FROM users WHERE email = ?", (email,))
+            if existing_player:
+                # If it exists, return the existing player
+                data = existing_player[0]
+                return Player(
+                    user_id=data['user_id'],
+                    email=data['email'],
+                    username=data['username'],
+                    password=data['password'],
+                    level=data['level'],
+                    exp=data['exp'],
+                    title=data['title']
+                )
             # Insert the user data
             hashed_password = generate_password_hash(password)
             db.execute(

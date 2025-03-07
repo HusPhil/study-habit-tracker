@@ -1,20 +1,22 @@
 // Battle-related functionality
 function selectOpponent(subjectId) {
-    console.log("prevSelectedId", selectedSubject);
+    console.log("prevSelectedId", selectedSubjectId);
 
-    selectedSubject = subjectId;
+    selectedSubjectId = subjectId;
     document.querySelectorAll('.subject-card').forEach(card => {
         card.classList.remove('selected');
     });
     event.currentTarget.classList.add('selected');
+    selectedSubjectCodeName = event.currentTarget.getAttribute('data-subject-code-name');
     
-    window.dispatchEvent(new CustomEvent("subjectSelected", { "detail": {
-        "subjectId": subjectId,
-    } }));
+    console.log("selectedSubjectCodeName", selectedSubjectCodeName);
+    updateQuestsUI(selectedSubjectId);
+
+    document.getElementById('modal-indicator-subject-id').value = selectedSubjectId;
 }
 
 function checkSubjectAndAddQuest() {
-    if (selectedSubject != null) {
+    if (selectedSubjectId != null) {
         addQuest(); // Call the function to open the modal
     } else {
         alert("Please select a subject before adding a quest.");
