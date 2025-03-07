@@ -253,6 +253,11 @@ main {
     padding: 10px 0;
 }
 
+body.modal-open {
+    overflow: hidden;
+    pointer-events: none; /* Prevent clicking background */
+}
+
 /* Dialog Modal System */
 .rpg-dialog {
     padding: 0;
@@ -263,12 +268,14 @@ main {
     background: transparent;
     color: var(--text-color);
     font-family: 'MedievalSharp', cursive;
+    pointer-events: auto;
 }
 
 /* Backdrop customization */
 .rpg-dialog::backdrop {
     background: rgba(44, 62, 80, 0.8);
     backdrop-filter: blur(3px);
+    pointer-events: none;
 }
 
 /* Animation styles */

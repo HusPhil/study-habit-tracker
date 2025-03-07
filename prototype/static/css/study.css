@@ -112,7 +112,7 @@
     background: #e74c3c;
 }
 
-#quest-list {
+#quest-list, #battle-quest-list {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -166,6 +166,45 @@
 
 .quest-menu-btn i {
     font-size: 1.2rem;
+}
+
+
+#battle-quest-list .quest-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    background: rgba(44, 62, 80, 0.7);
+    border: 1px solid #34495e;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    min-height: 30px; 
+}
+
+
+#battle-quest-list .quest-content {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    width: 100%;
+}
+
+#battle-quest-list input[type="checkbox"] {
+    width: 15px; /* ✅ Fixed size */
+    height: 15px; /* ✅ Fixed size */
+    accent-color: #e74c3c;
+    cursor: pointer;
+    flex-shrink: 0; /* ✅ Prevents resizing */
+    align-self: flex-start; /* ✅ Ensures checkbox stays at the top */
+}
+
+#battle-quest-list .quest-text {
+    color: #ecf0f1;
+    font-family: 'MedievalSharp', cursive;
+    font-size: 1rem;
+    flex-grow: 1; /* ✅ Allows text to take up available space */
+    word-break: break-word; /* ✅ Prevents long words from overflowing */
+    max-width: calc(100% - 40px); /* ✅ Ensures text does not push checkbox */
 }
 
 .empty-state {

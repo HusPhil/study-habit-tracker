@@ -43,20 +43,38 @@ async function updateQuestsUI(subjectId) {
         const questList = document.getElementById('quest-list');
         selectedSubjectQuests = quests;
         const fragment = document.createDocumentFragment();
-        
-        quests.reverse().forEach(quest => {
-            const li = document.createElement('li');
-            li.className = 'quest-item';
-            li.innerHTML = `
-                <div class="quest-content">
-                    <button class="quest-menu-btn" aria-label="Quest options">
-                        <i class="fas fa-ellipsis-vertical"></i>
-                    </button>
-                    <span class="quest-text">${quest.description}</span>
-                </div>
-            `;
-            fragment.appendChild(li);
-        });
+                function getDifficultyColor(difficulty) {
+                    // ✅ Ensure difficulty is within expected range (1-5)
+                    difficulty = Math.max(1, Math.min(difficulty, 5)); 
+                
+                    // ✅ Convert difficulty (1-5) to an appropriate HSL hue (Green → Red)
+                    const hue = 120 - ((difficulty - 1) / 4) * 120;
+                
+                    return `hsl(${hue}, 70%, 50%)`; // ✅ Returns color from Green (easy) to Red (hard)
+                }
+
+                quests.reverse().forEach(quest => {
+                console.log(quest);
+                    const li = document.createElement('li');
+                    li.className = 'quest-item';
+                    li.style.cssText = `
+                        transition: border-color 0.3s ease;
+                        margin: 5px 0;
+                        padding: 8px;
+                        border-radius: 4px;
+                        background: rgba(255, 255, 255, 0.05);
+                        border-left: 4px solid ${getDifficultyColor(quest.difficulty)};
+                    `;
+                    li.innerHTML = `
+                        <div class="quest-content">
+                            <button class="quest-menu-btn" aria-label="Quest options">
+                                <i class="fas fa-ellipsis-vertical"></i>
+                            </button>
+                            <span class="quest-text">${quest.description}</span>
+                        </div>
+                    `;
+                    fragment.appendChild(li);
+                });
 
         questList.innerHTML = '';
         questList.appendChild(fragment);
@@ -68,7 +86,6 @@ async function updateQuestsUI(subjectId) {
 }
 
 function loadBattleModalQuests() {
-    console.log(`Loading battle modal quests:  ${selectedSubjectQuests}` );
     const questList = document.getElementById('battle-quest-list');
     const fragment = document.createDocumentFragment();
     
@@ -77,9 +94,7 @@ function loadBattleModalQuests() {
         li.className = 'quest-item';
         li.innerHTML = `
             <div class="quest-content">
-                <button class="quest-menu-btn" aria-label="Quest options">
-                    <i class="fas fa-ellipsis-vertical"></i>
-                </button>
+                <input type="checkbox" id="battle-quest-${quest.id}" name="selected_quests" value="${quest.id}">
                 <span class="quest-text">${quest.description}</span>
             </div>
         `;

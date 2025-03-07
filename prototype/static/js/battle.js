@@ -13,7 +13,7 @@ function selectOpponent(subjectId) {
     }
     selectedSubjectCard.classList.add('selected');
     selectedSubjectCodeName = selectedSubjectCard.getAttribute('data-subject-code-name');
-    document.getElementById('opponent-title').textContent = `A battle against [${selectedSubjectCodeName}]`;
+    document.getElementById('opponent-title').textContent = `[ ${selectedSubjectCodeName} ] - Select Goals`;
 
     updateQuestsUI(selectedSubjectId);
 

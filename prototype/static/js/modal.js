@@ -6,6 +6,7 @@ const modalSystem = {
         if (typeof dialog.showModal === 'function') {
             dialog.showModal();
             dialog.classList.add('active');
+            document.body.classList.add("modal-open");
             dialog.dispatchEvent(new CustomEvent('dialog:open'));
         } else {
             console.error('The <dialog> element is not supported by this browser.');
@@ -18,6 +19,7 @@ const modalSystem = {
         if (!dialog) return console.error(`Dialog with ID ${dialogId} not found`);
         
         dialog.classList.remove('active');
+        document.body.classList.remove("modal-open");
         setTimeout(() => {
             dialog.close();
             dialog.dispatchEvent(new CustomEvent('dialog:close'));
