@@ -7,7 +7,7 @@ class Flashcard(TrackableContent):
         self.id = id
         self.question = question
         self.answer = answer
-        self.subject_id = subject_id  # Foreign key linking to a subject
+        self.subject_id = subject_id  
 
     @staticmethod
     def create(question: str, answer: str, subject_id: int, difficulty: str = "Easy") -> 'Flashcard':
