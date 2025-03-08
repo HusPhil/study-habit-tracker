@@ -1,7 +1,6 @@
 # models/player.py
 from .user import User
 from datetime import datetime
-import requests
 from .db import db, DatabaseError
 from .subject import Subject
 from werkzeug.security import generate_password_hash
