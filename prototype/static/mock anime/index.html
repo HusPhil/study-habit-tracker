@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Box Fight Animation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #222;
+        }
+
+        #fight-container {
+            position: relative;
+            width: 400px;
+            height: 200px;
+            border: 2px solid white;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #fighter1, #fighter2 {
+            background-position: center;
+            background-size: cover;
+        }
+
+        #fighter1 {
+            background-image: url(avatar_icons/players/con1.png);
+            /* border: green solid 3px; */
+        }
+
+        #fighter2 {
+            background-image: url(avatar_icons/monsta/con22.png);
+            /* border: blue solid 3px; */
+        }
+
+        .fighter {
+            width: 64px;
+            height: 64px;
+            background-color: red;
+            position: relative;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .attack-left, .attack-right {
+            z-index: 300;
+        }
+
+        .attack-left {
+            transform: translateX(50px) scale(1.2);
+            background-color: yellow;
+        }
+
+        .attack-right {
+            transform: translateX(-50px) scale(1.2);
+            background-color: yellow;
+        }
+
+        .hit {
+            transform: translateY(-10px) rotate(-5deg);
+            border: rgb(255, 87, 68) solid 5px;
+        }
+
+        .dodge {
+            transform: translateY(-20px);
+            background-color: blue;
+        }
+
+        .block {
+            transform: scale(1.1);
+            background-color: gray;
+        }
+    </style>
+</head>
+<body>
+    <div id="fight-container">
+        <div class="fighter" id="fighter1"></div>
+        <div class="fighter" id="fighter2"></div>
+    </div>
+    
+    <script>
+        const fighter1 = document.getElementById("fighter1");
+        const fighter2 = document.getElementById("fighter2");
+
+        function attack(fighter, opponent, attackClass, reactionClass) {
+            fighter.style.zIndex = 3;
+            opponent.style.zIndex = 1
+            fighter.classList.add(attackClass);
+            setTimeout(() => {
+                opponent.classList.add(reactionClass);
+                setTimeout(() => {
+                    opponent.classList.remove(reactionClass);
+                }, 300);
+                setTimeout(() => {
+                    fighter.classList.remove(attackClass);
+                    // fighter.style.zIndex = 1;
+                }, 100);
+            }, 300);
+        }
+
+        function fightLoop() {
+            setTimeout(() => {
+                attack(fighter1, fighter2, "attack-left", "hit");
+            }, 1000);
+
+            setTimeout(() => {
+                attack(fighter2, fighter1, "attack-right", "block");
+            }, 2000);
+
+            setTimeout(() => {
+                attack(fighter1, fighter2, "attack-left", "dodge");
+            }, 3000);
+
+            setTimeout(() => {
+                attack(fighter2, fighter1, "attack-right", "hit");
+            }, 4000);
+
+            setTimeout(fightLoop, 5000);
+        }
+
+        fightLoop();
+    </script>
+</body>
+</html>

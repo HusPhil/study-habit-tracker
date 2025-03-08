@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/battle.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/study.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/battle_arena.css') }}">
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -232,6 +233,7 @@
 <body>
     <input id="current_user_id" value="{{ player.user_id }}" hidden>
     <main>
+        {% include 'components/battle/battle_arena.html' %}
         {% include 'components/battle/battle_screen.html' %}
         {% include 'components/study/study_zone.html' %}
         
@@ -315,6 +317,7 @@
             console.log(message); // You can replace this with a better success handling UI
         }
     </script>
+    <script src="{{ url_for('static', filename='js/battle_arena.js') }}"></script>
     <script src="{{ url_for('static', filename='js/battle.js') }}"></script>
     <script src="{{ url_for('static', filename='js/study.js') }}"></script>
     <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
