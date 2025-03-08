@@ -43,13 +43,14 @@ folder_path = "./"  # Current directory
 
 # Rename files
 for old_name, new_name in name_map.items():
-    old_path = os.path.join(folder_path, old_name)
-    new_path = os.path.join(folder_path, new_name)
+    # old_path = os.path.join(folder_path, old_name)
+    # new_path = os.path.join(folder_path, new_name)
 
-    if os.path.exists(old_path):  # Check if the file exists
-        os.rename(old_path, new_path)
-        print(f"Renamed: {old_name} ➝ {new_name}")
-    else:
-        print(f"File not found: {old_name}")
+    # if os.path.exists(old_path):  # Check if the file exists
+    #     os.rename(old_path, new_path)
+    #     print(f"Renamed: {old_name} ➝ {new_name}")
+    # else:
+    #     print(f"File not found: {old_name}")
+    print(new_name)
 
 print("✅ Renaming complete!")
