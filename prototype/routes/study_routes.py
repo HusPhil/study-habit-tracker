@@ -1,7 +1,9 @@
 from flask import Blueprint, request, jsonify, redirect, url_for
 from typing import Dict
-from models import Subject, Quest  # Import the Subject model
+from models import Subject, Quest, Session  # Import the Subject model
 from models.enemy import EnemyType
+from extensions import socketio
+import time
 
 study_routes = Blueprint("study_routes", __name__)  # Define Blueprint
 
@@ -12,12 +14,27 @@ def start_session():
         data = request.json
         subject = Subject.get(data["subject_id"])
         selected_quests: list = data["selected_quests"]
+        battle_duration = int(data["battle_duration"])
+        user_id = data["user_id"]
+
         enemies: list[EnemyType] = subject.spawnEnemy(len(selected_quests))
 
         for enemy in enemies:
             print(f"Enemy: {enemy.value}")
+        
+        session = Session(
+            id=int(time.time()), 
+            subject_id=subject.id, 
+            duration=battle_duration, 
+            goals=selected_quests
+        )
+        
+        if session.get_session_status().get("status") == "active":
+            return jsonify("Session already started")
 
-        return jsonify({"message": "Session started successfully"})
+        session_data = session.start(user_id=user_id, socketio=socketio)
+
+        return jsonify(session_data)
     except Exception as e:
         return jsonify({"error": f"Invalid request: {str(e)}"}), 400
 

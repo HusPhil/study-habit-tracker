@@ -238,6 +238,7 @@
     </main>
 
     <!-- Scripts -->
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
     <script>
         // Global variables and utility functions
         const API_ENDPOINTS = {
@@ -252,6 +253,37 @@
         let selectedSubjectId = null;
         let selectedSubjectQuests = [];
 
+        let socket;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+    
+            socket = io();
+
+            const userId = document.getElementById("current_user_id").value; // Get logged-in user ID
+            console.log("User ID:", `user_${userId}`);
+            socket.emit("join", { room: `user_${userId}`, user_id: userId });
+
+            socket.on("session_update", (data) => {
+                if (data.user_id !== userId) return; // ✅ Ignore updates for other users
+
+                console.log("Session update:", data);
+            });
+
+            socket.on("session_ended", (data) => {
+                if (data.user_id !== userId) return; // ✅ Ignore updates for other users
+
+                console.log("Session ended for user:", data.user_id);
+                alert("Your study session has ended!");
+            });
+
+            modalSystem.init();
+            // pre-select the first subject card
+            const firstSubjectCard = document.querySelector('.subject-card');
+            
+            selectedSubjectId = firstSubjectCard.getAttribute('data-subject-id');
+            selectedSubjectCodeName = firstSubjectCard.getAttribute('data-subject-code-name');
+            selectOpponent(selectedSubjectId);
+        });
 
         // Battle-related functionality
         function selectOpponent(subjectId) {
@@ -274,16 +306,6 @@
 
             document.getElementById('modal-indicator-subject-id').value = selectedSubjectId;
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            modalSystem.init();
-            // pre-select the first subject card
-            const firstSubjectCard = document.querySelector('.subject-card');
-            
-            selectedSubjectId = firstSubjectCard.getAttribute('data-subject-id');
-            selectedSubjectCodeName = firstSubjectCard.getAttribute('data-subject-code-name');
-            selectOpponent(selectedSubjectId);
-        });
 
         function showError(message) {
             alert(message); // You can replace this with a better error handling UI
