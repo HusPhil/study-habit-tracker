@@ -17,6 +17,33 @@ document.addEventListener('DOMContentLoaded', () => {
         'snow_yeti.png', 'venom_cobra.png', 'wyrmling_drake.png'
     ];
 
+    let tasks = [
+        "Read 1 section of PEP 8",
+        "Debug a small script",
+        "Write a docstring for a function",
+        "Solve a CodeWars kata (easy)",
+        "Review list comprehensions",
+        "Practice string formatting",
+        "Explore a new built-in function",
+        "Refactor a past project",
+        "Write a unit test",
+        "Learn about virtual environments",
+        "Study dictionary methods",
+        "Research a Python library",
+        "Implement a simple class",
+        "Traceback a given error",
+        "Practice file I/O",
+        "Review conditional statements",
+        "Study for loops",
+        "Learn about tuple unpacking",
+        "Write a short script using argparse",
+        "Explore exception handling",
+        "Practice using sets",
+        "Review lambda functions",
+        "Solve a simple algorithm problem",
+        "Read a Python blog post"
+    ]
+
     // Game state
     let enemies = [];
     let currentEnemyIndex = 0;
@@ -26,14 +53,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Show/Hide battle overlay
     showBattleBtn?.addEventListener('click', () => {
         battleOverlay.style.display = 'flex';
+        
         initializeBattle();
     });
 
     // Close battle when clicking outside
     battleOverlay.addEventListener('click', (e) => {
-        if (e.target === battleOverlay) {
-            endBattle();
-        }
+        e.preventDefault();
     });
 
     function getRandomMonster() {
@@ -41,6 +67,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function initializeBattle() {
+        // get a task from shuffle list
+        const taskDescription = document.getElementById('taskDescription');
+        taskDescription.focus();
+        taskDescription.textContent = tasks.pop()
+
         resetBattle();
         battleActive = true;
         
@@ -61,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Create queue indicators
         enemies.forEach((_, index) => {
             const indicator = document.createElement('div');
-            indicator.className = `queue-indicator ${index === 0 ? 'active' : ''}`;
+            indicator.className = `queue-indicator`;
             enemyQueue.appendChild(indicator);
         });
 
@@ -88,6 +119,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 performAttack();
             }
         });
+
+        document.addEventListener('keydown', (event) => {
+            event.stopPropagation();
+            if (event.key === " " && !isAnimating && battleActive) {
+                performAttack();
+
+            }
+        });
+        
+        const taskDescription = document.getElementById('taskDescription');
+        taskDescription.addEventListener('click', () => {
+            if (!isAnimating && battleActive) {
+                performAttack();
+            }
+        });
+
     }
 
     function performAttack() {
@@ -143,8 +190,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function defeatCurrentEnemy() {
         const indicators = enemyQueue.children;
-        indicators[currentEnemyIndex].classList.add('defeated');
-        indicators[currentEnemyIndex].classList.remove('active');
+
+        const taskDescription = document.getElementById('taskDescription');
+        taskDescription.textContent = tasks.pop()
+
+        // indicators[currentEnemyIndex].classList.add('defeated');
+        indicators[currentEnemyIndex].classList.add('active');
 
         currentEnemy.classList.add('defeated');
 
@@ -153,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (currentEnemyIndex < enemies.length) {
                 if (indicators[currentEnemyIndex]) {
-                    indicators[currentEnemyIndex].classList.add('active');
+                    // indicators[currentEnemyIndex].classList.add('active');
                 }
                 currentEnemy.classList.remove('defeated');
                 showCurrentEnemy();
@@ -167,6 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function resetBattle() {
+        tasks.sort(() => Math.random() - 0.5);
         enemyQueue.innerHTML = '';
         currentEnemy.classList.remove('hit', 'defeated', 'attacking-left');
         document.querySelector('.enemy-stats .hp-fill').style.transform = 'scaleX(1)';
