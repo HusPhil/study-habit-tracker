@@ -11,19 +11,25 @@ function startBattle(event) {
 
     // console.log("Form Data:", );
     // ✅ Extract selected quests
+    const battle_duration = formData.get("battle_duration");
     const selectedQuests = formData.getAll("selected_quests");
 
     selectedQuests.forEach((quest, index) => {
-        formData.append(`selected_quests[${index}]`, quest);
+        formData.append(`selected_  quests[${index}]`, quest);
     });
     
     
     console.log("Selected Quests:", selectedQuests);
+    console.log("battle_duration:" + battle_duration)
 
     fetch(target_url, { // Replace with your actual endpoint
         method: 'POST',
         headers: { "Content-Type": "application/json" }, // ✅ Tell Flask to expect JSON
-        body: JSON.stringify({"subject_id": selectedSubjectId, "selected_quests": selectedQuests}),
+        body: JSON.stringify({
+                "subject_id": selectedSubjectId, 
+                "selected_quests": selectedQuests,
+                "battle_duration": battle_duration
+            }),
     })
     .then(response => {
         if (response.ok) {

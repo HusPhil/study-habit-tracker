@@ -96,27 +96,103 @@
                 </div>
             </div>
         </div>
-        <div class="form-group duration-input">
-            <label for="battle_duration">Battle Duration (minutes):</label>
-            <input type="number" min="1" max="60" name="battle_duration" value="30" class="duration-input">
+        <div class="battle-duration-container">
+            <div class="duration-crystal">
+                <i class="fas fa-hourglass-half crystal-icon"></i>
+                <div class="duration-content">
+                    <label for="battle_duration">Battle Duration</label>
+                    <div class="input-group">
+                        <input type="number" min="1" max="777" name="battle_duration" id="battle_duration" value="30">
+                        <span class="time-unit">minutes</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <style>
-        .duration-input {
-            width: 60px; /* Adjust width as needed */
+        .battle-duration-container {
+            margin: 1.5rem 0;
             padding: 0.5rem;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1rem;
-            appearance: textfield; /* For consistent number input styling */
-            -moz-appearance: textfield; /* Firefox */
         }
 
-        /* Remove number input spinner arrows */
-        .duration-input::-webkit-inner-spin-button,
-        .duration-input::-webkit-outer-spin-button {
+        .duration-crystal {
+            background: rgba(44, 62, 80, 0.9);
+            border: 2px solid #34495e;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .duration-crystal:hover {
+            box-shadow: 0 0 20px rgba(52, 152, 219, 0.4);
+            border-color: #3498db;
+        }
+
+        .crystal-icon {
+            color: #3498db;
+            font-size: 1.5rem;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        .duration-content {
+            flex-grow: 1;
+        }
+
+        .duration-content label {
+            display: block;
+            color: #3498db;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-group input {
+            width: 70px;
+            padding: 0.5rem;
+            background: rgba(236, 240, 241, 0.1);
+            border: 2px solid #34495e;
+            border-radius: 6px;
+            color: #ecf0f1;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            background: rgba(236, 240, 241, 0.15);
+        }
+
+        .input-group input::-webkit-inner-spin-button,
+        .input-group input::-webkit-outer-spin-button {
             -webkit-appearance: none;
             margin: 0;
+        }
+
+        .time-unit {
+            color: #ecf0f1;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
         }
         </style>
 
