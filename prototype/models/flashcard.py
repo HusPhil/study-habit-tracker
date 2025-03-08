@@ -2,32 +2,37 @@ from models.trackable_content import TrackableContent
 from models.db import db
 
 class Flashcard(TrackableContent):
-    def __init__(self, question, answer, subject_id, status=False, difficulty="Easy"):
+    def __init__(self, id=None, question="", answer="", subject_id=None, status=False, difficulty="Easy"):
         super().__init__(status, difficulty)
+        self.id = id
         self.question = question
         self.answer = answer
         self.subject_id = subject_id  # Foreign key linking to a subject
 
-    def save_to_db(self):
-        """Save flashcard data to the database"""
+    @staticmethod
+    def create(question: str, answer: str, subject_id: int, difficulty: str = "Easy") -> 'Flashcard':
+        """Create a new flashcard and store it in the database"""
         query = """
         INSERT INTO flashcards (question, answer, subject_id, status, difficulty) 
-        VALUES (?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?) RETURNING id
         """
-        db.execute(query, (self.question, self.answer, self.subject_id, self.status, self.difficulty))
+        result = db.execute(query, (question, answer, subject_id, False, difficulty))
         db.commit()
+        flashcard_id = result[0]['id'] if result else None
+        return Flashcard(id=flashcard_id, question=question, answer=answer, subject_id=subject_id, status=False, difficulty=difficulty)
 
     @staticmethod
     def get_all():
         """Retrieve all flashcards"""
         query = "SELECT * FROM flashcards"
-        return db.fetch_all(query)
+        return [Flashcard(**data) for data in db.fetch_all(query)]
 
     @staticmethod
     def get_by_id(flashcard_id):
         """Retrieve a single flashcard by ID"""
         query = "SELECT * FROM flashcards WHERE id = ?"
-        return db.fetch_one(query, (flashcard_id,))
+        data = db.fetch_one(query, (flashcard_id,))
+        return Flashcard(**data) if data else None
 
     def update(self, question=None, answer=None, status=None, difficulty=None):
         """Update flashcard details"""
