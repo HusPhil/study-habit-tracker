@@ -13,12 +13,6 @@
                     <div class="character-sprite"></div>
                     <div class="character-effects"></div>
                 </div>
-                <div class="player-stats">
-                    <div class="stat-name">Player</div>
-                    <div class="stat-bar">
-                        <div class="stat-fill hp-fill"></div>
-                    </div>
-                </div>
             </div>
 
             <div class="vs-section">
@@ -26,7 +20,6 @@
                 <div class="vs-text medieval-text">VS</div>
                 <div class="vs-decoration right"></div>
             </div>
-            
 
             <div class="enemy-section">
                 <div class="character enemy-character" id="currentEnemy">
@@ -35,23 +28,16 @@
                 </div>
                 <div class="enemy-stats">
                     <div class="stat-name">Enemy</div>
-                    <div class="stat-bar">
-                        <div class="stat-fill hp-fill"></div>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <button id="taskDescription" class="task-description medieval-text rpg-button" onclick="performAttack()">
-            <div class="decoration left"></div>
-            <div class="button-content">
-                <i class="fa-solid fa-hand-fist"></i>
-                <span>Attack!</span>
-            </div>
-            <div class="decoration right"></div>
+        <button type="button" id="taskDescription" class="rpg-button task-description">
+            <span class="task-text">
+                <span class="enemy-name">Start Battle</span>
+            </span>
         </button>
-        <div class="enemy-queue" id="enemyQueue">
-        </div>
+        <div class="enemy-queue" id="enemyQueue"></div>
     </div>
 </div>
 

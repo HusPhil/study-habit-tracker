@@ -194,7 +194,6 @@ body.modal-open {
     justify-content: center;
     align-items: center;
     gap: 10px;
-    padding: 10px;
     background: rgba(52, 73, 94, 0.5);
     border-radius: 8px;
     margin-top: auto;
@@ -224,86 +223,171 @@ body.modal-open {
     opacity: 0.7;
 }
 
-.task-description {
-    background-color: #333;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    font-size: 18px;
-    cursor: pointer;
-  }
-  
-  .quest-icon {
-    font-size: 24px;
-    margin-right: 10px;
-  }
-  
-  .quest-text {
-    font-weight: bold;
-  }
-
-  .rpg-button {
-    background: linear-gradient(to bottom, #2c3e50, #34495e);
-    color: #ecf0f1;
-    border: 2px solid #3498db;
-    padding: 12px 24px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-family: 'MedievalSharp', cursive;
-    font-size: 1.2em;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2),
-                inset 0 1px 1px rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
-    position: relative;
+/* Task Text Styling */
+.task-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    text-align: center;
     overflow: hidden;
+    padding: 5px;
 }
 
-.rpg-button::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 80%);
-    transform: rotate(45deg);
-    transition: all 0.3s ease;
-    opacity: 0;
+.enemy-name {
+    max-width: 100%;
+    word-wrap: break-word;
+    white-space: normal;
 }
 
-.rpg-button:hover, .rpg-button:focus {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3),
-                inset 0 1px 1px rgba(255, 255, 255, 0.2);
-    border-color: var(--rpg-button-border-color);
+/* Enemy Name (Battle Title) */
+.enemy-name {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ecf0f1;
+    font-family: 'MedievalSharp', cursive;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    letter-spacing: 1px;
 }
 
-.rpg-button:hover::before, .rpg-button:focus::before {
-    opacity: 1;
-    transform: rotate(45deg) translate(50%, 50%);
+/* Since health display is removed, we can remove those styles */
+.health-display,
+.health-display i,
+.health-count {
+    display: none;
 }
 
-.rpg-button:active {
-    transform: translateY(1px);
-    background: linear-gradient(to bottom, #e74c3c, #c0392b);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    border-color: #c0392b;
+/* Adjust button padding for better single-line text appearance */
+.rpg-button.task-description {
+    padding: 15px 30px;
+    min-width: 200px;
 }
 
-.button-content {
+/* Task Description Button */
+.task-description {
+    width: 100%;
+    max-width: 600px;
+    height: 70px; /* Set a fixed height */
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    position: relative;
-    z-index: 1;
+    background: rgba(44, 62, 80, 0.9);
+    border: 2px solid #34495e;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    padding: 10px 15px;
+    text-align: center;
+    overflow: hidden; /* Ensures content does not overflow */
 }
 
-.rpg-button i {
-    font-size: 1.1em;
+
+.task-description:hover {
+    transform: translateY(-2px);
+    border-color: #3498db;
+    box-shadow: 0 6px 12px rgba(52, 152, 219, 0.2);
+}
+
+.task-description:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* RPG Button Base Style */
+.rpg-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, #3498db, #2c3e50);
+    border: 3px solid #34495e;
+    border-radius: 10px;
+    font-weight: bold;
+    color: #ecf0f1;
+    font-family: 'MedievalSharp', cursive;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.rpg-button:hover {
+    background: linear-gradient(145deg, #2c3e50, #3498db);
+    transform: scale(1.05);
+    border-color: #3498db;
+}
+
+.vs-section {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.vs-text {
+    color: #ffd700;
+    font-size: 3em;
+    text-shadow: 
+        0 0 10px rgba(255, 215, 0, 0.5),
+        2px 2px 4px rgba(0, 0, 0, 0.8);
+    animation: vsGlow 2s infinite alternate;
+}
+
+.vs-decoration {
+    width: 30px;
+    height: 60px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.8;
+}
+
+.vs-decoration.left {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 80'%3E%3Cpath d='M12 0L0 40l12 40' fill='none' stroke='%23ffd700' stroke-width='2'/%3E%3C/svg%3E");
+}
+
+.vs-decoration.right {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 80'%3E%3Cpath d='M12 0L24 40l-12 40' fill='none' stroke='%23ffd700' stroke-width='2'/%3E%3C/svg%3E");
+}
+
+@keyframes vsGlow {
+    from {
+        text-shadow: 
+            0 0 10px rgba(255, 215, 0, 0.5),
+            2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+    to {
+        text-shadow: 
+            0 0 20px rgba(255, 215, 0, 0.8),
+            0 0 30px rgba(255, 215, 0, 0.6),
+            2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+}
+
+.enemy-stats .stat-name {
+    font-family: 'MedievalSharp', cursive;
+    color: #ecf0f1;
+    text-shadow: 0 0 10px #e74c3c,
+                 2px 2px 2px rgba(231, 76, 60, 0.5);
+    font-size: 1.2em;
+    margin-bottom: 5px;
+    text-align: center;
+    letter-spacing: 1px;
+    transform: translateZ(0);
+    transition: all 0.3s ease-in-out;
+    opacity: 1;
+}
+
+.enemy-stats .stat-name:hover {
+    transform: scale(1.05) translateZ(0);
+    text-shadow: 0 0 15px #e74c3c,
+                 2px 2px 4px rgba(231, 76, 60, 0.7);
+}
+
+.enemy-character.defeated + .enemy-stats .stat-name {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
 }
 
 @keyframes pulse {
@@ -331,7 +415,6 @@ body.modal-open {
     75% { transform: translateX(10px) scaleX(1); }
     100% { transform: translateX(0) scaleX(1); }
 }
-
 
 @keyframes hit {
     0% {
@@ -400,96 +483,99 @@ body.modal-open {
     animation: defeat 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-.vs-section {
-    position: relative;
-    z-index: 2;
+/* Battle Content Container */
+.battle-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Task Description Button - Allow shrinking */
+.battle-content .task-description {
+    width: auto;
+    min-width: 200px;
+    max-width: 400px;
+    margin: 0;
+}
+
+/* Enemy Queue - Maintain full width */
+.battle-content .enemy-queue {
+    width: 100%;
+    margin: 0;
+    background: rgba(52, 73, 94, 0.5);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+@media (max-width: 480px) {
+    .task-description {
+        padding: 12px 20px;
+    }
+
+    .task-description .task-text {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .task-description .enemy-name {
+        padding: 0;
+        text-align: center;
+        width: 100%;
+    }
+
+    .task-description .health-display {
+        width: auto;
+        justify-content: center;
+    }
+}
+
+
+.rpg-button {
     display: flex;
     align-items: center;
-    gap: 15px;
+    justify-content: center;
+    width: 100%; /* Adjust as needed */
+    height: 60px; /* Fixed height */
+    overflow: hidden;
+    padding: 10px;
+    border: 3px solid #c77c00;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #ffcc00, #ff9900);
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
 }
 
-.vs-text {
-    color: #ffd700;
-    font-size: 3em;
-    text-shadow: 
-        0 0 10px rgba(255, 215, 0, 0.5),
-        2px 2px 4px rgba(0, 0, 0, 0.8);
-    animation: vsGlow 2s infinite alternate;
+/* Ensure the text scales down instead of overflowing */
+.task-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: clamp(1.5rem, 4vw, 20px); /* Auto-adjusts size */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
 }
 
-.vs-decoration {
-    width: 30px;
-    height: 60px;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: contain;
-    opacity: 0.8;
+/* If you want it to wrap but still shrink */
+.task-text {
+    font-size: min(20px, 4vw); /* Adjusts dynamically */
+    text-align: center;
+    word-wrap: break-word;
 }
 
-.vs-decoration.left {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 80'%3E%3Cpath d='M12 0L0 40l12 40' fill='none' stroke='%23ffd700' stroke-width='2'/%3E%3C/svg%3E");
-}
-
-.vs-decoration.right {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 80'%3E%3Cpath d='M12 0L24 40l-12 40' fill='none' stroke='%23ffd700' stroke-width='2'/%3E%3C/svg%3E");
-}
-
-@keyframes vsGlow {
-    from {
-        text-shadow: 
-            0 0 10px rgba(255, 215, 0, 0.5),
-            2px 2px 4px rgba(0, 0, 0, 0.8);
-    }
-    to {
-        text-shadow: 
-            0 0 20px rgba(255, 215, 0, 0.8),
-            0 0 30px rgba(255, 215, 0, 0.6),
-            2px 2px 4px rgba(0, 0, 0, 0.8);
-    }
-}
-
-@keyframes playerIdle {
-    0% {
-        transform: translateY(0) translateX(0) rotate(0deg) scaleX(1);
-        filter: drop-shadow(0 0 8px rgba(52, 152, 219, 0.4));
-    }
-    25% {
-        transform: translateY(-5px) translateX(2px) rotate(2deg) scaleX(1.02);
-        filter: drop-shadow(0 0 12px rgba(52, 152, 219, 0.6));
-    }
-    50% {
-        transform: translateY(0) translateX(3px) rotate(0deg) scaleX(1);
-        filter: drop-shadow(0 0 8px rgba(52, 152, 219, 0.4));
-    }
-    75% {
-        transform: translateY(-3px) translateX(1px) rotate(-2deg) scaleX(0.98);
-        filter: drop-shadow(0 0 12px rgba(52, 152, 219, 0.6));
-    }
-    100% {
-        transform: translateY(0) translateX(0) rotate(0deg) scaleX(1);
-        filter: drop-shadow(0 0 8px rgba(52, 152, 219, 0.4));
-    }
-}
-
-@keyframes enemyIdle {
-    0% {
-        transform: translateY(0) translateX(0) rotate(0deg) scaleX(1);
-        filter: drop-shadow(0 0 8px rgba(231, 76, 60, 0.4));
-    }
-    25% {
-        transform: translateY(-5px) translateX(-2px) rotate(-2deg) scaleX(1.02);
-        filter: drop-shadow(0 0 12px rgba(231, 76, 60, 0.6));
-    }
-    50% {
-        transform: translateY(0) translateX(-3px) rotate(0deg) scaleX(1);
-        filter: drop-shadow(0 0 8px rgba(231, 76, 60, 0.4));
-    }
-    75% {
-        transform: translateY(-3px) translateX(-1px) rotate(2deg) scaleX(0.98);
-        filter: drop-shadow(0 0 12px rgba(231, 76, 60, 0.6));
-    }
-    100% {
-        transform: translateY(0) translateX(0) rotate(0deg) scaleX(1);
-        filter: drop-shadow(0 0 8px rgba(231, 76, 60, 0.4));
-    }
+/* Hover Effect */
+.rpg-button:hover {
+    background: linear-gradient(145deg, #ff9900, #ff6600);
+    transform: scale(1.05);
 }

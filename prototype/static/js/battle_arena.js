@@ -5,45 +5,63 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentEnemy = document.getElementById('currentEnemy');
     const enemyQueue = document.getElementById('enemyQueue');
 
-    // Available monster images
-    const monsterImages = [
-        'abyssal_fiend.png', 'ancient_dragon.png', 'berserker_dwarf.png',
-        'bone_harbinger.png', 'crimson_imp.png', 'dark_raven.png',
-        'demon_warrior.png', 'djinn_mystic.png', 'eclipse_phantom.png',
-        'flame_serpent.png', 'forest_beast.png', 'golden_devourer.png',
-        'hellhound.png', 'infernal_juggernaut.png', 'mad_orc.png',
-        'medusa_enchantress.png', 'nosferos.png', 'obsidian_warlord.png',
-        'shadow_striker.png', 'skeletal_spearman.png', 'skull_inferno.png',
-        'snow_yeti.png', 'venom_cobra.png', 'wyrmling_drake.png'
-    ];
+    // Available monster images and names
+    const monsters = {
+        'abyssal_fiend.png': 'Abyssal Fiend',
+        'ancient_dragon.png': 'Ancient Dragon',
+        'berserker_dwarf.png': 'Berserker Dwarf',
+        'bone_harbinger.png': 'Bone Harbinger',
+        'crimson_imp.png': 'Crimson Imp',
+        'dark_raven.png': 'Dark Raven',
+        'demon_warrior.png': 'Demon Warrior',
+        'djinn_mystic.png': 'Djinn Mystic',
+        'eclipse_phantom.png': 'Eclipse Phantom',
+        'flame_serpent.png': 'Flame Serpent',
+        'forest_beast.png': 'Forest Beast',
+        'golden_devourer.png': 'Golden Devourer',
+        'hellhound.png': 'Hellhound',
+        'infernal_juggernaut.png': 'Infernal Juggernaut',
+        'mad_orc.png': 'Mad Orc',
+        'medusa_enchantress.png': 'Medusa Enchantress',
+        'nosferos.png': 'Nosferos',
+        'obsidian_warlord.png': 'Obsidian Warlord',
+        'shadow_striker.png': 'Shadow Striker',
+        'skeletal_spearman.png': 'Skeletal Spearman',
+        'skull_inferno.png': 'Skull Inferno',
+        'snow_yeti.png': 'Snow Yeti',
+        'venom_cobra.png': 'Venom Cobra',
+        'wyrmling_drake.png': 'Wyrmling Drake'
+    };
+
+    const monsterImages = Object.keys(monsters);
 
     let tasks = [
-        "Read 1 section of PEP 8",
-        "Debug a small script",
-        "Write a docstring for a function",
-        "Solve a CodeWars kata (easy)",
-        "Review list comprehensions",
-        "Practice string formatting",
-        "Explore a new built-in function",
-        "Refactor a past project",
-        "Write a unit test",
-        "Learn about virtual environments",
-        "Study dictionary methods",
-        "Research a Python library",
-        "Implement a simple class",
-        "Traceback a given error",
-        "Practice file I/O",
-        "Review conditional statements",
-        "Study for loops",
-        "Learn about tuple unpacking",
-        "Write a short script using argparse",
-        "Explore exception handling",
-        "Practice using sets",
-        "Review lambda functions",
-        "Solve a simple algorithm problem",
-        "Read a Python blog post"
+        "Code", // Very short
+        "Debug", // Very short
+        "Test", // Very short
+        "Write a basic Python function", // Medium
+        "Create a simple class definition", // Medium
+        "Study list methods in Python", // Medium
+        "Implement comprehensive error handling and logging mechanisms in your Python application while following best practices and industry standards Implement comprehensive error handling and logging mechanisms in your Python application while following best practices and industry standards", // Very long
+        "Design and develop a complete object-oriented architecture for a complex system using inheritance, polymorphism, and encapsulation principles", // Very long
+        "Create an extensive unit test suite that covers all edge cases and potential scenarios while maintaining proper test documentation", // Very long
+        "Debug", // Very short
+        "Review Python decorators", // Medium
+        "Master advanced Python concepts including metaclasses, descriptors, and context managers while building practical examples for each concept", // Very long
+        "Test", // Very short
+        "Practice list comprehensions", // Medium
+        "Implement a complete database migration system with rollback capabilities and proper version control integration", // Very long
+        "Code", // Very short
+        "Study generators in Python", // Medium
+        "Create a comprehensive documentation system that includes API references, usage examples, and troubleshooting guides", // Very long
+        "Debug", // Very short
+        "Learn about virtual environments", // Medium
+        "Develop a full-featured REST API with authentication, rate limiting, and comprehensive swagger documentation", // Very long
+        "Test", // Very short
+        "Practice string methods", // Medium
+        "Build an advanced caching system with multiple storage backends and intelligent cache invalidation strategies" // Very long
     ]
-
+     
     // Game state
     let enemies = [];
     let currentEnemyIndex = 0;
@@ -63,14 +81,19 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function getRandomMonster() {
-        return monsterImages[Math.floor(Math.random() * monsterImages.length)];
+        const image = monsterImages[Math.floor(Math.random() * monsterImages.length)];
+        return {
+            image: image,
+            name: monsters[image]
+        };
     }
 
     function initializeBattle() {
         // get a task from shuffle list
         const taskDescription = document.getElementById('taskDescription');
         taskDescription.focus();
-        taskDescription.textContent = tasks.pop()
+        taskDescription.textContent = tasks.pop();
+        shrinkText(taskDescription, taskDescription);
 
         resetBattle();
         battleActive = true;
@@ -83,36 +106,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Generate 3-5 enemies
         const totalEnemies = Math.floor(Math.random() * 3) + 3;
-        enemies = Array.from({ length: totalEnemies }, () => ({
-            health: Math.floor(Math.random() * 3) + 3,
-            maxHealth: Math.floor(Math.random() * 3) + 3,
-            image: getRandomMonster()
-        }));
+        enemies = Array.from({ length: totalEnemies }, () => {
+            const monster = getRandomMonster();
+            return {
+                health: Math.floor(Math.random() * 3) + 3,
+                maxHealth: Math.floor(Math.random() * 3) + 3,
+                image: monster.image,
+                name: monster.name
+            };
+        });
 
         // Create queue indicators
-        enemies.forEach((_, index) => {
+        enemies.forEach((enemy, index) => {
             const indicator = document.createElement('div');
-            indicator.className = `queue-indicator`;
+            indicator.className = 'queue-indicator';
+            indicator.title = enemy.name;
             enemyQueue.appendChild(indicator);
         });
 
         showCurrentEnemy();
     }
 
+    function shrinkText(container, textElement) {
+        let fontSize = 24; // Start with a reasonable default
+        textElement.style.fontSize = fontSize + "px";
+    
+        // Reduce font size if text overflows container
+        while ((textElement.scrollWidth > container.clientWidth || textElement.scrollHeight > container.clientHeight) && fontSize > 10) {
+            fontSize--;
+            textElement.style.fontSize = fontSize + "px";
+        }
+    }
+
+    
+
     function showCurrentEnemy() {
         if (!enemies[currentEnemyIndex]) return;
-        
+
         const enemy = enemies[currentEnemyIndex];
-        const enemySprite = currentEnemy.querySelector('.character-sprite');
-        const hpFill = document.querySelector('.enemy-stats .hp-fill');
+        const taskDescription = document.getElementById('taskDescription');
+        const taskText = taskDescription.querySelector('.task-text');
         
-        if (enemySprite) {
-            enemySprite.style.backgroundImage = `url('/static/assets/images/avatar_icons/monsta/${enemy.image}')`;
+        if(taskText) {
+            taskText.innerHTML = `<span class="enemy-name">${enemy.name}</span> (${enemy.health}/${enemy.maxHealth} HP)`;
+        shrinkText(taskDescription, taskText); // Ensure text fits
         }
-        
-        if (hpFill) {
-            hpFill.style.transform = `scaleX(${enemy.health / enemy.maxHealth})`;
-        }
+
+        const healthPercentage = (enemy.health / enemy.maxHealth) * 100;
+        taskDescription.style.background = `linear-gradient(90deg, 
+            rgba(231, 76, 60, 0.3) ${healthPercentage}%, 
+            rgba(44, 62, 80, 0.9) ${healthPercentage}% )`;
 
         currentEnemy.addEventListener('click', () => {
             if (!isAnimating && battleActive) {
@@ -124,17 +167,14 @@ document.addEventListener('DOMContentLoaded', () => {
             event.stopPropagation();
             if (event.key === " " && !isAnimating && battleActive) {
                 performAttack();
-
             }
         });
         
-        const taskDescription = document.getElementById('taskDescription');
         taskDescription.addEventListener('click', () => {
             if (!isAnimating && battleActive) {
                 performAttack();
             }
         });
-
     }
 
     function performAttack() {
@@ -142,6 +182,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         isAnimating = true;
         const enemy = enemies[currentEnemyIndex];
+        const taskDescription = document.getElementById('taskDescription');
+        const taskText = taskDescription.querySelector('.task-text');
         
         // Player attack animation
         const playerChar = document.querySelector('.player-character');
@@ -150,10 +192,19 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             // Enemy takes damage
             enemy.health--;
-            const hpFill = document.querySelector('.enemy-stats .hp-fill');
-            if (hpFill) {
-                hpFill.style.transform = `scaleX(${enemy.health / enemy.maxHealth})`;
+            
+            // Update task text with new health
+            if (taskText) {
+                taskText.innerHTML = `<span class="enemy-name">${enemy.name}</span> (${enemy.health}/${enemy.maxHealth} HP)`;
+                shrinkText(taskDescription, taskText); // Shrink text after updating
             }
+
+            // Update health bar in button
+            const healthPercentage = (enemy.health / enemy.maxHealth) * 100;
+            taskDescription.style.background = `linear-gradient(90deg, 
+                rgba(231, 76, 60, 0.3) ${healthPercentage}%, 
+                rgba(44, 62, 80, 0.9) ${healthPercentage}%
+            )`;
 
             // Enemy hit animation
             const enemyChar = currentEnemy;
@@ -221,7 +272,20 @@ document.addEventListener('DOMContentLoaded', () => {
         tasks.sort(() => Math.random() - 0.5);
         enemyQueue.innerHTML = '';
         currentEnemy.classList.remove('hit', 'defeated', 'attacking-left');
-        document.querySelector('.enemy-stats .hp-fill').style.transform = 'scaleX(1)';
+        
+        const enemyName = document.querySelector('.enemy-stats .stat-name');
+        if (enemyName) {
+            enemyName.textContent = 'Enemy';
+        }
+
+        const taskDescription = document.getElementById('taskDescription');
+        const taskText = taskDescription.querySelector('.task-text');
+        
+        if (taskText) {
+            taskText.textContent = 'Start Battle';
+        }
+
+        taskDescription.style.background = 'rgba(44, 62, 80, 0.9)';
         
         const playerChar = document.querySelector('.player-character');
         if (playerChar) {
