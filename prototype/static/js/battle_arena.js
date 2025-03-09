@@ -5,6 +5,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentEnemy = document.getElementById('currentEnemy');
     const enemyQueue = document.getElementById('enemyQueue');
 
+    const observer = new MutationObserver((mutationsList) => {
+        for (const mutation of mutationsList) {
+            if (mutation.attributeName === "style") {
+                const newDisplay = window.getComputedStyle(battleOverlay).display;
+                if (newDisplay === 'none') {
+                    stopBattleTimer();
+                }       
+            }
+        }
+    });
+    
+    // ✅ Observe only `style` attribute changes
+    observer.observe(battleOverlay, { attributes: true, attributeFilter: ["style"] });
+
+
     // Available monster images and names
     const monsters = {
         'abyssal_fiend.png': 'Abyssal Fiend',
@@ -80,6 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
     });
 
+    
+
     function getRandomMonster() {
         const image = monsterImages[Math.floor(Math.random() * monsterImages.length)];
         return {
@@ -88,12 +105,46 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
+    let battleTimerInterval = null;
+
+    function startBattleTimer(durationMinutes, timerElement) {
+        let duration = durationMinutes * 60;
+        let minutes = Math.floor(duration / 60);
+        let seconds = duration % 60;
+    
+        function updateTimer() {
+            minutes = Math.floor(duration / 60);    
+            seconds = duration % 60;
+            timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            duration--;
+            if (duration < 0) {
+                stopBattleTimer();
+            }
+        }    
+    
+        updateTimer();
+        battleTimerInterval = setInterval(updateTimer, 1000);
+    }
+    
+    function stopBattleTimer() {
+        if (battleTimerInterval) {
+            clearInterval(battleTimerInterval);
+            battleTimerInterval = null;
+        }
+    }
+
     function initializeBattle() {
         // get a task from shuffle list
         const taskDescription = document.getElementById('taskDescription');
         taskDescription.focus();
         taskDescription.textContent = tasks.pop();
         shrinkText(taskDescription, taskDescription);
+
+        const durationMinutes = 30;
+        const battleTimer = document.getElementById('battleTimer');
+
+        startBattleTimer(durationMinutes, battleTimer);
+
 
         resetBattle();
         battleActive = true;

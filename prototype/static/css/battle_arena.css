@@ -29,7 +29,6 @@ body.modal-open {
     padding: 20px;
     width: 90%;
     max-width: 900px;
-    min-height: 500px;
     max-height: 80vh;
     position: relative;
     display: flex;
@@ -48,6 +47,7 @@ body.modal-open {
         transparent 100%
     );
     flex-shrink: 0;
+    margin-bottom: 10px;
 }
 
 .battle-header h2 {
@@ -58,7 +58,6 @@ body.modal-open {
 }
 
 .battle-stage {
-    flex: 1;
     position: relative;
     display: flex;
     justify-content: space-between;
@@ -71,7 +70,6 @@ body.modal-open {
     );
     border: 2px solid #34495e;
     border-radius: 10px;
-    min-height: 300px;
     overflow: hidden;
 }
 
@@ -293,7 +291,6 @@ body.modal-open {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* RPG Button Base Style */
 .rpg-button {
     display: flex;
     align-items: center;
@@ -307,7 +304,28 @@ body.modal-open {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     cursor: pointer;
     transition: all 0.2s ease-in-out;
+    padding: 12px 20px;
+    font-size: 18px;
 }
+
+/* ✅ Button presses down when spacebar is pressed */
+.rpg-button:active,
+.rpg-button.pressed {
+    transform: scale(0.95);
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* ✅ Bounce effect when key is released */
+@keyframes buttonBounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.rpg-button.bouncing {
+    animation: buttonBounce 0.2s ease-in-out;
+}
+
 
 .rpg-button:hover {
     background: linear-gradient(145deg, #2c3e50, #3498db);
@@ -410,6 +428,37 @@ body.modal-open {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
+}
+
+@keyframes playerIdle {
+    0% { transform: translateY(0) scaleX(1) rotate(-3deg); }
+    25% { transform: translateY(-2px) scaleX(1.02) rotate(-2deg); }
+    50% { transform: translateY(-3px) scaleX(1.02) rotate(-3deg); }
+    75% { transform: translateY(-1px) scaleX(1.01) rotate(-2deg); }
+    100% { transform: translateY(0) scaleX(1) rotate(-3deg); }
+}
+
+@keyframes enemyIdle {
+    0% { transform: translateY(0) scaleX(-1) rotate(3deg); }
+    25% { transform: translateY(-2px) scaleX(-1.02) rotate(2deg); }
+    50% { transform: translateY(-3px) scaleX(-1.02) rotate(3deg); }
+    75% { transform: translateY(-1px) scaleX(-1.01) rotate(2deg); }
+    100% { transform: translateY(0) scaleX(-1) rotate(3deg); }
+}
+
+/* ✅ Add a Punching Animation */
+@keyframes playerPunch {
+    0% { transform: translateX(0) scaleX(1) rotate(-3deg); }
+    30% { transform: translateX(10px) scaleX(1.1) rotate(0deg); } /* Punch forward */
+    50% { transform: translateX(-5px) scaleX(1) rotate(-3deg); } /* Recoil */
+    100% { transform: translateX(0) scaleX(1) rotate(-3deg); }
+}
+
+@keyframes enemyPunch {
+    0% { transform: translateX(0) scaleX(-1) rotate(3deg); }
+    30% { transform: translateX(-10px) scaleX(-1.1) rotate(0deg); } /* Punch forward */
+    50% { transform: translateX(5px) scaleX(-1) rotate(3deg); } /* Recoil */
+    100% { transform: translateX(0) scaleX(-1) rotate(3deg); }
 }
 
 .rpg-button:hover .button-content {
@@ -526,6 +575,27 @@ body.modal-open {
     background: rgba(52, 73, 94, 0.5);
     border-radius: 8px;
     padding: 10px;
+}
+
+.battle-duration {
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ecf0f1;
+    font-size: 1.2em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    background: rgba(44, 62, 80, 0.9);
+    padding: 5px 15px;
+    border-radius: 15px;
+    border: 2px solid #34495e;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.battle-duration i {
+    color: #3498db;
 }
 
 @media (max-width: 480px) {

@@ -280,6 +280,17 @@
                 alert("Your study session has ended!");
             });
 
+            
+            const battleOverlay = document.getElementById('battleOverlay');
+            const rpgButton = document.querySelector('.rpg-button');
+
+            document.addEventListener("keydown", function (event) { // Adjust to your modal class
+                if (battleOverlay.style.display != 'none' && event.code === "Space") {
+                    event.preventDefault();
+                    rpgButton.classList.add("pressed"); // Prevent spacebar activation
+                }
+            });
+
             modalSystem.init();
             // pre-select the first subject card
             const firstSubjectCard = document.querySelector('.subject-card');

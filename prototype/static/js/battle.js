@@ -39,9 +39,12 @@ function startBattle(event) {
         throw new Error('Network response was not ok.');
     })
     .then(data => {
+        document.body.focus();
         console.log('Success session:', data);
         modalSystem.hide('startBattleModal');
         form.reset();
+
+
         battleOverlay.style.display = 'flex';
         initializeBattle();
 
