@@ -157,8 +157,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    
-
     function showCurrentEnemy() {
         if (!enemies[currentEnemyIndex]) return;
 
@@ -337,4 +335,14 @@ document.addEventListener('DOMContentLoaded', () => {
         battleOverlay.style.display = 'none';
         resetBattle();
     }
+
+    // Expose functions to the global scope
+    window.initializeBattle = initializeBattle;
+    window.shrinkText = shrinkText;
+    window.showCurrentEnemy = showCurrentEnemy;
+    window.performAttack = performAttack;
+    window.enemyCounterAttack = enemyCounterAttack;
+    window.defeatCurrentEnemy = defeatCurrentEnemy;
+    window.resetBattle = resetBattle;
+    window.endBattle = endBattle;
 });

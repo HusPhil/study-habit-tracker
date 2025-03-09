@@ -42,6 +42,8 @@ function startBattle(event) {
         console.log('Success session:', data);
         modalSystem.hide('startBattleModal');
         form.reset();
+        battleOverlay.style.display = 'flex';
+        initializeBattle();
 
     })
     .catch((error) => {
