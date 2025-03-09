@@ -232,7 +232,9 @@
 </head>
 <body>
     <input id="current_user_id" value="{{ player.user_id }}" hidden>
+    <input id="current_username" value="{{ player.username }}" hidden>
     <main>
+        
         {% include 'components/battle/battle_arena.html' %}
         {% include 'components/battle/battle_screen.html' %}
         {% include 'components/study/study_zone.html' %}

@@ -147,10 +147,6 @@ body.modal-open {
     background-color: rgba(231, 76, 60, 0.08);
 }
 
-.character-sprite:hover {
-    transform: scale(1.02);
-}
-
 .character-sprite::before {
     animation-delay: -4s;
 }
@@ -196,7 +192,7 @@ body.modal-open {
     gap: 10px;
     background: rgba(52, 73, 94, 0.5);
     border-radius: 8px;
-    margin-top: auto;
+    margin-top: 12px;
     flex-shrink: 0;
     min-height: 50px;
 }
@@ -236,7 +232,7 @@ body.modal-open {
 }
 
 .enemy-name {
-    max-width: 100%;
+    max-width: 70%  ;
     word-wrap: break-word;
     white-space: normal;
 }
@@ -262,6 +258,8 @@ body.modal-open {
 .rpg-button.task-description {
     padding: 15px 30px;
     min-width: 200px;
+    margin: 0 auto; /* Center the button horizontally */
+    transform: translateX(0);
 }
 
 /* Task Description Button */
@@ -365,11 +363,9 @@ body.modal-open {
     }
 }
 
-.enemy-stats .stat-name {
+.enemy-stats .stat-name, .player-stats .stat-name {
     font-family: 'MedievalSharp', cursive;
     color: #ecf0f1;
-    text-shadow: 0 0 10px #e74c3c,
-                 2px 2px 2px rgba(231, 76, 60, 0.5);
     font-size: 1.2em;
     margin-bottom: 5px;
     text-align: center;
@@ -379,10 +375,30 @@ body.modal-open {
     opacity: 1;
 }
 
-.enemy-stats .stat-name:hover {
+
+.enemy-stats .stat-name {
+    text-shadow: 0 0 10px #e74c3c,
+                 2px 2px 2px rgba(231, 76, 60, 0.5);
+    
+}
+
+.player-stats .stat-name {
+    text-shadow: 0 0 20px #3498db,
+                 2px 2px 4px rgba(52, 152, 219, 0.8);
+}
+
+.enemy-stats .stat-name:hover, .player-stats .stat-name:hover {
     transform: scale(1.05) translateZ(0);
-    text-shadow: 0 0 15px #e74c3c,
-                 2px 2px 4px rgba(231, 76, 60, 0.7);
+}
+
+.enemy-stats .stat-name:hover {
+    text-shadow: 0 0 20px #e74c3c,
+                 2px 2px 4px rgba(231, 76, 60, 0.8);
+}
+
+.player-stats .stat-name:hover {
+    text-shadow: 0 0 20px #3498db,
+                 2px 2px 4px rgba(52, 152, 219, 0.8);
 }
 
 .enemy-character.defeated + .enemy-stats .stat-name {

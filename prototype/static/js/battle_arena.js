@@ -36,18 +36,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const monsterImages = Object.keys(monsters);
 
     let tasks = [
-        "Code", // Very short
-        "Debug", // Very short
-        "Test", // Very short
-        "Write a basic Python function", // Medium
+        "Design and develop a complete object-oriented architecture for a complex system using inheritance, polymorphism, and encapsulation principles", // Very long
         "Create a simple class definition", // Medium
         "Study list methods in Python", // Medium
-        "Implement comprehensive error handling and logging mechanisms in your Python application while following best practices and industry standards Implement comprehensive error handling and logging mechanisms in your Python application while following best practices and industry standards", // Very long
-        "Design and develop a complete object-oriented architecture for a complex system using inheritance, polymorphism, and encapsulation principles", // Very long
+        "Code", // Very short
+        "Test", // Very short
         "Create an extensive unit test suite that covers all edge cases and potential scenarios while maintaining proper test documentation", // Very long
         "Debug", // Very short
         "Review Python decorators", // Medium
-        "Master advanced Python concepts including metaclasses, descriptors, and context managers while building practical examples for each concept", // Very long
         "Test", // Very short
         "Practice list comprehensions", // Medium
         "Implement a complete database migration system with rollback capabilities and proper version control integration", // Very long
@@ -59,7 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
         "Develop a full-featured REST API with authentication, rate limiting, and comprehensive swagger documentation", // Very long
         "Test", // Very short
         "Practice string methods", // Medium
-        "Build an advanced caching system with multiple storage backends and intelligent cache invalidation strategies" // Very long
+        "Build an advanced caching system with multiple storage backends and intelligent cache invalidation strategies", // Very long
+        "Write a basic Python function", // Medium
+        "Master advanced Python concepts including metaclasses, descriptors, and context managers while building practical examples for each concept", // Very long
+        "Debug", // Very short
+        "Long Implement comprehensive error handling and logging mechanisms in your Python application while following best practices and industry standards Implement comprehensive error handling and logging mechanisms in your Python application while following best practices and industry standards", // Very long
     ]
      
     // Game state
@@ -128,13 +128,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function shrinkText(container, textElement) {
-        let fontSize = 24; // Start with a reasonable default
+        let fontSize = 20; // Start with a reasonable default
         textElement.style.fontSize = fontSize + "px";
+        console.log(`Initial font size: ${fontSize}px`);
+    
+        // Create a temporary element for measurement
+        const tempElement = document.createElement('div');
+        tempElement.style.position = 'absolute';
+        tempElement.style.visibility = 'hidden';
+        tempElement.style.whiteSpace = 'nowrap';
+        tempElement.style.fontSize = fontSize + "px";
+        tempElement.textContent = textElement.textContent;
+        document.body.appendChild(tempElement);
     
         // Reduce font size if text overflows container
-        while ((textElement.scrollWidth > container.clientWidth || textElement.scrollHeight > container.clientHeight) && fontSize > 10) {
+        while ((tempElement.offsetHeight > container.clientHeight || tempElement.offsetWidth > container.clientWidth) && fontSize > 10) {
             fontSize--;
+            tempElement.style.fontSize = fontSize + "px";
             textElement.style.fontSize = fontSize + "px";
+            console.log(`Adjusted font size: ${fontSize}px, offsetHeight: ${tempElement.offsetHeight}, containerHeight: ${container.clientHeight}, offsetWidth: ${tempElement.offsetWidth}, containerWidth: ${container.clientWidth}`);
+        }
+    
+        // Remove the temporary element
+        document.body.removeChild(tempElement);
+    
+        if (fontSize <= 10) {
+            console.warn('Minimum font size reached, text may still overflow.');
         }
     }
 
@@ -144,13 +163,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!enemies[currentEnemyIndex]) return;
 
         const enemy = enemies[currentEnemyIndex];
-        const taskDescription = document.getElementById('taskDescription');
-        const taskText = taskDescription.querySelector('.task-text');
-        
-        if(taskText) {
-            taskText.innerHTML = `<span class="enemy-name">${enemy.name}</span> (${enemy.health}/${enemy.maxHealth} HP)`;
-        shrinkText(taskDescription, taskText); // Ensure text fits
+        const enemySprite = currentEnemy.querySelector('.character-sprite');
+
+        const enemyName = document.querySelector('.enemy-stats .stat-name');
+        if (enemyName) {
+            enemyName.textContent = enemy.name;
         }
+        
+        const taskDescription = document.getElementById('taskDescription');
+        taskDescription.textContent = tasks.pop()
+        shrinkText(taskDescription, taskDescription);
+
+        if(enemySprite) {
+            enemySprite.style.backgroundImage = `url('/static/assets/images/avatar_icons/monsta/${enemy.image}')`;
+        }   
 
         const healthPercentage = (enemy.health / enemy.maxHealth) * 100;
         taskDescription.style.background = `linear-gradient(90deg, 
@@ -242,9 +268,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function defeatCurrentEnemy() {
         const indicators = enemyQueue.children;
 
-        const taskDescription = document.getElementById('taskDescription');
-        taskDescription.textContent = tasks.pop()
-
         // indicators[currentEnemyIndex].classList.add('defeated');
         indicators[currentEnemyIndex].classList.add('active');
 
@@ -269,13 +292,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function resetBattle() {
-        tasks.sort(() => Math.random() - 0.5);
+        // tasks.sort(() => Math.random() - 0.5);
         enemyQueue.innerHTML = '';
         currentEnemy.classList.remove('hit', 'defeated', 'attacking-left');
+
+        const playerName = document.querySelector('.player-stats .stat-name');
+        const playerUsername = document.getElementById('current_username').value;
+
+        console.log(playerUsername, playerName)
+
+        if (playerName) {
+            playerName.textContent = playerUsername;
+        }
         
         const enemyName = document.querySelector('.enemy-stats .stat-name');
         if (enemyName) {
-            enemyName.textContent = 'Enemy';
+            enemyName.textContent = "enemy";
         }
 
         const taskDescription = document.getElementById('taskDescription');
