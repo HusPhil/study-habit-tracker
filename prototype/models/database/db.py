@@ -98,6 +98,25 @@ class Database:
             ''')
             c.execute('CREATE INDEX IF NOT EXISTS idx_quests_subject ON quests(subject_id)')
 
+            # Badges table
+            c.execute('''
+                      CREATE TABLE IF NOT EXISTS badges (    
+                            badge_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            title TEXT NOT NULL,
+                            rarity TEXT NOT NULL
+                        )
+                        ''')
+            
+            # Player badges association table
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS player_badges (
+                    player_id INTEGER,
+                    badge_id INTEGER,
+                    FOREIGN KEY (player_id) REFERENCES users (user_id) ON DELETE CASCADE,
+                    FOREIGN KEY (badge_id) REFERENCES badges (badge_id) ON DELETE CASCADE,
+                    PRIMARY KEY (player_id, badge_id)
+                )
+            ''')
             
 
     def execute(self, query: str, params: tuple = ()) -> List[sqlite3.Row]:
@@ -125,3 +144,16 @@ class DatabaseError(Exception):
 
 # Global database instance
 db = Database()
+
+# Ewan ko talaga tong part na tong dalwa, nilagay ko lang baka kelangan, bobo ko sa db hayss
+def add_badge(title: str, rarity: str) -> int:
+    """Add a new badge to the badges table and return its ID."""
+    query = "INSERT INTO badges (title, rarity) VALUES (?, ?)"
+    db.execute(query, (title, rarity))
+    badge_id = db.execute("SELECT last_insert_rowid() AS id")[0]["id"]
+    return badge_id
+
+def add_badge_to_player(player_id: int, badge_id: int):
+    """Associate a badge with a player."""
+    query = "INSERT INTO player_badges (player_id, badge_id) VALUES (?, ?)"
+    db.execute(query, (player_id, badge_id))
