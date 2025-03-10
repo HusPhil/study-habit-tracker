@@ -1,8 +1,8 @@
 # models/player.py
-from .user import User
+from models.user.user import User
 from datetime import datetime
-from .db import db, DatabaseError
-from .subject import Subject
+from models.database.db import db, DatabaseError
+from models.subject.subject import Subject
 from werkzeug.security import generate_password_hash
 
 class Player(User):

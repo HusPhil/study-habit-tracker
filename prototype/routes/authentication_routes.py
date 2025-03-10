@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
-from models.player import Player
-from models.db import db, DatabaseError
-from models.user import User
+from models.player.player import Player
+from models.database.db import db, DatabaseError
+from models.user.user import User
 
 auth_routes = Blueprint('auth', __name__)
 
@@ -10,7 +10,6 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        print(username, password)
         try:
             # Find user by username
             result = db.execute("SELECT * FROM users WHERE username = ?", (username,))
@@ -22,7 +21,7 @@ def login():
                     password=result[0]['password']
                 )
                 
-                if user.verify_password(password):
+                if user.login(password):
                     session['user_id'] = user.user_id
                     return redirect(url_for('index'))
             

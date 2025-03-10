@@ -1,9 +1,9 @@
 from datetime import datetime
 import random
 from typing import List
-from .db import db, DatabaseError
-from .quest import Quest
-from .enemy import Enemy, EnemyType
+from models.database.db import db, DatabaseError
+from models.quest.quest import Quest
+from models.enemy.enemy import Enemy, EnemyType
 
 
 class Subject:
@@ -19,6 +19,7 @@ class Subject:
 
     def spawnEnemy(self, enemy_count: int) -> List[Enemy]:
         all_enemy_types = list(EnemyType)
+    
         chosen_enemies = random.choices(all_enemy_types, k=enemy_count)
         return chosen_enemies
 

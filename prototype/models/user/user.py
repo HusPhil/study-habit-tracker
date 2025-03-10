@@ -1,14 +1,18 @@
 # models/user.py
-from .db import db, DatabaseError
+from models.database.db import db, DatabaseError
 from typing import Optional
 from werkzeug.security import generate_password_hash, check_password_hash
 
 class User:
     def __init__(self, user_id: int, email: str, username: str, password: str):
         self.user_id = user_id          
-        self.email = email      
         self.username = username
+        self.email = email      
         self.__password = password
+
+    def login(self, password: str) -> bool:
+        """Verify if the provided password matches"""
+        return check_password_hash(self.__password, password)
 
     @staticmethod
     def create(email: str, username: str, password: str) -> 'User':
@@ -69,7 +73,3 @@ class User:
             'email': self.email,
             'username': self.username
         }
-
-    def verify_password(self, password: str) -> bool:
-        """Verify if the provided password matches"""
-        return check_password_hash(self.__password, password)

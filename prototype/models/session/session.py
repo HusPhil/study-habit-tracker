@@ -16,8 +16,8 @@ class Session:
         if not self.id:
             return {"error": "Invalid session: Missing session ID"}
         
-        # if user_id in active_sessions:
-        #     return {"error": f"A session {self.id} is already running"}
+        if user_id in active_sessions:
+            return {"error": f"A session {self.id} is already running"}
 
         if not isinstance(self.duration, int) or self.duration <= 0:
             return {"error": "Session duration must be a positive integer"}

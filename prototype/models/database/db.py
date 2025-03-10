@@ -45,7 +45,7 @@ class Database:
 
     def __init__(self):
         if not self.initialized:
-            db_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'study_quest.db')
+            db_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'cram_quest.db')
             self.pool = ConnectionPool(db_path)
             self.setup_database()
             self.initialized = True

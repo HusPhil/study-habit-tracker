@@ -1,5 +1,5 @@
-from models.trackable_content import TrackableContent
-from .db import db
+from models.content.trackable_content import TrackableContent
+from models.database.db import db
 
 class Quest(TrackableContent):
     def __init__(self, id: int = None, description: str = "New Quest", 

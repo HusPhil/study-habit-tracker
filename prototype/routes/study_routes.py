@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, redirect, url_for
 from typing import Dict
 from models import Subject, Quest, Session  # Import the Subject model
-from models.enemy import EnemyType
+from models.enemy.enemy import EnemyType
 from extensions import socketio
 import time
 
