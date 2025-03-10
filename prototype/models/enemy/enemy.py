@@ -1,4 +1,5 @@
 from enum import Enum
+from models.badge.badge import Badge
 
 class Enemy:
     def __init__(self, id: int, name: str, health: int):
@@ -12,8 +13,8 @@ class Enemy:
     def hurt(self, damage: int):
         pass
 
-    def drop_item():
-        pass
+    def drop_badge():
+        return Badge("Dragon Slayer", "Legendary")
 
 
 class EnemyType(Enum):

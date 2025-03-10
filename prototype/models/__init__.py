@@ -5,3 +5,4 @@ from .quest.quest import Quest
 from .enemy.enemy import Enemy
 from .session.session import Session
 from .database.db import Database
+from .badge.badge import Badge

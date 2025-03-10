@@ -7,6 +7,7 @@ class Player(User):
         self.title = title
         self.level = level
         self.exp = exp
+        self.badges = []
 
     def get_exp_threshold(self) -> int:
         """Get experience points needed for the next level."""
