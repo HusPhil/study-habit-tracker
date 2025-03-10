@@ -4,7 +4,7 @@ from datetime import datetime
 import json
 import os
 
-from models.player.player import Player
+from models.player.player_manager import PlayerManager
 from models.subject.subject import Subject
 from routes.study_routes import study_routes
 from routes.authentication_routes import auth_routes
@@ -42,7 +42,7 @@ def index():
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
         
-    player = Player.get(session['user_id'])
+    player = PlayerManager.get(session['user_id'])
     if not player:
         return redirect(url_for('auth.login'))
         

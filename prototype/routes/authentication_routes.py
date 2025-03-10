@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
-from models.player.player import Player
+from models.player.player_manager import PlayerManager
 from models.database.db import db, DatabaseError
 from models.user.user import User
 
@@ -59,7 +59,7 @@ def register():
                 return redirect(url_for('auth.register'))
             
             # Create new player
-            player = Player.create(email, username, password)
+            player = PlayerManager.create(email, username, password)
             if player:
                 session['user_id'] = player.user_id
                 flash('Registration successful!')
