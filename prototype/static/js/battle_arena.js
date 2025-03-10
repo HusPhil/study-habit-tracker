@@ -1,3 +1,6 @@
+let monsters;
+let tasks;
+
 document.addEventListener('DOMContentLoaded', () => {
     // Battle elements
     const battleOverlay = document.getElementById('battleOverlay');
@@ -20,63 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     observer.observe(battleOverlay, { attributes: true, attributeFilter: ["style"] });
 
 
-    // Available monster images and names
-    const monsters = {
-        'abyssal_fiend.png': 'Abyssal Fiend',
-        'ancient_dragon.png': 'Ancient Dragon',
-        'berserker_dwarf.png': 'Berserker Dwarf',
-        'bone_harbinger.png': 'Bone Harbinger',
-        'crimson_imp.png': 'Crimson Imp',
-        'dark_raven.png': 'Dark Raven',
-        'demon_warrior.png': 'Demon Warrior',
-        'djinn_mystic.png': 'Djinn Mystic',
-        'eclipse_phantom.png': 'Eclipse Phantom',
-        'flame_serpent.png': 'Flame Serpent',
-        'forest_beast.png': 'Forest Beast',
-        'golden_devourer.png': 'Golden Devourer',
-        'hellhound.png': 'Hellhound',
-        'infernal_juggernaut.png': 'Infernal Juggernaut',
-        'mad_orc.png': 'Mad Orc',
-        'medusa_enchantress.png': 'Medusa Enchantress',
-        'nosferos.png': 'Nosferos',
-        'obsidian_warlord.png': 'Obsidian Warlord',
-        'shadow_striker.png': 'Shadow Striker',
-        'skeletal_spearman.png': 'Skeletal Spearman',
-        'skull_inferno.png': 'Skull Inferno',
-        'snow_yeti.png': 'Snow Yeti',
-        'venom_cobra.png': 'Venom Cobra',
-        'wyrmling_drake.png': 'Wyrmling Drake'
-    };
-
-    const monsterImages = Object.keys(monsters);
-
-    let tasks = [
-        "Design and develop a complete object-oriented architecture for a complex system using inheritance, polymorphism, and encapsulation principles", // Very long
-        "Create a simple class definition", // Medium
-        "Study list methods in Python", // Medium
-        "Code", // Very short
-        "Test", // Very short
-        "Create an extensive unit test suite that covers all edge cases and potential scenarios while maintaining proper test documentation", // Very long
-        "Debug", // Very short
-        "Review Python decorators", // Medium
-        "Test", // Very short
-        "Practice list comprehensions", // Medium
-        "Implement a complete database migration system with rollback capabilities and proper version control integration", // Very long
-        "Code", // Very short
-        "Study generators in Python", // Medium
-        "Create a comprehensive documentation system that includes API references, usage examples, and troubleshooting guides", // Very long
-        "Debug", // Very short
-        "Learn about virtual environments", // Medium
-        "Develop a full-featured REST API with authentication, rate limiting, and comprehensive swagger documentation", // Very long
-        "Test", // Very short
-        "Practice string methods", // Medium
-        "Build an advanced caching system with multiple storage backends and intelligent cache invalidation strategies", // Very long
-        "Write a basic Python function", // Medium
-        "Master advanced Python concepts including metaclasses, descriptors, and context managers while building practical examples for each concept", // Very long
-        "Debug", // Very short
-        "Long Implement comprehensive error handling and logging mechanisms in your Python application while following best practices and industry standards Implement comprehensive error handling and logging mechanisms in your Python application while following best practices and industry standards", // Very long
-    ]
-     
     // Game state
     let enemies = [];
     let currentEnemyIndex = 0;
@@ -95,15 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
     });
 
-    
 
-    function getRandomMonster() {
-        const image = monsterImages[Math.floor(Math.random() * monsterImages.length)];
-        return {
-            image: image,
-            name: monsters[image]
-        };
-    }
 
     let battleTimerInterval = null;
 
@@ -133,17 +71,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function initializeBattle() {
+    function initializeBattle(generatedMonsters, battle_duration) {
+
+        monsters = generatedMonsters;
         // get a task from shuffle list
+        
         const taskDescription = document.getElementById('taskDescription');
         taskDescription.focus();
-        taskDescription.textContent = tasks.pop();
+        // taskDescription.textContent = tasks.pop();
         shrinkText(taskDescription, taskDescription);
 
-        const durationMinutes = 30;
         const battleTimer = document.getElementById('battleTimer');
+        console.log("battle_duration", battle_duration)
 
-        startBattleTimer(durationMinutes, battleTimer);
+        startBattleTimer(battle_duration, battleTimer);
 
 
         resetBattle();
@@ -156,16 +97,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Generate 3-5 enemies
-        const totalEnemies = Math.floor(Math.random() * 3) + 3;
-        enemies = Array.from({ length: totalEnemies }, () => {
-            const monster = getRandomMonster();
-            return {
-                health: Math.floor(Math.random() * 3) + 3,
-                maxHealth: Math.floor(Math.random() * 3) + 3,
-                image: monster.image,
-                name: monster.name
-            };
-        });
+        const totalEnemies = generatedMonsters.length;
+        enemies = []
+        for (let i = 0; i < totalEnemies; i++) {
+            const enemy = generatedMonsters[i];
+            console.log(enemy)
+            enemies.push({
+                name: enemy.name,
+                image: enemy.file_name,
+                health: enemy.health,
+                maxHealth: enemy.health,
+                description: enemy.description
+            });
+        }
+
+        console.log('Enemies:', enemies);   
+
 
         // Create queue indicators
         enemies.forEach((enemy, index) => {
@@ -177,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         showCurrentEnemy();
     }
+    
 
     function shrinkText(container, textElement) {
         let fontSize = 20; // Start with a reasonable default
@@ -212,6 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!enemies[currentEnemyIndex]) return;
 
         const enemy = enemies[currentEnemyIndex];
+        console.log('Current enemy:', enemy);
         const enemySprite = currentEnemy.querySelector('.character-sprite');
 
         const enemyName = document.querySelector('.enemy-stats .stat-name');
@@ -219,8 +168,9 @@ document.addEventListener('DOMContentLoaded', () => {
             enemyName.textContent = enemy.name;
         }
         
+        console.log('showCurrentEnemy:', tasks);
         const taskDescription = document.getElementById('taskDescription');
-        taskDescription.textContent = tasks.pop()
+        taskDescription.textContent = enemy.description
         shrinkText(taskDescription, taskDescription);
 
         if(enemySprite) {

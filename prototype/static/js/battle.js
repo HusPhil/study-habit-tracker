@@ -9,17 +9,24 @@ function startBattle(event) {
     const targetUrl = formData.get("target_url");
     const userId = formData.get("user_id")
 
-    // console.log("Form Data:", );
     // ✅ Extract selected quests
     const battle_duration = formData.get("battle_duration");
-    const selectedQuests = formData.getAll("selected_quests");
+    const formSelectedQuests = formData.getAll("selected_quests");
+    const selectedQuests = []
 
-    selectedQuests.forEach((quest, index) => {
-        formData.append(`selected_  quests[${index}]`, quest);
+    formSelectedQuests.forEach((questId, index) => {
+        const difficulty = formData.get(`quest_difficulty_${questId}`); 
+        const description = formData.get(`quest_description_${questId}`); 
+        const quest = {
+            "id": parseInt(questId),
+            "difficulty": parseInt(difficulty),
+            "description": description
+        }
+        selectedQuests.push(quest);
     });
     
     
-    console.log("Selected Quests:", selectedQuests);
+    console.log("Selected Quests:", formSelectedQuests);
     console.log("battle_duration:" + battle_duration)
 
     fetch(targetUrl, { // Replace with your actual endpoint
@@ -46,12 +53,13 @@ function startBattle(event) {
 
 
         battleOverlay.style.display = 'flex';
-        initializeBattle();
+        initializeBattle(data["enemies"], parseInt(data["session_data"]["duration"]));
 
     })
     .catch((error) => {
         alert('Failed to start session');
         console.error('Error:', error);
+        endBattle(false)
         // Handle error (e.g., show error message)
     });
 

@@ -17,10 +17,16 @@ class Subject:
         self._notes = None
         self._flashcards = None
 
-    def spawnEnemy(self, enemy_count: int) -> List[Enemy]:
+    def spawnEnemy(self, quests: list) -> List[Enemy]:
         all_enemy_types = list(EnemyType)
     
-        chosen_enemies = random.choices(all_enemy_types, k=enemy_count)
+        random_enemies = random.choices(all_enemy_types, k=len(quests))
+        chosen_enemies = []
+
+        for i, enemy in enumerate(random_enemies):
+            newEnemy = Enemy(id=quests[i]['id'], name=enemy.value.monster_name, health=quests[i]['difficulty'], description=quests[i]['description'])
+            chosen_enemies.append(newEnemy)
+        # print(chosen_enemies)
         return chosen_enemies
 
 

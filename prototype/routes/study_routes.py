@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, redirect, url_for
 from typing import Dict
 from models import Subject, Quest, Session  # Import the Subject model
-from models.enemy.enemy import EnemyType
+from models.enemy.enemy import Enemy
 from extensions import socketio
 import time
 
@@ -17,10 +17,7 @@ def start_session():
         battle_duration = int(data["battle_duration"])
         user_id = data["user_id"]
 
-        enemies: list[EnemyType] = subject.spawnEnemy(len(selected_quests))
-
-        for enemy in enemies:
-            print(f"Enemy: {enemy.value}")
+        enemies: list[Enemy] = subject.spawnEnemy(selected_quests)  
         
         session = Session(
             id=int(time.time()), 
@@ -34,7 +31,25 @@ def start_session():
 
         session_data = session.start(user_id=user_id, socketio=socketio)
 
-        return jsonify(session_data)
+        print("enemies", enemies, session_data)
+
+        # if session_data.get("error"):
+        #     return jsonify({"error": f"Invalid request: {str(e)}"})   
+
+        return jsonify({
+            "session_data": session_data, 
+            "enemies": [enemy.to_dict() for enemy in enemies],
+        })
+    
+    except Exception as e:
+        return jsonify({"error": f"Invalid request: {str(e)}"}), 400
+
+@study_routes.route("/stop_session", methods=["POST"])
+def stop_session(session_id):
+    try:
+        session = Session.get(session_id)
+        session.stop(socketio)
+        return jsonify({"message": "Session stopped successfully"})
     except Exception as e:
         return jsonify({"error": f"Invalid request: {str(e)}"}), 400
 
