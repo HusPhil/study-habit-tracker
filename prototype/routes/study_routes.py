@@ -17,6 +17,8 @@ def start_session():
         battle_duration = int(data["battle_duration"])
         user_id = data["user_id"]
 
+        print("selectedQuests", selected_quests)
+
         enemies: list[Enemy] = subject.spawnEnemy(selected_quests)  
         
         session = Session(
@@ -47,7 +49,7 @@ def start_session():
 @study_routes.route("/stop_session", methods=["POST"])
 def stop_session(session_id):
     try:
-        session = Session.get(session_id)
+        session = session_manager.get(session_id)
         session.stop(socketio)
         return jsonify({"message": "Session stopped successfully"})
     except Exception as e:

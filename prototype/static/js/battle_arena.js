@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const showBattleBtn = document.getElementById('showBattleBtn');
     const currentEnemy = document.getElementById('currentEnemy');
     const enemyQueue = document.getElementById('enemyQueue');
+    const attackButton = document.getElementById('attack-button');
 
     const observer = new MutationObserver((mutationsList) => {
         for (const mutation of mutationsList) {
@@ -19,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // ✅ Observe only `style` attribute changes
+    // Observe only `style` attribute changes
     observer.observe(battleOverlay, { attributes: true, attributeFilter: ["style"] });
 
 
@@ -40,6 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
     battleOverlay.addEventListener('click', (e) => {
         e.preventDefault();
     });
+
+    
+
 
 
 
@@ -76,10 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
         monsters = generatedMonsters;
         // get a task from shuffle list
         
-        const taskDescription = document.getElementById('taskDescription');
-        taskDescription.focus();
-        // taskDescription.textContent = tasks.pop();
-        shrinkText(taskDescription, taskDescription);
+        
+        attackButton.focus();
+        shrinkText(attackButton, attackButton);
 
         const battleTimer = document.getElementById('battleTimer');
         console.log("battle_duration", battle_duration)
@@ -156,6 +159,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function getDifficultyColor(maxHealth) {
+        // Map maxHealth to 1-5 difficulty scale
+        const difficulty = maxHealth; // maxHealth should already be 1-5
+
+        // Convert difficulty (1-5) to an appropriate HSL hue (Green → Red)
+        // const hue = 120 - ((difficulty - 1) / 4) * 120;
+
+        // Use project's theme colors based on difficulty
+        switch(difficulty) {
+            case 1: return '#2ecc71'; // Easiest - Success green
+            case 2: return '#87D37C'; // Easy-medium - Light green
+            case 3: return '#3498db'; // Medium - Interactive blue
+            case 4: return '#E87E04'; // Medium-hard - Orange
+            case 5: return '#e74c3c'; // Hardest - Accent red
+            default: return '#2ecc71'; // Default to success green
+        }
+    }
+
     function showCurrentEnemy() {
         if (!enemies[currentEnemyIndex]) return;
 
@@ -167,20 +188,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (enemyName) {
             enemyName.textContent = enemy.name;
         }
-        
-        console.log('showCurrentEnemy:', tasks);
-        const taskDescription = document.getElementById('taskDescription');
-        taskDescription.textContent = enemy.description
-        shrinkText(taskDescription, taskDescription);
+
+        attackButton.textContent = enemy.description
+        shrinkText(attackButton, attackButton);
 
         if(enemySprite) {
             enemySprite.style.backgroundImage = `url('/static/assets/images/avatar_icons/monsta/${enemy.image}')`;
         }   
 
         const healthPercentage = (enemy.health / enemy.maxHealth) * 100;
-        taskDescription.style.background = `linear-gradient(90deg, 
-            rgba(231, 76, 60, 0.3) ${healthPercentage}%, 
-            rgba(44, 62, 80, 0.9) ${healthPercentage}% )`;
+        const difficultyColor = getDifficultyColor(enemy.maxHealth);
+        attackButton.style.background = `linear-gradient(90deg, 
+            ${difficultyColor}33 ${healthPercentage}%, 
+            rgba(44, 62, 80, 0.9) ${healthPercentage}%)`;
 
         currentEnemy.addEventListener('click', () => {
             if (!isAnimating && battleActive) {
@@ -195,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
-        taskDescription.addEventListener('click', () => {
+        attackButton.addEventListener('click', () => {
             if (!isAnimating && battleActive) {
                 performAttack();
             }
@@ -207,8 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         isAnimating = true;
         const enemy = enemies[currentEnemyIndex];
-        const taskDescription = document.getElementById('taskDescription');
-        const taskText = taskDescription.querySelector('.task-text');
+        const taskText = attackButton.querySelector('.task-text');
         
         // Player attack animation
         const playerChar = document.querySelector('.player-character');
@@ -221,13 +240,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update task text with new health
             if (taskText) {
                 taskText.innerHTML = `<span class="enemy-name">${enemy.name}</span> (${enemy.health}/${enemy.maxHealth} HP)`;
-                shrinkText(taskDescription, taskText); // Shrink text after updating
+                shrinkText(attackButton, taskText); // Shrink text after updating
             }
 
             // Update health bar in button
             const healthPercentage = (enemy.health / enemy.maxHealth) * 100;
-            taskDescription.style.background = `linear-gradient(90deg, 
-                rgba(231, 76, 60, 0.3) ${healthPercentage}%, 
+            const difficultyColor = getDifficultyColor(enemy.maxHealth);
+            attackButton.style.background = `linear-gradient(90deg, 
+                ${difficultyColor}33 ${healthPercentage}%, 
                 rgba(44, 62, 80, 0.9) ${healthPercentage}%
             )`;
 
@@ -309,14 +329,13 @@ document.addEventListener('DOMContentLoaded', () => {
             enemyName.textContent = "enemy";
         }
 
-        const taskDescription = document.getElementById('taskDescription');
-        const taskText = taskDescription.querySelector('.task-text');
+        const taskText = attackButton.querySelector('.task-text');
         
         if (taskText) {
             taskText.textContent = 'Start Battle';
         }
 
-        taskDescription.style.background = 'rgba(44, 62, 80, 0.9)';
+        attackButton.style.background = 'rgba(44, 62, 80, 0.9)';
         
         const playerChar = document.querySelector('.player-character');
         if (playerChar) {

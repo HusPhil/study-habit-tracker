@@ -1,4 +1,22 @@
- // ✅ Initialize Socket.IO
+let selectedQuestOrder = []; // Ordered list of selected quest IDs
+
+document.getElementById("battle-quest-list").addEventListener("change", function (event) {
+    if (event.target.matches("input[name='selected_quests']")) {
+        const questId = event.target.value;
+
+        if (event.target.checked) {
+            // Add to the selection order if not already present
+            if (!selectedQuestOrder.includes(questId)) {
+                selectedQuestOrder.push(questId);
+            }
+        } else {
+            // Remove if unchecked
+            selectedQuestOrder = selectedQuestOrder.filter(id => id !== questId);
+        }
+
+        console.log("Updated Selection Order:", selectedQuestOrder);
+    }
+});
 
 function startBattle(event) {
     
@@ -14,9 +32,12 @@ function startBattle(event) {
     const formSelectedQuests = formData.getAll("selected_quests");
     const selectedQuests = []
 
-    formSelectedQuests.forEach((questId, index) => {
+    console.log("formSelectedQuests:", formSelectedQuests);
+    selectedQuestOrder.forEach((questId, index) => {
         const difficulty = formData.get(`quest_difficulty_${questId}`); 
         const description = formData.get(`quest_description_${questId}`); 
+        
+        console.log("desc:", description, questId);
         const quest = {
             "id": parseInt(questId),
             "difficulty": parseInt(difficulty),
@@ -25,8 +46,10 @@ function startBattle(event) {
         selectedQuests.push(quest);
     });
     
+
     
-    console.log("Selected Quests:", formSelectedQuests);
+    
+    console.log("Selected Quests:", selectedQuests);
     console.log("battle_duration:" + battle_duration)
 
     fetch(targetUrl, { // Replace with your actual endpoint
@@ -51,10 +74,18 @@ function startBattle(event) {
         modalSystem.hide('startBattleModal');
         form.reset();
 
+        const battle_duration = parseInt(data["session_data"]["duration"]);
+
+        if (data["session_data"]["error"]) {
+            return
+        }
 
         battleOverlay.style.display = 'flex';
         initializeBattle(data["enemies"], parseInt(data["session_data"]["duration"]));
 
+    })
+    .finally(() => {    
+        selectedQuestOrder = []
     })
     .catch((error) => {
         alert('Failed to start session');
@@ -63,6 +94,23 @@ function startBattle(event) {
         // Handle error (e.g., show error message)
     });
 
+}
+
+function getDifficultyColor(difficulty) {
+    // Ensure difficulty is within expected range (1-5)
+    difficulty = Math.max(1, Math.min(difficulty, 5)); 
+
+    // Convert difficulty (1-5) to an appropriate HSL hue (Green → Red)
+    const hue = 120 - ((difficulty - 1) / 4) * 120;
+
+    return `hsl(${hue}, 70%, 50%)`; 
+}
+
+function updateHealthBar(healthPercentage, difficulty) {
+    const difficultyColor = getDifficultyColor(difficulty);
+    attackButton.style.background = `linear-gradient(90deg, 
+        ${difficultyColor}33 ${healthPercentage}%, 
+        rgba(44, 62, 80, 0.9) ${healthPercentage}%)`;
 }
 
 function updateSessionTimer(data) {

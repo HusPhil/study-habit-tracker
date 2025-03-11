@@ -85,6 +85,83 @@ body.modal-open {
     z-index: 0;
 }
 
+.rpg-button {
+    background: linear-gradient(to bottom, #2c3e50, #1a2634);
+    color: #ffd700;
+    border: 2px solid #ffd700;
+    padding: 12px 24px;
+    font-family: 'MedievalSharp', cursive;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.2),
+                inset 0 0 15px rgba(255, 215, 0, 0.1);
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+    outline: none;
+}
+
+.rpg-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent 65%, rgba(255, 215, 0, 0.2) 66%, rgba(255, 215, 0, 0.2) 67%, transparent 68%);
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+}
+
+.rpg-button:hover {
+    background: linear-gradient(to bottom, #34495e, #2c3e50);
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4),
+                inset 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+
+.rpg-button:focus {
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.6),
+                inset 0 0 25px rgba(255, 215, 0, 0.3);
+    border-color: #fff5cc;
+}
+
+.rpg-button:active,
+.rpg-button:focus:active {
+    background: linear-gradient(to bottom, #e74c3c, #c0392b);
+    transform: translateY(3px) scale(0.95);
+    box-shadow: 0 0 30px #ffd700,
+                inset 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+.rpg-button i {
+    color: #ffd700;
+    filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+}
+
+.rpg-button:hover i {
+    transform: rotate(-15deg) scale(1.2);
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
+}
+
+.rpg-button:active i,
+.rpg-button:focus:active i {
+    transform: rotate(-30deg) scale(0.9);
+    transition-duration: 0.1s;
+}
+
+
+
 .character {
     position: relative;
     width: 120px;
@@ -252,68 +329,28 @@ body.modal-open {
     display: none;
 }
 
-/* Adjust button padding for better single-line text appearance */
-.rpg-button.task-description {
-    padding: 15px 30px;
-    min-width: 200px;
-    margin: 0 auto; /* Center the button horizontally */
-    transform: translateX(0);
-}
-
-/* Task Description Button */
-.task-description {
-    width: 100%;
-    max-width: 600px;
-    height: 70px; /* Set a fixed height */
+/* Ensure the text scales down instead of overflowing */
+.task-text {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(44, 62, 80, 0.9);
-    border: 2px solid #34495e;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    padding: 10px 15px;
     text-align: center;
-    overflow: hidden; /* Ensures content does not overflow */
+    font-size: clamp(1.5rem, 4vw, 20px); /* Auto-adjusts size */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+}
+
+/* If you want it to wrap but still shrink */
+.task-text {
+    font-size: min(20px, 4vw); /* Adjusts dynamically */
+    text-align: center;
+    word-wrap: break-word;
 }
 
 
-.task-description:hover {
-    transform: translateY(-2px);
-    border-color: #3498db;
-    box-shadow: 0 6px 12px rgba(52, 152, 219, 0.2);
-}
 
-.task-description:active {
-    transform: translateY(1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.rpg-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(145deg, #3498db, #2c3e50);
-    border: 3px solid #34495e;
-    border-radius: 10px;
-    font-weight: bold;
-    color: #ecf0f1;
-    font-family: 'MedievalSharp', cursive;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    padding: 12px 20px;
-    font-size: 18px;
-}
-
-/* ✅ Button presses down when spacebar is pressed */
-.rpg-button:active,
-.rpg-button.pressed {
-    transform: scale(0.95);
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
-}
 
 /* ✅ Bounce effect when key is released */
 @keyframes buttonBounce {
@@ -322,16 +359,6 @@ body.modal-open {
     100% { transform: scale(1); }
 }
 
-.rpg-button.bouncing {
-    animation: buttonBounce 0.2s ease-in-out;
-}
-
-
-.rpg-button:hover {
-    background: linear-gradient(145deg, #2c3e50, #3498db);
-    transform: scale(1.05);
-    border-color: #3498db;
-}
 
 .vs-section {
     position: relative;
@@ -461,9 +488,6 @@ body.modal-open {
     100% { transform: translateX(0) scaleX(-1) rotate(3deg); }
 }
 
-.rpg-button:hover .button-content {
-    animation: pulse 1s infinite;
-}
 
 @keyframes attackRight {
     0% { transform: translateX(0) scaleX(1); }
@@ -560,13 +584,6 @@ body.modal-open {
     padding: 20px;
 }
 
-/* Task Description Button - Allow shrinking */
-.battle-content .task-description {
-    width: auto;
-    min-width: 200px;
-    max-width: 400px;
-    margin: 0;
-}
 
 /* Enemy Queue - Maintain full width */
 .battle-content .enemy-queue {
@@ -596,72 +613,4 @@ body.modal-open {
 
 .battle-duration i {
     color: #3498db;
-}
-
-@media (max-width: 480px) {
-    .task-description {
-        padding: 12px 20px;
-    }
-
-    .task-description .task-text {
-        flex-direction: column;
-        text-align: center;
-        gap: 10px;
-        align-items: center;
-    }
-
-    .task-description .enemy-name {
-        padding: 0;
-        text-align: center;
-        width: 100%;
-    }
-
-    .task-description .health-display {
-        width: auto;
-        justify-content: center;
-    }
-}
-
-
-.rpg-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%; /* Adjust as needed */
-    height: 60px; /* Fixed height */
-    overflow: hidden;
-    padding: 10px;
-    border: 3px solid #c77c00;
-    border-radius: 10px;
-    background: linear-gradient(145deg, #ffcc00, #ff9900);
-    color: #fff;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-}
-
-/* Ensure the text scales down instead of overflowing */
-.task-text {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-size: clamp(1.5rem, 4vw, 20px); /* Auto-adjusts size */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 90%;
-}
-
-/* If you want it to wrap but still shrink */
-.task-text {
-    font-size: min(20px, 4vw); /* Adjusts dynamically */
-    text-align: center;
-    word-wrap: break-word;
-}
-
-/* Hover Effect */
-.rpg-button:hover {
-    background: linear-gradient(145deg, #ff9900, #ff6600);
-    transform: scale(1.05);
 }

@@ -23,6 +23,8 @@ class Subject:
         random_enemies = random.choices(all_enemy_types, k=len(quests))
         chosen_enemies = []
 
+        print(quests)
+
         for i, enemy in enumerate(random_enemies):
             newEnemy = Enemy(id=quests[i]['id'], name=enemy.value.monster_name, health=quests[i]['difficulty'], description=quests[i]['description'])
             chosen_enemies.append(newEnemy)
