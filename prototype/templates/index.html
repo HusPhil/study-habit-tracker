@@ -283,11 +283,12 @@
             
             const battleOverlay = document.getElementById('battleOverlay');
 
-            document.addEventListener("keydown", function (event) { // Adjust to your modal class
-                if (battleOverlay.style.display != 'none' && event.code === "Space") {
+            document.addEventListener("keydown", function (event) {
+                if (battleOverlay.style.display == "flex" && event.code === "Space") {
                     event.preventDefault();
-                    rpgButton.classList.add("pressed"); // Prevent spacebar activation
-                }
+                    const attackButton = document.getElementById("attack-button");
+                    attackButton.classList.add("pressed"); // Prevent spacebar activation
+                } 
             });
 
             modalSystem.init();

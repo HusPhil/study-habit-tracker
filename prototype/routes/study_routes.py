@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, redirect, url_for
 from typing import Dict
 from models import Subject, Quest, Session  # Import the Subject model
 from models.enemy.enemy import Enemy
+from models.session.session import SessionManager
 from extensions import socketio
 import time
 
@@ -46,14 +47,11 @@ def start_session():
     except Exception as e:
         return jsonify({"error": f"Invalid request: {str(e)}"}), 400
 
-@study_routes.route("/stop_session", methods=["POST"])
-def stop_session(session_id):
-    try:
-        session = session_manager.get(session_id)
-        session.stop(socketio)
-        return jsonify({"message": "Session stopped successfully"})
-    except Exception as e:
-        return jsonify({"error": f"Invalid request: {str(e)}"}), 400
+@study_routes.route("/stop_session/<int:user_id>", methods=["POST"])
+def stop_session(user_id):
+    result = SessionManager.active_sessions
+    print(result)
+    return jsonify(result)
 
 @study_routes.route("/subject/get_by_id", methods=["GET"])
 def get_subject():
