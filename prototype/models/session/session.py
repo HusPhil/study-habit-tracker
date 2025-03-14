@@ -10,7 +10,7 @@ class Session:
         self.goals = goals
         self.accumulated_exp = 0
 
-    def start(self, user_id, socketio):
+    def start(self, user_id: int, socketio):
         """Start the session using session_manager with safety checks."""
 
         if not self.id:
@@ -38,20 +38,20 @@ class Session:
         except Exception as e:
             return {"error": f"Failed to start session: {str(e)}"}
 
-    def stop(self, socketio):
+    def stop(self, user_id: int, socketio):
         """Stop the session using session_manager with safety checks."""
         
         if not self.id:
             return {"error": "Invalid session: Missing session ID"}
 
-        if self.id not in SessionManager.active_sessions:
-            return {"error": f"Session {self.id} is not active or has already ended"}
+        # if self.id not in SessionManager.active_sessions:
+        #     return {"error": f"Session {self.id} is not active or has already ended"}
 
         if socketio is None:
             return {"error": "SocketIO instance is required"}
 
         try:
-            result = SessionManager.stop_session(self.id, socketio)
+            result = SessionManager.stop_session(self.id, user_id, socketio)
             
             if self.id in SessionManager.active_sessions:
                 return {"error": "Session failed to stop properly"}

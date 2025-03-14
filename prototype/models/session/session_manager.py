@@ -20,12 +20,15 @@ class SessionManager:
         }
 
     @staticmethod
-    def stop_session(session_id: int, socketio: SocketIO):
+    def stop_session(session_id: int, user_id: int, socketio: SocketIO):
         """Stop a session and remove it from active_sessions."""
-        session = SessionManager.active_sessions.pop(session_id, None)  # ✅ Remove from tracking
+        print(f"Stopping session {session_id}")
+        session = SessionManager.active_sessions.pop(user_id, None)  # ✅ Remove from tracking
+        print("Popped session:", session)
         if session:
             socketio.emit("session_ended", {"session_id": session_id})
             return {"message": "Session ended", "session_id": session_id}
+        print(f"Stopping session {session_id} failed")
         return {"error": "Session not found"}
 
     @staticmethod

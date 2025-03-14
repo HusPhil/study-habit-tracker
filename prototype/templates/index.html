@@ -308,7 +308,7 @@
     
             socket = io();
 
-            const userId = document.getElementById("current_user_id").value; // Get logged-in user ID
+            const userId = parseInt(document.getElementById("current_user_id").value); // Get logged-in user ID
             console.log("User ID:", `user_${userId}`);
             socket.emit("join", { room: `user_${userId}`, user_id: userId });
 

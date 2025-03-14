@@ -1,6 +1,7 @@
 from models.user.user import User
 from .title import Title
 from .player_manager import PlayerManager
+from werkzeug.security import generate_password_hash
 
 
 class Player(User):
@@ -14,8 +15,14 @@ class Player(User):
     def gain_exp(self, amount: int) -> None:
         """Gain experience and level up if necessary."""
         self.exp += amount
+        
         while self.exp >= PlayerManager.get_exp_threshold(self.level):
             self.level_up()
+        
+        if self.exp < 0:
+            self.exp = 0
+
+        print(f"Player {self.username} gained {amount} exp. Level: {self.level}, Exp: {self.exp}, NextLvlUpXP: {PlayerManager.get_exp_threshold(self.level)}, Title: {self.title}")
 
     def level_up(self):
         """Increase player level and update title based on level."""

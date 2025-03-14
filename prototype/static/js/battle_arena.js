@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
             duration--;
             if (duration < 0) {
+                endBattle();
                 stopBattleTimer();
             }
         }    
@@ -297,7 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 isAnimating = false;
             } else {
                 setTimeout(() => {
-                    endBattle(true);
+                    endBattle();
                 }, 500);
             }
         }, 1000);
@@ -340,21 +341,24 @@ document.addEventListener('DOMContentLoaded', () => {
         isAnimating = false;
     }
 
-    function endBattle(victory = false) {
-        if (victory) {
+    function endBattle() {
+        remainingEnemies = enemies.length - currentEnemyIndex;
+        
+        if (remainingEnemies === 0) {
             alert('Victory! All enemies defeated!');
         }
+
         battleActive = false;
         battleOverlay.style.display = 'none';
         resetBattle();
 
-        const user_id = document.getElementById('current_user_id').value;
-        fetch(`/api/stop_session/${parseInt(user_id)}`, {
+
+        fetch(`/api/stop_session`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ victory })
+            body: JSON.stringify({ "remaining_enemies": remainingEnemies, "total_enemies": enemies.length })
         });
     }   
 
