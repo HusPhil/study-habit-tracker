@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, redirect, url_for
 from typing import Dict
 from models import Subject, Quest, Session  # Import the Subject model
 from models.enemy.enemy import EnemyType
+from models.database.db import add_badge, add_badge_to_player
 from extensions import socketio
 import time
 
@@ -144,5 +145,17 @@ def update_quest_status(quest_id):
             "message": "Quest status updated successfully",
             "quest": quest.to_dict()
         })
+    except Exception as e:
+        return jsonify({"error": f"Invalid request: {str(e)}"}), 400
+    
+# Enemy drops badge
+@study_routes.route("/enemy/drop_badge", methods=["POST"])
+def drop_badge():
+    try:
+        data = request.json
+        user_id = data["user_id"]
+        badge = add_badge(data["title"], data["rarity"])
+        add_badge_to_player(user_id, badge.id)
+        return jsonify(badge.to_dict())
     except Exception as e:
         return jsonify({"error": f"Invalid request: {str(e)}"}), 400

@@ -314,6 +314,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 200);
     }
 
+    // Badge stuff
+    function dropBage(enemy) {
+        if (enemy.health <= 0) {
+            return { title: "Dragon Slayer", rarity: "legendary" };
+        }
+        return null;
+    }
+
+    function handleBadgeDrop(enemy) {
+        const badge = dropBage(enemy);
+        if (badge) {
+            console.log(`You got a ${badge.rarity} badge: ${badge.title}`);
+            fetch('/enemy/drop_badge', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: playerId,
+                    title: badge.title,
+                    rarity: badge.rarity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Failed to add badge to player:', data.error);
+                } else {
+                    console.log('Badge added to player successfully:', data);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    }
+
     function defeatCurrentEnemy() {
         const indicators = enemyQueue.children;
 
@@ -321,6 +358,9 @@ document.addEventListener('DOMContentLoaded', () => {
         indicators[currentEnemyIndex].classList.add('active');
 
         currentEnemy.classList.add('defeated');
+        handleBadgeDrop(enemies[currentEnemyIndex]);
+        // Drop item
+
 
         setTimeout(() => {
             currentEnemyIndex++;
@@ -330,6 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // indicators[currentEnemyIndex].classList.add('active');
                 }
                 currentEnemy.classList.remove('defeated');
+                // drop item
                 showCurrentEnemy();
                 isAnimating = false;
             } else {
@@ -386,6 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
         battleOverlay.style.display = 'none';
         resetBattle();
     }
+    
 
     // Expose functions to the global scope
     window.initializeBattle = initializeBattle;
