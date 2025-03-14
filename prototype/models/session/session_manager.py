@@ -31,7 +31,7 @@ class SessionManager:
     @staticmethod
     def session_countdown(session_id, user_id, duration, socketio):
         """Handles session countdown for a specific user"""
-        for remaining in range(duration, -1, -1):
+        for remaining in range(duration * 60, -1, -1):
             if user_id not in SessionManager.active_sessions:
                 return  # ✅ Stop if session was canceled
 
