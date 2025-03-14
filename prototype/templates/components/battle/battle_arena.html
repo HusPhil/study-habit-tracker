@@ -53,56 +53,5 @@
 
 <script>
 window.addEventListener('DOMContentLoaded', () => {
-    const button = document.getElementById('attack-button');
-    
-    function createRipple(event) {
-        const button = event.currentTarget;
-        const ripple = button.querySelector('.click-effect');
-        
-        // Reset animation
-        ripple.style.animation = 'none';
-        ripple.offsetHeight; // Trigger reflow
-        ripple.style.animation = null;
-        
-        // Set ripple position based on click or center
-        if (event.type === 'click') {
-            const rect = button.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-            ripple.style.left = `${x}px`;
-            ripple.style.top = `${y}px`;
-        } else {
-            // Center for keyboard
-            ripple.style.left = '50%';
-            ripple.style.top = '50%';
-        }
-        
-        ripple.classList.add('animate');
-        
-        // Add pressed class
-        button.classList.add('pressed');
-        
-        // Remove classes after animation
-        setTimeout(() => {
-            ripple.classList.remove('animate');
-            button.classList.remove('pressed');
-        }, 600);
-    }
-
-    button.addEventListener('click', createRipple);
-    button.addEventListener('keydown', (e) => {
-        if (e.code === 'Space' || e.code === 'Enter') {
-            e.preventDefault();
-            createRipple(e);
-            button.classList.add('keyboard-pressed');
-        }
-    });
-    
-    button.addEventListener('keyup', (e) => {
-        if (e.code === 'Space' || e.code === 'Enter') {
-            e.preventDefault();
-            button.classList.remove('keyboard-pressed');
-        }
-    });
 });
 </script>

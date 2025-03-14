@@ -36,7 +36,7 @@ class Subject:
     def create(code_name: str, description: str, difficulty: int, user_id: int) -> 'Subject':
         """Create a new subject in database"""
         try:
-            existing_subject = db.execute("SELECT * FROM subjects WHERE code_name = ?", (code_name,))
+            existing_subject = db.execute("SELECT * FROM subjects WHERE code_name = ? AND user_id = ?", (code_name, user_id))
             if existing_subject:
                 data = existing_subject[0]
                 return Subject(id=data['subject_id'], code_name=data['code_name'], difficulty=data['difficulty'], user_id=data['user_id'])

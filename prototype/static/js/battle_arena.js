@@ -207,13 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 performAttack();
             }
         });
-
-        document.addEventListener('keydown', (event) => {
-            event.stopPropagation();
-            if (event.key === " " && !isAnimating && battleActive) {
-                performAttack();
-            }
-        });
         
         attackButton.addEventListener('click', () => {
             if (!isAnimating && battleActive) {
@@ -354,7 +347,16 @@ document.addEventListener('DOMContentLoaded', () => {
         battleActive = false;
         battleOverlay.style.display = 'none';
         resetBattle();
-    }
+
+        const user_id = document.getElementById('current_user_id').value;
+        fetch(`/api/stop_session/${parseInt(user_id)}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ victory })
+        });
+    }   
 
     // Expose functions to the global scope
     window.initializeBattle = initializeBattle;

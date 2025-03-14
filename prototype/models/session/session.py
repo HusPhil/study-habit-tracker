@@ -1,5 +1,5 @@
-from .session_manager import start_session, stop_session, active_sessions
 from flask_socketio import SocketIO
+from .session_manager import SessionManager
 
 class Session:
 
@@ -16,7 +16,7 @@ class Session:
         if not self.id:
             return {"error": "Invalid session: Missing session ID"}
         
-        if user_id in active_sessions:
+        if user_id in SessionManager.active_sessions:
             return {"error": f"A session {self.id} is already running"}
 
         if not isinstance(self.duration, int) or self.duration <= 0:
@@ -29,9 +29,9 @@ class Session:
             return {"error": "SocketIO instance is required"}
 
         try:
-            result = start_session(self, user_id, socketio)
+            result = SessionManager.start_session(session=self, user_id=user_id, socketio=socketio)
             
-            if user_id not in active_sessions:
+            if user_id not in SessionManager.active_sessions:
                 return {"error": "Session failed to startss"}
             
             return result
@@ -44,16 +44,16 @@ class Session:
         if not self.id:
             return {"error": "Invalid session: Missing session ID"}
 
-        if self.id not in active_sessions:
+        if self.id not in SessionManager.active_sessions:
             return {"error": f"Session {self.id} is not active or has already ended"}
 
         if socketio is None:
             return {"error": "SocketIO instance is required"}
 
         try:
-            result = stop_session(self.id, socketio)
+            result = SessionManager.stop_session(self.id, socketio)
             
-            if self.id in active_sessions:
+            if self.id in SessionManager.active_sessions:
                 return {"error": "Session failed to stop properly"}
 
             return result 
@@ -62,6 +62,6 @@ class Session:
         
     def get_session_status(self):
         """Get the status of the session."""
-        if self.id not in active_sessions:
+        if self.id not in SessionManager.active_sessions:
             return {"error": f"Session {self.id} is not active or has already ended"}
         return {"status": "active"}
