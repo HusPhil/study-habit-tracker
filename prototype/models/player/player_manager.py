@@ -1,25 +1,16 @@
 from models.database.db import db, DatabaseError
-from models.player.player import Player
 from typing import Optional
 from werkzeug.security import generate_password_hash
 
+
 class PlayerManager:
     @staticmethod
-    def create(email: str, username: str, password: str) -> Player:
-        """Create a new player in the database or return an existing one."""
+    def create(email: str, username: str, password: str) -> dict:
+        """Create a new player in the database or return an existing one as a dictionary."""
         try:
             existing_player = db.execute("SELECT * FROM users WHERE email = ?", (email,))
             if existing_player:
-                data = existing_player[0]
-                return Player(
-                    user_id=data['user_id'],
-                    email=data['email'],
-                    username=data['username'],
-                    password=data['password'],
-                    level=data['level'],
-                    exp=data['exp'],
-                    title=data['title']
-                )
+                return dict(existing_player[0])  # ✅ Return dictionary
 
             # Insert new player
             hashed_password = generate_password_hash(password)
@@ -28,79 +19,51 @@ class PlayerManager:
                 (email, username, hashed_password, 1, 0, "Noobie")
             )
 
-            # Retrieve the newly created player
+            # Retrieve and return the newly created player
             result = db.execute("SELECT * FROM users WHERE email = ?", (email,))
-            if result:
-                data = result[0]
-                return Player(
-                    user_id=data['user_id'],
-                    email=data['email'],
-                    username=data['username'],
-                    password=data['password'],
-                    level=data['level'],
-                    exp=data['exp'],
-                    title=data['title']
-                )
-
-            raise DatabaseError("Failed to create player")
+            return dict(result[0]) if result else None
         except DatabaseError as e:
             raise DatabaseError(f"Error creating player: {str(e)}")
 
     @staticmethod
-    def get(user_id: int) -> Optional[Player]:
-        """Retrieve a player from the database."""
+    def get(user_id: int) -> Optional[dict]:
+        """Retrieve a player from the database as a dictionary."""
         try:
             result = db.execute("SELECT * FROM users WHERE user_id = ?", (user_id,))
-            if result:
-                data = result[0]
-                return Player(
-                    user_id=data['user_id'],
-                    email=data['email'],
-                    username=data['username'],
-                    password=data['password'],
-                    level=data['level'],
-                    exp=data['exp'],
-                    title=data['title']
-                )
-            return None
+            return dict(result[0]) if result else None
         except DatabaseError as e:
             raise DatabaseError(f"Error retrieving player: {str(e)}")
 
     @staticmethod
-    def save(player: Player) -> None:
+    def save(player_data: dict) -> None:
         """Save changes to the database for an existing player."""
         try:
             db.execute("""
                 UPDATE users 
                 SET email = ?, username = ?, password = ?, level = ?, exp = ?, title = ?
                 WHERE user_id = ?
-            """, (player.email, player.username, player._User__password, 
-                 player.level, player.exp, player.title, player.user_id))
+            """, (player_data["email"], player_data["username"], player_data["password"],
+                  player_data["level"], player_data["exp"], player_data["title"], player_data["user_id"]))
         except DatabaseError as e:
             raise DatabaseError(f"Error saving player: {str(e)}")
 
     @staticmethod
-    def gain_exp(player: Player, amount: int) -> None:
-        """Increase player's experience and level up if necessary."""
-        player.exp += amount
-        while player.exp >= player.get_exp_threshold():
-            PlayerManager.level_up(player)
-        PlayerManager.save(player)
+    def get_exp_threshold(level: int) -> int:
+        """Get experience points needed for the next level."""
+        return level * 100
 
     @staticmethod
-    def level_up(player: Player) -> None:
-        """Increase player level and adjust experience points."""
-        player.level += 1
-        player.exp -= player.get_exp_threshold()
+    def gain_exp(user_id: int, amount: int) -> None:
+        """Increase player's experience and level up if necessary."""
+        player_data = PlayerManager.get(user_id)
+        if not player_data:
+            raise DatabaseError("Player not found")
 
-        # Update title based on level
-        if player.level >= 20:
-            player.title = "Legend"
-        elif player.level >= 15:
-            player.title = "Master"
-        elif player.level >= 10:
-            player.title = "Expert"
-        elif player.level >= 5:
-            player.title = "Adept"
+        player_data["exp"] += amount
+        while player_data["exp"] >= PlayerManager.get_exp_threshold(player_data["level"]):
+            # ✅ Use `level_up()` method in Player
+            player = Player(**player_data)  # Convert dict to Player object
+            player.level_up()
+            player_data.update(player.to_dict())  # Update player data dictionary
 
-        PlayerManager.save(player)
+        PlayerManager.save(player_data)

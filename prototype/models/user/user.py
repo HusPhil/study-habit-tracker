@@ -1,4 +1,6 @@
 from werkzeug.security import check_password_hash
+from flask import session
+
 
 class User:
     def __init__(self, user_id: int, email: str, username: str, password: str):
@@ -9,7 +11,14 @@ class User:
 
     def login(self, password: str) -> bool:
         """Verify if the provided password matches the stored hash."""
-        return check_password_hash(self.__password, password)
+        if check_password_hash(self.__password, password):
+            session['user_id'] = self.user_id
+            return True
+        return False
+
+    def logout(self):
+        """Log the user out."""
+        session.clear()
 
     def to_dict(self):
         """Return a dictionary representation of the user."""

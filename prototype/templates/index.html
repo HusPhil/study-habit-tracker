@@ -132,6 +132,33 @@
             transform: scale(0.95);
         }
 
+        /* Log Out Button */
+        .logout-btn {
+            background: linear-gradient(45deg, var(--accent-color), #c0392b);
+            color: var(--text-color);
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: 2px solid #c0392b;
+            cursor: pointer;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.8em;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .logout-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.5);
+        }
+
+        .logout-btn:active {
+            transform: scale(0.95);
+        }
+
         /* Study Zone */
         #study-zone {
             display: grid;
@@ -238,12 +265,29 @@
         {% include 'components/battle/battle_arena.html' %}
         {% include 'components/battle/battle_screen.html' %}
         {% include 'components/study/study_zone.html' %}
+
+        <button class="logout-btn" onclick="logout('{{player.user_id}}')">Log Out</button>
         
     </main>
 
     <!-- Scripts -->
     <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
     <script>
+        function logout(user_id) {
+            console.log("Logging out user:", user_id);
+            fetch(`/logout`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_id: user_id })
+            }).then(response => {
+                if (response.ok) {
+                    window.location.href = '/login';
+                }
+            });
+        }
+        
         // Global variables and utility functions
         const API_ENDPOINTS = {
             subject: '/api/subject',
@@ -258,6 +302,7 @@
         let selectedSubjectQuests = [];
 
         let socket;
+        
         
         document.addEventListener('DOMContentLoaded', () => {
     

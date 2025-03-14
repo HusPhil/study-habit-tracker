@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 from models.player.player_manager import PlayerManager
+from models.player.player import Player
+from models.user.user_manager import UserManager
 from models.database.db import db, DatabaseError
 from models.user.user import User
 
@@ -7,6 +9,9 @@ auth_routes = Blueprint('auth', __name__)
 
 @auth_routes.route('/login', methods=['GET', 'POST'])
 def login():
+    # Check if the user is already logged in
+    # if 'user_id' in session:
+    #     return redirect(url_for('index'))
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -22,7 +27,6 @@ def login():
                 )
                 
                 if user.login(password):
-                    session['user_id'] = user.user_id
                     return redirect(url_for('index'))
             
             flash('Invalid username or password')
@@ -49,6 +53,7 @@ def register():
         if password != confirm_password:
             flash('Passwords do not match')
             return redirect(url_for('auth.register'))
+        
             
         try:
             # Check if username or email already exists
@@ -59,9 +64,10 @@ def register():
                 return redirect(url_for('auth.register'))
             
             # Create new player
-            player = PlayerManager.create(email, username, password)
+            newPlayer_data = PlayerManager.create(email, username, password)
+            player = Player(**newPlayer_data)
             if player:
-                session['user_id'] = player.user_id
+                player.login(password=password)
                 flash('Registration successful!')
                 return redirect(url_for('index'))
             
@@ -74,8 +80,16 @@ def register():
     
     return render_template('register.html')
 
-@auth_routes.route('/logout')
+@auth_routes.route('/logout', methods=['POST'])
 def logout():
-    session.clear()
-    flash('You have been logged out')
-    return redirect(url_for('auth.login'))
+    data = request.get_json()
+    
+    user_data = UserManager.get(data['user_id'])
+    print(user_data)
+    user = User(**user_data)
+    user.logout()
+
+    flash("You have been logged out")
+
+    return jsonify({"message": "You have been logged out"})  # ✅ Return as JSON
+  # ✅ Redirect to login page
