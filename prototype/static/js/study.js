@@ -88,12 +88,17 @@ function loadBattleModalQuests() {
     const questList = document.getElementById('battle-quest-list');
     const fragment = document.createDocumentFragment();
     
-    selectedSubjectQuests.reverse().forEach(quest => {
+    selectedSubjectQuests.forEach(quest => {
         const li = document.createElement('li');
         li.className = 'quest-item';
         li.innerHTML = `
             <div class="quest-content">
-                <input type="checkbox" id="battle-quest-${quest.id}" name="selected_quests" value="${quest.id}">
+                <input type="checkbox" 
+                name="selected_quests" 
+                value="${quest.id}" 
+                data-difficulty="${quest.difficulty}">
+                <input type="hidden" name="quest_difficulty_${quest.id}" value="${quest.difficulty}">
+                <input type="hidden" name="quest_description_${quest.id}" value="${quest.description}">
                 <span class="quest-text">${quest.description}</span>
             </div>
         `;

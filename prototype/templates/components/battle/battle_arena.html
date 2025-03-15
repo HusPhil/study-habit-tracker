@@ -13,11 +13,9 @@
                     <div class="character-sprite"></div>
                     <div class="character-effects"></div>
                 </div>
+                
                 <div class="player-stats">
-                    <div class="stat-name">Player</div>
-                    <div class="stat-bar">
-                        <div class="stat-fill hp-fill"></div>
-                    </div>
+                    <div class="stat-name">{{ player_username }}</div>
                 </div>
             </div>
 
@@ -25,8 +23,11 @@
                 <div class="vs-decoration left"></div>
                 <div class="vs-text medieval-text">VS</div>
                 <div class="vs-decoration right"></div>
+                <div class="battle-duration medieval-text">
+                    <i class="fas fa-hourglass-half"></i>
+                    <span id="battleTimer">00:00</span>
+                </div>
             </div>
-            
 
             <div class="enemy-section">
                 <div class="character enemy-character" id="currentEnemy">
@@ -35,25 +36,22 @@
                 </div>
                 <div class="enemy-stats">
                     <div class="stat-name">Enemy</div>
-                    <div class="stat-bar">
-                        <div class="stat-fill hp-fill"></div>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <button id="taskDescription" class="task-description medieval-text rpg-button" onclick="performAttack()">
-            <div class="decoration left"></div>
-            <div class="button-content">
-                <i class="fa-solid fa-hand-fist"></i>
-                <span>Attack!</span>
-            </div>
-            <div class="decoration right"></div>
+        <button type="button" id="attack-button" class="rpg-button" tabindex="0">
+            <i class="fas fa-sword fa-lg"></i>
+            <span class="task-text">
+                <span class="enemy-name">Start Battle</span>
+            </span>
+            <span class="click-effect"></span>
         </button>
-        <div class="enemy-queue" id="enemyQueue">
-        </div>
+        <div class="enemy-queue" id="enemyQueue"></div>
     </div>
-</div>
+</div>  
 
-<!-- Trigger Button -->
-<button id="showBattleBtn" class="show-battle-btn medieval-text">Start Battle</button>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+});
+</script>

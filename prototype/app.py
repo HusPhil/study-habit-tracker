@@ -4,11 +4,12 @@ from datetime import datetime
 import json
 import os
 
-from models.player import Player
-from models.subject import Subject
+from models.player.player_manager import PlayerManager
+from models.player.player import Player
+from models.subject.subject import Subject
 from routes.study_routes import study_routes
 from routes.authentication_routes import auth_routes
-from models.db import db
+from models.database.db import db
 from extensions import socketio
 from flask_socketio import join_room, leave_room
 
@@ -42,11 +43,13 @@ def index():
     if 'user_id' not in session:
         return redirect(url_for('auth.login'))
         
-    player = Player.get(session['user_id'])
+    player: Player = PlayerManager.get(session['user_id'])
     if not player:
         return redirect(url_for('auth.login'))
         
     subjects = Subject.get_all(session['user_id'])
+
+    print("subjects", subjects)
     
     return render_template("index.html",
         player=player,

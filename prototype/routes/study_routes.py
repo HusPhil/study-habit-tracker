@@ -1,7 +1,10 @@
-from flask import Blueprint, request, jsonify, redirect, url_for
+from flask import Blueprint, request, jsonify, redirect, url_for, session
 from typing import Dict
 from models import Subject, Quest, Session  # Import the Subject model
-from models.enemy import EnemyType
+from models.enemy.enemy import Enemy
+from models.player.player_manager import PlayerManager
+from models.player.player import Player
+from models.session.session import SessionManager
 from extensions import socketio
 import time
 
@@ -17,10 +20,9 @@ def start_session():
         battle_duration = int(data["battle_duration"])
         user_id = data["user_id"]
 
-        enemies: list[EnemyType] = subject.spawnEnemy(len(selected_quests))
+        print("selectedQuests", selected_quests)
 
-        for enemy in enemies:
-            print(f"Enemy: {enemy.value}")
+        enemies: list[Enemy] = subject.spawnEnemy(selected_quests)  
         
         session = Session(
             id=int(time.time()), 
@@ -32,11 +34,43 @@ def start_session():
         if session.get_session_status().get("status") == "active":
             return jsonify("Session already started")
 
-        session_data = session.start(user_id=user_id, socketio=socketio)
+        session_data = session.start(user_id=int(user_id), socketio=socketio)
 
-        return jsonify(session_data)
+        print("enemies", enemies, session_data)
+
+        # if session_data.get("error"):
+        #     return jsonify({"error": f"Invalid request: {str(e)}"})   
+
+        return jsonify({
+            "session_data": session_data, 
+            "enemies": [enemy.to_dict() for enemy in enemies],
+        })
+    
     except Exception as e:
         return jsonify({"error": f"Invalid request: {str(e)}"}), 400
+
+@study_routes.route("/stop_session", methods=["POST"])
+def stop_session():
+    user_id = session.get("user_id")  # Ensure we get an integer user_id
+    if user_id is None:
+        return jsonify({"error": "User ID not found in session"}), 400
+
+    current_session: Session = SessionManager.active_sessions.get(user_id)
+    if not current_session:
+        return jsonify({"error": "No active session found for this user"}), 404
+
+    session_data = current_session.stop(user_id=user_id, socketio=socketio)
+
+    data = request.get_json()
+
+    remaining_enemies = data["remaining_enemies"]
+
+    player = Player(**PlayerManager.get(user_id))
+    player.gain_exp(PlayerManager.calculate_exp(total_enemies=data["total_enemies"], remaining_enemies=remaining_enemies)["net_exp"])
+    PlayerManager.save(player.to_dict())
+    return jsonify({"message": "Session stopped successfully"})
+
+
 
 @study_routes.route("/subject/get_by_id", methods=["GET"])
 def get_subject():
@@ -95,6 +129,11 @@ def get_all_by_user_id():
         return jsonify([subject.to_dict() for subject in subjects])
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+
+
+
 
 @study_routes.route("/quest/create", methods=["POST"])
 def create_quest():
