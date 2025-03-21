@@ -8,7 +8,7 @@ class Flashcard(TrackableContent):
         
         super().__init__(
             status=status, difficulty=difficulty, 
-            description=description, subject=subject
+            description=description, subject_id=subject_id
         )
 
         self.id = id

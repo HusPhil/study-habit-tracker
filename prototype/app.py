@@ -7,6 +7,7 @@ import os
 from models.player.player_manager import PlayerManager
 from models.player.player import Player
 from models.subject.subject import Subject
+from models.flashcard.flashcard import Flashcard
 from routes.study_routes import study_routes
 from routes.authentication_routes import auth_routes
 from models.database.db import db
@@ -59,6 +60,15 @@ def index():
 @app.route('/route_tester', methods=['POST'])
 def route_tester():
     print(request.form)
+    return jsonify({
+        'message': 'Route tester endpoint'
+    })
+
+@app.route('/route_test_flashcard', methods=['GET'])
+def route_flashcard_test():
+    print(request.form)
+    flashcard = Flashcard(id=1, subject_id=1, description="Test flashcard")
+    flashcard.create()
     return jsonify({
         'message': 'Route tester endpoint'
     })
