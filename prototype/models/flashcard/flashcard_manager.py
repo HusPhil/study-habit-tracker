@@ -1,5 +1,5 @@
-from models.db import db
-from models.flashcard import Flashcard
+from models.database.db import db
+from models.flashcard.flashcard import Flashcard
 
 class FlashcardManager:
     """Handles database operations for Flashcards."""
