@@ -117,6 +117,32 @@ class Database:
                     PRIMARY KEY (player_id, badge_id)
                 )
             ''')
+
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS notes (
+                    note_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    subject_id INTEGER,
+                    content TEXT NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (subject_id) REFERENCES subjects(subject_id) ON DELETE CASCADE
+                )
+            ''')
+
+            c.execute('''
+                CREATE TABLE IF NOT EXISTS flashcards (
+                    flashcard_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                    subject_id INTEGER,
+                    description TEXT NOT NULL,
+                    link TEXT NOT NULL,
+                    status INTEGER DEFAULT 0,
+                    difficulty INTEGER DEFAULT 1,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (subject_id) REFERENCES subjects (subject_id) ON DELETE CASCADE
+                )
+            ''')
+
+
+
             
 
     def execute(self, query: str, params: tuple = ()) -> List[sqlite3.Row]:

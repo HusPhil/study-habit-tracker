@@ -42,7 +42,7 @@ class Player(User):
     def to_dict(self):
         """Convert player to dictionary."""
         return {
-            'user_id': self.user_id,
+            'user_id': self.id,
             'email': self.email,
             'username': self.username,
             'level': self.level,

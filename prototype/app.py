@@ -1,13 +1,12 @@
 from sqlite3 import DatabaseError
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
-from datetime import datetime
-import json
-import os
+import os, time
 
 from models.player.player_manager import PlayerManager
 from models.player.player import Player
 from models.subject.subject import Subject
-from models.flashcard.flashcard import Flashcard
+from models.flashcard.flashcard_manager import FlashcardManager
+from models.content.linkable_content import LinkableContent
 from routes.study_routes import study_routes
 from routes.authentication_routes import auth_routes
 from models.database.db import db
@@ -67,8 +66,15 @@ def route_tester():
 @app.route('/route_test_flashcard', methods=['GET'])
 def route_flashcard_test():
     print(request.form)
-    flashcard = Flashcard(id=1, subject_id=1, description="Test flashcard")
-    flashcard.create()
+    my_link: str = "https://www.google.com"
+
+    if not LinkableContent.verify_link(my_link):
+        return jsonify({
+            'error': 'link not valid'
+        })
+    
+    FlashcardManager.create(1, "Test flashcard kom", my_link)
+
     return jsonify({
         'message': 'Route tester endpoint'
     })

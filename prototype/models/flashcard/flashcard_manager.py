@@ -1,41 +1,26 @@
-from models.database.db import db
-from models.flashcard.flashcard import Flashcard
+from models.database.db import db, DatabaseError
 
 class FlashcardManager:
     """Handles database operations for Flashcards."""
 
-    @classmethod
-    def create(cls, link: str) -> Flashcard:
-        """Creates and stores a new flashcard in the database."""
-        query = "INSERT INTO flashcards (link) VALUES (?) RETURNING id"
+    @staticmethod
+    def create(subject_id: int, description: str, link: str) -> dict:
+        """Create a new flashcard in the database or return an existing one as a dictionary."""
         try:
-            result = db.execute(query, (link,))
-            db.commit()
-            return Flashcard(link=link)
-        except Exception as e:
-            db.rollback()
-            raise Exception(f"Error creating flashcard: {e}")
+            # Check if flashcard already exists
+            existing_flashcard = db.execute("SELECT * FROM flashcards WHERE link = ?", (link,))
+            if existing_flashcard:
+                return dict(existing_flashcard[0])  # ✅ Return existing flashcard
+            
+            # Insert new flashcard
+            db.execute(
+                "INSERT INTO flashcards (subject_id, description, link) VALUES (?, ?, ?)",
+                (subject_id, description, link)
+            )
 
-    @classmethod
-    def get_all(cls):
-        """Retrieves all flashcards from the database."""
-        query = "SELECT * FROM flashcards"
-        return [Flashcard(**data) for data in db.fetch_all(query)]
-
-    @classmethod
-    def get_by_id(cls, flashcard_id: int) -> Flashcard | None:
-        """Retrieves a single flashcard by its ID."""
-        query = "SELECT * FROM flashcards WHERE id = ?"
-        data = db.fetch_one(query, (flashcard_id,))
-        return Flashcard(**data) if data else None
-
-    @classmethod
-    def delete(cls, flashcard_id: int):
-        """Deletes a flashcard by ID."""
-        query = "DELETE FROM flashcards WHERE id = ?"
-        try:
-            db.execute(query, (flashcard_id,))
-            db.commit()
-        except Exception as e:
-            db.rollback()
-            raise Exception(f"Error deleting flashcard: {e}")
+            # Retrieve the newly created flashcard using LAST_INSERT_ROWID()
+            result = db.execute("SELECT * FROM flashcards WHERE flashcard_id = LAST_INSERT_ROWID()")
+            return dict(result[0]) if result else None
+        
+        except DatabaseError as e:
+            raise DatabaseError(f"Error creating flashcard: {str(e)}")

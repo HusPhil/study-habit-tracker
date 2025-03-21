@@ -1,11 +1,8 @@
 from datetime import datetime
+from models.content.content_manager import ContentManager
 
 class Content:
     def __init__(self, description: str, subject_id: int):
         self.description = description
         self.subject_id = subject_id
         self.created_at = datetime.now()
-
-    def create(self):
-        """Create a new content instance"""
-        print(f"A FLASHCARD CONTENT FOR {self.subject} WAS CREATED!!")
