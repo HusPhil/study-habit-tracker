@@ -5,6 +5,7 @@ import os, time
 from models.player.player_manager import PlayerManager
 from models.player.player import Player
 from models.subject.subject import Subject
+from models.subject.subject_manager import SubjectManager
 from routes.study_routes import study_routes
 from routes.authentication_routes import auth_routes
 from routes.test_routes import test_routes
@@ -47,7 +48,15 @@ def index():
     if not player:
         return redirect(url_for('auth.login'))
         
-    subjects = Subject.get_all(session['user_id'])
+    subjects = []
+
+    for subject in SubjectManager.get_all(session['user_id']):
+        subjects.append(Subject(
+            id=subject["subject_id"],
+            code_name=subject["code_name"],
+            difficulty=subject["difficulty"],
+            user_id=subject["user_id"]
+        ))
 
     print("subjects", subjects)
     

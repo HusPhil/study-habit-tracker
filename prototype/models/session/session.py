@@ -4,11 +4,11 @@ from .session_manager import SessionManager
 class Session:
 
     def __init__(self, id: int, duration: int, subject_id: int, goals):
-        self.id = id
-        self.subject_id = subject_id
-        self.duration = duration
+        self._id = id
+        self._subject_id = subject_id
+        self._duration = duration
+        self._accumulated_exp = 0
         self.goals = goals
-        self.accumulated_exp = 0
 
     def start(self, user_id: int, socketio):
         """Start the session using session_manager with safety checks."""
@@ -63,3 +63,24 @@ class Session:
             return result 
         except Exception as e:
             return {"error": f"Failed to stop session: {str(e)}"}
+
+
+    @property
+    def id(self):
+        return self._id
+    
+    @property
+    def subject_id(self):
+        return self._subject_id
+    
+    @property
+    def duration(self):
+        return self._duration
+    
+    @property
+    def accumulated_exp(self):
+        return self._accumulated_exp    
+    
+    @accumulated_exp.setter
+    def accumulated_exp(self, value):
+        self._accumulated_exp = value

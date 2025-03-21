@@ -2,9 +2,15 @@ from flask import Blueprint, request, jsonify, redirect, url_for, session
 from typing import Dict
 from models import Subject, Quest, Session  # Import the Subject model
 from models.enemy.enemy import Enemy
-from models.player.player_manager import PlayerManager
+
 from models.player.player import Player
+from models.player.player_manager import PlayerManager
+
 from models.session.session import SessionManager
+
+from models.subject.subject_manager import SubjectManager
+from models.quest.quest_manager import QuestManager
+
 from extensions import socketio
 import time
 
@@ -15,7 +21,7 @@ study_routes = Blueprint("study_routes", __name__)  # Define Blueprint
 def start_session():
     try:
         data = request.json
-        subject = Subject.get(data["subject_id"])
+        subject = SubjectManager.get(data["subject_id"])
         selected_quests: list = data["selected_quests"]
         battle_duration = int(data["battle_duration"])
         user_id = data["user_id"]
@@ -77,7 +83,7 @@ def get_subject():
         if not subject_id:
             return jsonify({"error": "subject_id parameter is required"}), 400
             
-        subject = Subject.get(subject_id)
+        subject = SubjectManager.get(subject_id)
         if not subject:
             return jsonify({"error": "Subject not found"}), 404
             
@@ -90,7 +96,7 @@ def get_subject():
 @study_routes.route("/subject/create", methods=["POST"])
 def create_subject():
     try:
-        Subject.create(
+        SubjectManager.create(
             user_id=request.form["user_id"],
             code_name=request.form["code_name"],
             description=request.form["description"],
@@ -100,6 +106,36 @@ def create_subject():
 
     except Exception as e:
         return jsonify({"error": f"Invalid request: {str(e)}"}), 400
+    
+@study_routes.route("/subject/get_all_by_user_id", methods=["GET"])
+def get_all_by_user_id():
+    try:
+        print("GETTING ALL THE SUBJECTS")
+
+        # Validate user_id parameter
+        user_id = int(request.args.get('user_id'))
+        if user_id is None:
+            return jsonify({"error": "Valid user_id parameter is required"}), 400
+
+        # Fetch subjects from SubjectManager
+        subjects = []
+        print("user_id", user_id, type (user_id))
+        subjects = SubjectManager.get_all_with_details(int(user_id))
+
+        # # Convert subjects to JSON format
+        # subjects_data = [Subject(
+        #     id=subject["subject_id"],
+        #     code_name=subject["code_name"],
+        #     difficulty=subject["difficulty"],
+        #     user_id=subject["user_id"]
+        # ).to_dict() for subject in subjects]
+
+        # print("Fetched Subjects:", subjects_data)  # Debugging log
+        return jsonify(subjects)
+    
+    except Exception as e:
+        print("Error retrieving subjects:", str(e))  # Log error for debugging
+        return jsonify({"error": str(e)}), 500
 
 @study_routes.route("/subject/get_quests", methods=["GET"])
 def get_subject_quests():
@@ -108,12 +144,23 @@ def get_subject_quests():
     if not subject_id:
         return jsonify({"error": "Subject ID is required"}), 400
 
-    try:    
-        subject = Subject.get(subject_id)  # ✅ Fetch subject by ID
-        quests = [quest.to_dict() for quest in subject.get_quests()]  # ✅ Convert quests to JSON
-        return jsonify(quests)
+    try:
+        # Convert subject_id to an integer safely
+        subject_id = int(subject_id)
+        
+        # Fetch quests using SubjectManager
+        quests = SubjectManager.get_quests(subject_id)
+
+        # Ensure response is JSON serializable
+        quests_data = [quest.to_dict() for quest in quests]  
+        return jsonify(quests_data)
+
+    except ValueError:
+        return jsonify({"error": "Invalid Subject ID format"}), 400  # Handles non-integer input
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @study_routes.route("/subject/get_flashcards", methods=["GET"])
 def get_subject_flashcards():
@@ -126,18 +173,11 @@ def get_subject_flashcards():
         # Convert subject_id to int (assuming IDs are integers)
         subject_id = int(subject_id)
 
-        # Fetch subject by ID
-        subject = Subject.get(subject_id)
-
-        if not subject:
-            return jsonify({"error": f"Subject with ID {subject_id} not found"}), 404
-
         # Fetch and convert flashcards
-        flashcards = subject.get_flashcards() or []  # Ensure it's a list
-        flashcards_data = [flashcard.to_dict() for flashcard in flashcards]
+        flashcards = SubjectManager.get_flashcards(subject_id) or []  # Ensure it's a list
+        flashcards = [flashcard.to_dict() for flashcard in flashcards]
 
-        print(f"MY FLASHCARDS AT SUBJECT {subject.code_name}", flashcards_data)
-        return jsonify(flashcards_data)
+        return jsonify(flashcards)
 
     except ValueError:
         return jsonify({"error": "Invalid Subject ID format"}), 400  # Handles non-integer subject_id
@@ -150,6 +190,8 @@ def get_subject_flashcards():
 def get_subject_notes():
     subject_id = request.args.get("subject_id")  # ✅ Get subject ID from query params
 
+    print("subject_id", request.args)
+
     if not subject_id:
         return jsonify({"error": "Subject ID is required"}), 400
 
@@ -157,18 +199,11 @@ def get_subject_notes():
         # Convert subject_id to int (assuming IDs are integers)
         subject_id = int(subject_id)
 
-        # Fetch subject by ID
-        subject = Subject.get(subject_id)
-
-        if not subject:
-            return jsonify({"error": f"Subject with ID {subject_id} not found"}), 404
-
         # Fetch and convert flashcards
-        notes = subject.get_notes() or []  # Ensure it's a list
-        notes_data = [note.to_dict() for note in notes]
+        notes = SubjectManager.get_notes(subject_id) or []  # Ensure it's a list        
+        notes = [note.to_dict() for note in notes]
 
-        print(f"MY NOTES AT SUBJECT {subject.code_name}", notes_data)
-        return jsonify(notes_data)
+        return jsonify(notes)
 
     except ValueError:
         return jsonify({"error": "Invalid Subject ID format"}), 400  # Handles non-integer subject_id
@@ -176,39 +211,41 @@ def get_subject_notes():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-
-
-@study_routes.route("/subject/get_all_by_user_id", methods=["GET"])
-def get_all_by_user_id():
-    try:
-        print(request.args)
-        user_id = request.args.get('user_id', type=int)
-        if not user_id:
-            return jsonify({"error": "user_id parameter is required"}), 400
-            
-        subjects = Subject.get_all(user_id)
-        return jsonify([subject.to_dict() for subject in subjects])
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-
-
-
-
 @study_routes.route("/quest/create", methods=["POST"])
 def create_quest():
     try:
-        print(request.form)
-        newQuest = Quest.create(
-            description=request.form["description"],
-            difficulty=request.form["questDifficulty"],
-            subject_id=request.form["subject_id"]
-        )
-        return newQuest.to_dict()
+        # Get JSON or form data safely
+        data = request.get_json(silent=True) or request.form
+
+        # Validate required fields
+        description = data.get("description", "").strip()
+        difficulty = data.get("difficulty")
+        subject_id = data.get("subject_id")
+
+        if not description:
+            return jsonify({"error": "Description is required"}), 400
+        if difficulty is None or subject_id is None:
+            return jsonify({"error": "Difficulty and subject_id are required"}), 400
+        
+        # Convert to correct types
+        try:
+            difficulty = int(difficulty)
+            subject_id = int(subject_id)
+        except ValueError:
+            return jsonify({"error": "Invalid data type for difficulty or subject_id"}), 400
+
+        # Create the new quest
+        newQuest: Quest = QuestManager.create_quest(description=description, difficulty=difficulty, subject_id=subject_id)
+
+        # Log for debugging
+        print(f"✅ New Quest Created: {newQuest.to_dict()}")
+
+        return jsonify({"quest": newQuest.to_dict()}), 201  # Use 201 for resource creation
+
     except Exception as e:
-        return jsonify({"error": f"Invalid request: {str(e)}"}), 400
+        print(f"❌ Error creating quest: {str(e)}")  # Log error
+        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
+
 
 @study_routes.route("/quest/get_by_subject_id", methods=["GET"])
 def get_quest_by_subject_id():
@@ -217,7 +254,7 @@ def get_quest_by_subject_id():
         if not subject_id:
             return jsonify({"error": "subject_id parameter is required"}), 400
             
-        quests = Quest.get_by_subject_id(subject_id)
+        quests = QuestManager.get_quests_by_subject(subject_id)
         return jsonify({"quests": [quest.to_dict() for quest in quests]})
     except Exception as e:
         return jsonify({"error": f"Invalid request: {str(e)}"}), 400

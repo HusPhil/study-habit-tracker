@@ -1,4 +1,3 @@
-
 function addQuest(event) {
     event.preventDefault();
     const form = document.getElementById('addQuestModalForm');
@@ -17,10 +16,10 @@ function addQuest(event) {
     })
     .then(data => {
         console.log('Success:', data);
-        updateQuestsUI(data.subject_id);
-        updateSubjectsUI();
+        // updateQuestsUI(data.subject_id);
+        // updateSubjectsUI();
         selectOpponent(prevSelectedId);
-        // ✅ Wait for UI updates before re-selecting subject
+        // Wait for UI updates before re-selecting subject
         waitForElementUpdate('#subject-cards', () => {
             selectOpponent(prevSelectedId);
         });
@@ -37,20 +36,20 @@ function addQuest(event) {
 async function updateQuestsUI(subjectId) {
     try {
         const response = await fetch(`/api/subject/get_quests?subject_id=${encodeURIComponent(subjectId)}`);
-        if (!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`);
+        console.log(response)
 
         const quests = await response.json();
         const questList = document.getElementById('quest-list');
         selectedSubjectQuests = quests;
         const fragment = document.createDocumentFragment();
                 function getDifficultyColor(difficulty) {
-                    // ✅ Ensure difficulty is within expected range (1-5)
+                    // Ensure difficulty is within expected range (1-5)
                     difficulty = Math.max(1, Math.min(difficulty, 5)); 
                 
-                    // ✅ Convert difficulty (1-5) to an appropriate HSL hue (Green → Red)
+                    // Convert difficulty (1-5) to an appropriate HSL hue (Green → Red)
                     const hue = 120 - ((difficulty - 1) / 4) * 120;
                 
-                    return `hsl(${hue}, 70%, 50%)`; // ✅ Returns color from Green (easy) to Red (hard)
+                    return `hsl(${hue}, 70%, 50%)`; // Returns color from Green (easy) to Red (hard)
                 }
 
                 quests.reverse().forEach(quest => {
@@ -87,33 +86,70 @@ async function updateQuestsUI(subjectId) {
 async function updateFlashcardsUI(subjectId) {
     try {
         const response = await fetch(`/api/subject/get_flashcards?subject_id=${encodeURIComponent(subjectId)}`);
-   
-        // if (!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`);
-
         const flashcards = await response.json();
         console.log("Updated flashcards:", flashcards);
-        const flashcardList = document.getElementById('flashcard-list'); // Ensure the correct ID exists in your HTML
+        const flashcardList = document.getElementById('flashcard-list');
+        flashcardList.style.listStyle = 'none';
+        flashcardList.style.padding = '0';
         const fragment = document.createDocumentFragment();
 
         flashcards.reverse().forEach(flashcard => {
             const li = document.createElement('li');
             li.className = 'flashcard-item';
             li.style.cssText = `
-                transition: border-color 0.3s ease;
-                margin: 5px 0;
-                padding: 8px;
-                border-radius: 4px;
-                background: rgba(255, 255, 255, 0.05);
+                transition: all 0.3s ease;
+                margin: 10px 0;
+                padding: 15px;
+                border-radius: 8px;
+                background: rgba(44, 62, 80, 0.9);
+                border: 2px solid #34495e;
+                cursor: pointer;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                color: #ecf0f1;
+                font-family: 'MedievalSharp', cursive;
             `;
 
             li.innerHTML = `
                 <div class="flashcard-content">
-                    <button class="flashcard-menu-btn" aria-label="Flashcard options">
+                    <button class="flashcard-menu-btn" aria-label="Flashcard options" style="
+                        background: none;
+                        border: none;
+                        color: #3498db;
+                        cursor: pointer;
+                        float: right;
+                        padding: 5px;
+                    ">
                         <i class="fas fa-ellipsis-vertical"></i>
                     </button>
                     <span class="flashcard-text">${flashcard.description}</span>
+                    ${flashcard.link ? `<div class="flashcard-link" style="
+                        margin-top: 8px;
+                        font-size: 0.9em;
+                        color: #3498db;
+                    "><i class="fas fa-link"></i> Study Resource</div>` : ''}
                 </div>
             `;
+
+            if (flashcard.link) {
+                li.addEventListener('click', (e) => {
+                    if (!e.target.closest('.flashcard-menu-btn')) {
+                        window.open(flashcard.link, '_blank');
+                    }
+                });
+
+                li.addEventListener('mouseenter', () => {
+                    li.style.transform = 'translateY(-2px)';
+                    li.style.borderColor = '#3498db';
+                    li.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)';
+                });
+
+                li.addEventListener('mouseleave', () => {
+                    li.style.transform = 'translateY(0)';
+                    li.style.borderColor = '#34495e';
+                    li.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+                });
+            }
+
             fragment.appendChild(li);
         });
 
@@ -129,32 +165,71 @@ async function updateFlashcardsUI(subjectId) {
 async function updateNotesUI(subjectId) {
     try {
         const response = await fetch(`/api/subject/get_notes?subject_id=${encodeURIComponent(subjectId)}`);
-
         const notes = await response.json();
         console.log("Updated notes:", notes);
         
-        const notesList = document.getElementById('note-list'); // Ensure this ID exists in your HTML
+        const notesList = document.getElementById('note-list');
+        notesList.style.listStyle = 'none';
+        notesList.style.padding = '0';
         const fragment = document.createDocumentFragment();
 
         notes.reverse().forEach(note => {
             const li = document.createElement('li');
             li.className = 'note-item';
             li.style.cssText = `
-                transition: border-color 0.3s ease;
-                margin: 5px 0;
-                padding: 8px;
-                border-radius: 4px;
-                background: rgba(255, 255, 255, 0.05);
+                transition: all 0.3s ease;
+                margin: 10px 0;
+                padding: 15px;
+                border-radius: 8px;
+                background: rgba(44, 62, 80, 0.9);
+                border: 2px solid #34495e;
+                cursor: pointer;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                color: #ecf0f1;
+                font-family: 'MedievalSharp', cursive;
             `;
 
             li.innerHTML = `
                 <div class="note-content">
-                    <button class="note-menu-btn" aria-label="Note options">
+                    <button class="note-menu-btn" aria-label="Note options" style="
+                        background: none;
+                        border: none;
+                        color: #3498db;
+                        cursor: pointer;
+                        float: right;
+                        padding: 5px;
+                    ">
                         <i class="fas fa-ellipsis-vertical"></i>
                     </button>
                     <span class="note-text">${note.description}</span>
+                    ${note.link ? `<div class="note-link" style="
+                        margin-top: 8px;
+                        font-size: 0.9em;
+                        color: #3498db;
+                    "><i class="fas fa-link"></i> Study Resource</div>` : ''}
                 </div>
             `;
+
+            if (note.link) {
+                li.addEventListener('click', (e) => {
+                    if (!e.target.closest('.note-menu-btn')) {
+                        window.open(note.link, '_blank');
+                    }
+                });
+
+                li.addEventListener('mouseenter', () => {
+                    li.style.transform = 'translateY(-2px)';
+                    li.style.borderColor = '#3498db';
+                    li.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)';
+                });
+
+                li.addEventListener('mouseleave', () => {
+                    li.style.transform = 'translateY(0)';
+                    li.style.borderColor = '#34495e';
+                    li.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+                });
+            }
+
             fragment.appendChild(li);
         });
 
@@ -195,44 +270,54 @@ function loadBattleModalQuests() {
 
 async function updateSubjectsUI() {
     try {
-        // ✅ Fetch updated subject list
-        const user_id = document.getElementById('current_user_id').value;
+        // Get user ID safely
+        const userInput = document.getElementById('current_user_id');
+        if (!userInput) throw new Error("User ID input field not found");
+
+        const user_id = userInput.value.trim();
+        if (!user_id) throw new Error("User ID is missing");
+
+        // Fetch updated subject list
         const response = await fetch(`/api/subject/get_all_by_user_id?user_id=${encodeURIComponent(user_id)}`);
         if (!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`);
 
         const subjects = await response.json();
         console.log("Updated subjects:", subjects);
 
-        // ✅ Select the container and clear it
-        const subjectCardsContainer = document.getElementById("subject-cards");
-        subjectCardsContainer.innerHTML = ""; 
+        console.log(subjects[0])
 
-        // ✅ Efficiently rebuild subject cards using DocumentFragment
+        // Select the container and clear it
+        const subjectCardsContainer = document.getElementById("subject-cards");
+        if (!subjectCardsContainer) throw new Error("Subject cards container not found");
+
+        subjectCardsContainer.innerHTML = ""; // Clear existing subjects
+
+        // Efficiently rebuild subject cards using DocumentFragment
         const fragment = document.createDocumentFragment();
 
         subjects.forEach(subject => {
-            // ✅ Create the main subject card div
+            // Create the main subject card div
             const subjectCard = document.createElement("div");
             subjectCard.classList.add("subject-card");
             subjectCard.dataset.subjectId = subject.id;
             subjectCard.dataset.subjectCodeName = subject.code_name;
             subjectCard.onclick = () => selectOpponent(subject.id);
 
-            // ✅ Add subject name
+            // Add subject name
             const subjectName = document.createElement("div");
             subjectName.classList.add("subject-name");
             subjectName.textContent = subject.code_name;
 
-            // ✅ Add difficulty stars
+            // Add difficulty stars
             const difficultyStars = document.createElement("div");
             difficultyStars.classList.add("difficulty-stars");
-            difficultyStars.textContent = "⭐".repeat(subject.difficulty);
+            difficultyStars.textContent = "★".repeat(subject.difficulty); // ✅ Corrected star rendering
 
-            // ✅ Create stats container
+            // Create stats container
             const subjectStats = document.createElement("div");
             subjectStats.classList.add("subject-stats");
 
-            // ✅ Helper function to add a stat row
+            // Helper function to add a stat row
             function addStatRow(label, value) {
                 const statRow = document.createElement("div");
                 statRow.classList.add("stat-row");
@@ -240,24 +325,25 @@ async function updateSubjectsUI() {
                 subjectStats.appendChild(statRow);
             }
 
-            // ✅ Add stats
-            addStatRow("Notes", subject.notes.length);
-            addStatRow("Flashcards", subject.flashcards.length);
-            addStatRow("Quests", subject.quests.length);
+            // Add stats
+
+            addStatRow("Notes", subject.notes?.length || 0);
+            addStatRow("Flashcards", subject.flashcards?.length || 0);
+            addStatRow("Quests", subject.quests?.length || 0);
             if (subject.last_battle) {
                 addStatRow("Last Battle", subject.last_battle);
             }
 
-            // ✅ Append all elements to subject card
+            // Append all elements to subject card
             subjectCard.appendChild(subjectName);
             subjectCard.appendChild(difficultyStars);
             subjectCard.appendChild(subjectStats);
 
-            // ✅ Append the subject card to the fragment
+            // Append the subject card to the fragment
             fragment.appendChild(subjectCard);
         });
 
-        // ✅ Create and add "Add Subject" button **outside the loop**
+        // Create and add "Add Subject" button **outside the loop**
         const addSubjectCard = document.createElement("div");
         addSubjectCard.classList.add("subject-card", "add-subject-card");
         addSubjectCard.setAttribute("data-dialog-target", "addSubjectModal");
@@ -270,23 +356,29 @@ async function updateSubjectsUI() {
         addSubjectName.classList.add("subject-name");
         addSubjectName.textContent = "New Subject";
 
-        // ✅ Append elements to "Add Subject" button
+        // Append elements to "Add Subject" button
         addSubjectCard.appendChild(addIcon);
         addSubjectCard.appendChild(addSubjectName);
 
-        // ✅ Append the "Add Subject" button to the fragment
+        // Append the "Add Subject" button to the fragment
         fragment.appendChild(addSubjectCard);
 
-        // ✅ Efficiently append all subject cards at once
+        // Efficiently append all subject cards at once
         subjectCardsContainer.appendChild(fragment);
 
-        modalSystem.init()
+        // Ensure modalSystem exists before calling it
+        if (typeof modalSystem !== "undefined" && modalSystem.init) {
+            modalSystem.init();
+        } else {
+            console.warn("modalSystem is not available");
+        }
 
     } catch (error) {
         console.error("Failed to update subjects UI:", error);
-        alert("Failed to load subjects. Please try again.");
+        alert(error.message || "Failed to load subjects. Please try again.");
     }
 }
+
 
 
 
@@ -294,12 +386,12 @@ function waitForElementUpdate(selector, callback) {
     const targetNode = document.querySelector(selector);
 
     if (!targetNode) {
-        console.warn(`❌ Element not found: ${selector}`);
+        console.warn(` Element not found: ${selector}`);
         return;
     }
 
     const observer = new MutationObserver((mutationsList, observer) => {
-        console.log("✅ DOM changes detected!");
+        console.log(" DOM changes detected!");
         observer.disconnect(); // Stop observing once changes are detected
         callback(); // Execute the callback function
     });

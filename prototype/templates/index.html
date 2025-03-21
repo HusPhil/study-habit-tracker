@@ -347,7 +347,7 @@
 
         // Battle-related functionality
         async function selectOpponent(subjectId) {
-            console.log("selecting opponent");
+            console.log("selecting opponent", subjectId);
             selectedSubjectId = subjectId;
             document.querySelectorAll('.subject-card').forEach(card => {
                 card.classList.remove('selected');
