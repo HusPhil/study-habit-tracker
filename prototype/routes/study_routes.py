@@ -70,8 +70,6 @@ def stop_session():
     PlayerManager.save(player.to_dict())
     return jsonify({"message": "Session stopped successfully"})
 
-
-
 @study_routes.route("/subject/get_by_id", methods=["GET"])
 def get_subject():
     try:
@@ -92,7 +90,7 @@ def get_subject():
 @study_routes.route("/subject/create", methods=["POST"])
 def create_subject():
     try:
-        newSubject = Subject.create(
+        Subject.create(
             user_id=request.form["user_id"],
             code_name=request.form["code_name"],
             description=request.form["description"],
