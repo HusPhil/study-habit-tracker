@@ -29,7 +29,11 @@ class Session:
             return {"error": "SocketIO instance is required"}
 
         try:
-            result = SessionManager.start_session(session=self, user_id=user_id, socketio=socketio)
+            result = SessionManager.start_session(
+                session=self, 
+                user_id=user_id, 
+                socketio=socketio
+            )
             
             if user_id not in SessionManager.active_sessions:
                 return {"error": "Session failed to startss"}
@@ -59,9 +63,3 @@ class Session:
             return result 
         except Exception as e:
             return {"error": f"Failed to stop session: {str(e)}"}
-        
-    def get_session_status(self):
-        """Get the status of the session."""
-        if self.id not in SessionManager.active_sessions:
-            return {"error": f"Session {self.id} is not active or has already ended"}
-        return {"status": "active"}

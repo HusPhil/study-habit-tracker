@@ -31,7 +31,7 @@ def start_session():
             goals=selected_quests
         )
         
-        if session.get_session_status().get("status") == "active":
+        if session.id in SessionManager.active_sessions:
             return jsonify("Session already started")
 
         session_data = session.start(user_id=int(user_id), socketio=socketio)
