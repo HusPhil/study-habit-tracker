@@ -2,12 +2,14 @@ from models.content.content import Content
 from models.database.db import db, DatabaseError
 import re
 
+
 class LinkableContent(Content):
     """Represents content that contains a link (e.g., Flashcards)."""
 
-    def __init__(self, id: int, description: str, subject_id: int, link: str):
-        super().__init__(id, description, subject_id)
+    def __init__(self, description: str, subject_id: int, link: str, *args, **kwargs):
+        super().__init__(description, subject_id, *args, **kwargs)  # Pass extra args for multiple inheritance
         self.link = link
+
 
     @staticmethod
     def verify_link(link: str) -> bool:

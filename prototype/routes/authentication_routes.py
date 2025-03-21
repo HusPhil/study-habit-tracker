@@ -18,7 +18,7 @@ def login():
             result = db.execute("SELECT * FROM users WHERE username = ?", (username,))
             if result:
                 user = User(
-                    user_id=result[0]['user_id'],
+                    id=result[0]['user_id'],
                     email=result[0]['email'],
                     username=result[0]['username'],
                     password=result[0]['password']
@@ -81,13 +81,18 @@ def register():
 @auth_routes.route('/logout', methods=['POST'])
 def logout():
     data = request.get_json()
+    user_id = int(data['user_id'])
+    user_data = UserManager.get(user_id)
     
-    user_data = UserManager.get(data['user_id'])
-    print(user_data)
-    user = User(**user_data)
+    user = User(
+        id=user_data['user_id'],
+        email=user_data['email'],
+        username=user_data['username'],
+        password=user_data['password']
+    )
+
     user.logout()
 
     flash("You have been logged out")
 
     return jsonify({"message": "You have been logged out"})  # ✅ Return as JSON
-  # ✅ Redirect to login page

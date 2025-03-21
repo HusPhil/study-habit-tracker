@@ -3,11 +3,20 @@ from models.content.linkable_content import LinkableContent
 from models.flashcard.flashcard_manager import FlashcardManager
 
 class Flashcard(TrackableContent, LinkableContent):
-    """Represents a flashcard with tracking capabilities."""
+    """Represents a flashcard with tracking and linking capabilities."""
     
-    def __init__(self, id: int, description: str, subject_id: int, link: str, status: bool = False, difficulty: int = 3):
-            # Initialize both parent classes properly
-            TrackableContent.__init__(self, id, description, subject_id, status, difficulty)
-            LinkableContent.__init__(self, id, description, subject_id, link)
+    def __init__(self, id: int, description: str, subject_id: int, link: str, status: int = 0):
 
-            self.id = id
+        super().__init__(description=description, subject_id=subject_id, status=status, link=link)
+        self.id = id 
+
+
+    def to_dict(self):
+        """Converts the flashcard object to a dictionary."""
+        return {
+            "id": self.id,
+            "description": self.description,
+            "subject_id": self.subject_id,
+            "link": self.link,
+            "status": self.status,
+        }

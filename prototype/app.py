@@ -5,10 +5,9 @@ import os, time
 from models.player.player_manager import PlayerManager
 from models.player.player import Player
 from models.subject.subject import Subject
-from models.flashcard.flashcard_manager import FlashcardManager
-from models.content.linkable_content import LinkableContent
 from routes.study_routes import study_routes
 from routes.authentication_routes import auth_routes
+from routes.test_routes import test_routes
 from models.database.db import db
 from extensions import socketio
 from flask_socketio import join_room, leave_room
@@ -16,6 +15,7 @@ from flask_socketio import join_room, leave_room
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # For session management
 app.register_blueprint(study_routes, url_prefix="/api")
+app.register_blueprint(test_routes, url_prefix="/test")
 app.register_blueprint(auth_routes)
 
 socketio.init_app(app)
@@ -56,28 +56,5 @@ def index():
         subjects=subjects
     )
 
-@app.route('/route_tester', methods=['POST'])
-def route_tester():
-    print(request.form)
-    return jsonify({
-        'message': 'Route tester endpoint'
-    })
-
-@app.route('/route_test_flashcard', methods=['GET'])
-def route_flashcard_test():
-    print(request.form)
-    my_link: str = "https://www.google.com"
-
-    if not LinkableContent.verify_link(my_link):
-        return jsonify({
-            'error': 'link not valid'
-        })
-    
-    FlashcardManager.create(1, "Test flashcard kom", my_link)
-
-    return jsonify({
-        'message': 'Route tester endpoint'
-    })
-    
 if __name__ == "__main__":
     app.run(debug=True)

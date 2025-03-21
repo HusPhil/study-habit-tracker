@@ -115,6 +115,70 @@ def get_subject_quests():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@study_routes.route("/subject/get_flashcards", methods=["GET"])
+def get_subject_flashcards():
+    subject_id = request.args.get("subject_id")  # ✅ Get subject ID from query params
+
+    if not subject_id:
+        return jsonify({"error": "Subject ID is required"}), 400
+
+    try:
+        # Convert subject_id to int (assuming IDs are integers)
+        subject_id = int(subject_id)
+
+        # Fetch subject by ID
+        subject = Subject.get(subject_id)
+
+        if not subject:
+            return jsonify({"error": f"Subject with ID {subject_id} not found"}), 404
+
+        # Fetch and convert flashcards
+        flashcards = subject.get_flashcards() or []  # Ensure it's a list
+        flashcards_data = [flashcard.to_dict() for flashcard in flashcards]
+
+        print(f"MY FLASHCARDS AT SUBJECT {subject.code_name}", flashcards_data)
+        return jsonify(flashcards_data)
+
+    except ValueError:
+        return jsonify({"error": "Invalid Subject ID format"}), 400  # Handles non-integer subject_id
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@study_routes.route("/subject/get_notes", methods=["GET"])
+def get_subject_notes():
+    subject_id = request.args.get("subject_id")  # ✅ Get subject ID from query params
+
+    if not subject_id:
+        return jsonify({"error": "Subject ID is required"}), 400
+
+    try:
+        # Convert subject_id to int (assuming IDs are integers)
+        subject_id = int(subject_id)
+
+        # Fetch subject by ID
+        subject = Subject.get(subject_id)
+
+        if not subject:
+            return jsonify({"error": f"Subject with ID {subject_id} not found"}), 404
+
+        # Fetch and convert flashcards
+        notes = subject.get_notes() or []  # Ensure it's a list
+        notes_data = [note.to_dict() for note in notes]
+
+        print(f"MY NOTES AT SUBJECT {subject.code_name}", notes_data)
+        return jsonify(notes_data)
+
+    except ValueError:
+        return jsonify({"error": "Invalid Subject ID format"}), 400  # Handles non-integer subject_id
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
+
 @study_routes.route("/subject/get_all_by_user_id", methods=["GET"])
 def get_all_by_user_id():
     try:

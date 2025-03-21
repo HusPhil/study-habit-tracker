@@ -275,7 +275,7 @@
     <script>
         function logout(user_id) {
             console.log("Logging out user:", user_id);
-            fetch(`/logout`, {
+            fetch(`logout`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -346,7 +346,7 @@
         });
 
         // Battle-related functionality
-        function selectOpponent(subjectId) {
+        async function selectOpponent(subjectId) {
             console.log("selecting opponent");
             selectedSubjectId = subjectId;
             document.querySelectorAll('.subject-card').forEach(card => {
@@ -362,7 +362,10 @@
             selectedSubjectCodeName = selectedSubjectCard.getAttribute('data-subject-code-name');
             document.getElementById('opponent-title').textContent = `[ ${selectedSubjectCodeName} ] - Select Goals`;
 
-            updateQuestsUI(selectedSubjectId);
+            await updateQuestsUI(selectedSubjectId);
+            await updateFlashcardsUI(selectedSubjectId)
+            await updateNotesUI(selectedSubjectId)
+            
 
             document.getElementById('modal-indicator-subject-id').value = selectedSubjectId;
         }

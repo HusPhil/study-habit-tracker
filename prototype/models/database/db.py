@@ -122,7 +122,8 @@ class Database:
                 CREATE TABLE IF NOT EXISTS notes (
                     note_id INTEGER PRIMARY KEY AUTOINCREMENT,
                     subject_id INTEGER,
-                    content TEXT NOT NULL,
+                    description TEXT NOT NULL,
+                    link TEXT NOT NULL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (subject_id) REFERENCES subjects(subject_id) ON DELETE CASCADE
                 )
@@ -135,7 +136,6 @@ class Database:
                     description TEXT NOT NULL,
                     link TEXT NOT NULL,
                     status INTEGER DEFAULT 0,
-                    difficulty INTEGER DEFAULT 1,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (subject_id) REFERENCES subjects (subject_id) ON DELETE CASCADE
                 )

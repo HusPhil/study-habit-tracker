@@ -38,12 +38,7 @@
             <button onclick="addTome()">Add Tome</button>
         </div>
         <div class="quest-list-container">
-            <ul id="tomes-list">
-                {% for tome in tomes %}
-                <li>
-                    <a href="{{ tome.url }}" target="_blank">{{ tome.title }}</a>
-                </li>
-                {% endfor %}
+            <ul id="note-list" class="scrollable-list">
             </ul>
             <div class="empty-state" id="empty-tomes-list">
                 <i class="fas fa-book-open"></i>
@@ -64,12 +59,7 @@
             <button onclick="addCrystal()">Forge Crystal</button>
         </div>
         <div class="quest-list-container">
-            <ul id="crystals-list">
-                {% for crystal in crystals %}
-                <li>
-                    <a href="{{ crystal.url }}" target="_blank">{{ crystal.title }}</a>
-                </li>
-                {% endfor %}
+            <ul id="flashcard-list" class="scrollable-list">
             </ul>
             <div class="empty-state" id="empty-crystals-list">
                 <i class="fas fa-book-open"></i>

@@ -84,6 +84,90 @@ async function updateQuestsUI(subjectId) {
     }
 }
 
+async function updateFlashcardsUI(subjectId) {
+    try {
+        const response = await fetch(`/api/subject/get_flashcards?subject_id=${encodeURIComponent(subjectId)}`);
+   
+        // if (!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`);
+
+        const flashcards = await response.json();
+        console.log("Updated flashcards:", flashcards);
+        const flashcardList = document.getElementById('flashcard-list'); // Ensure the correct ID exists in your HTML
+        const fragment = document.createDocumentFragment();
+
+        flashcards.reverse().forEach(flashcard => {
+            const li = document.createElement('li');
+            li.className = 'flashcard-item';
+            li.style.cssText = `
+                transition: border-color 0.3s ease;
+                margin: 5px 0;
+                padding: 8px;
+                border-radius: 4px;
+                background: rgba(255, 255, 255, 0.05);
+            `;
+
+            li.innerHTML = `
+                <div class="flashcard-content">
+                    <button class="flashcard-menu-btn" aria-label="Flashcard options">
+                        <i class="fas fa-ellipsis-vertical"></i>
+                    </button>
+                    <span class="flashcard-text">${flashcard.description}</span>
+                </div>
+            `;
+            fragment.appendChild(li);
+        });
+
+        flashcardList.innerHTML = '';
+        flashcardList.appendChild(fragment);
+
+    } catch (error) {
+        console.error("Failed to load flashcards:", error);
+        alert("Failed to load flashcards. Please try again.");
+    }
+}
+
+async function updateNotesUI(subjectId) {
+    try {
+        const response = await fetch(`/api/subject/get_notes?subject_id=${encodeURIComponent(subjectId)}`);
+
+        const notes = await response.json();
+        console.log("Updated notes:", notes);
+        
+        const notesList = document.getElementById('note-list'); // Ensure this ID exists in your HTML
+        const fragment = document.createDocumentFragment();
+
+        notes.reverse().forEach(note => {
+            const li = document.createElement('li');
+            li.className = 'note-item';
+            li.style.cssText = `
+                transition: border-color 0.3s ease;
+                margin: 5px 0;
+                padding: 8px;
+                border-radius: 4px;
+                background: rgba(255, 255, 255, 0.05);
+            `;
+
+            li.innerHTML = `
+                <div class="note-content">
+                    <button class="note-menu-btn" aria-label="Note options">
+                        <i class="fas fa-ellipsis-vertical"></i>
+                    </button>
+                    <span class="note-text">${note.description}</span>
+                </div>
+            `;
+            fragment.appendChild(li);
+        });
+
+        notesList.innerHTML = '';
+        notesList.appendChild(fragment);
+
+    } catch (error) {
+        console.error("Failed to load notes:", error);
+        alert("Failed to load notes. Please try again.");
+    }
+}
+
+
 function loadBattleModalQuests() {
     const questList = document.getElementById('battle-quest-list');
     const fragment = document.createDocumentFragment();

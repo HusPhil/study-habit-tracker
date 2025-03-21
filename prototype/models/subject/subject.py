@@ -3,6 +3,8 @@ import random
 from typing import List
 from models.database.db import db, DatabaseError
 from models.quest.quest import Quest
+from models.flashcard.flashcard import Flashcard
+from models.note.note import Note
 from models.enemy.enemy import Enemy, EnemyType
 
 
@@ -100,9 +102,9 @@ class Subject:
     def flashcards(self):
         """Lazy load flashcards only when accessed"""
         if self._flashcards is None:
-            self._flashcards = []
+            self._flashcards = self.get_flashcards()
         return self._flashcards
-
+    
     def get_quests(self) -> list:
         """Retrieve all quests for this subject dynamically"""
         try:
@@ -123,7 +125,46 @@ class Subject:
         """Add a quest to the subject"""
         db.execute("INSERT INTO quests (description, subject_id, status, difficulty) VALUES (?, ?, ?, ?)",
                    (quest.description, self.id, quest.status, quest.difficulty))
-    
+    def get_flashcards(self) -> list:
+        """Retrieve all flashcards for this subject dynamically."""
+        try:
+            results = db.execute("SELECT * FROM flashcards WHERE subject_id = ?", (self.id,))  # ✅ Fetch flashcards
+            
+
+            flashcards = []
+            for result in results:
+                flashcards.append(Flashcard(
+                    id=result['flashcard_id'],
+                    description=result['description'],
+                    link=result['link'],
+                    subject_id=result['subject_id'],
+                    status=result['status'],    
+                ))
+            print("Flashcard query results:", flashcards)
+            return flashcards  # ✅ Returns a list of Flashcard objects
+        except DatabaseError as e:
+            raise DatabaseError(f"Error retrieving flashcards: {str(e)}")
+        
+    def get_notes(self) -> list:
+        """Retrieve all flashcards for this subject dynamically."""
+        try:
+            results = db.execute("SELECT * FROM notes WHERE subject_id = ?", (self.id,))  # ✅ Fetch flashcards
+            
+
+            notes = []
+            for result in results:
+                notes.append(Note(
+                    id=result['note_id'],
+                    subject_id=result['subject_id'],
+                    description=result['description'],
+                    link=result['link'],
+                ))
+            print("Flashcard query results:", notes)
+            return notes  # ✅ Returns a list of Flashcard objects
+        except DatabaseError as e:
+            raise DatabaseError(f"Error retrieving flashcards: {str(e)}")
+
+
     def to_dict(self) -> dict:
         """Convert the subject to a dictionary for JSON serialization"""
         return {
