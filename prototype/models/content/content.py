@@ -3,7 +3,7 @@ from datetime import datetime
 class Content:
     def __init__(self, description: str, subject_id: int):
         self.description = description
-        self.subject = subject
+        self.subject_id = subject_id
         self.created_at = datetime.now()
 
     def create(self):
