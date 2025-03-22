@@ -16,20 +16,20 @@ class User:
             return True
         return False
 
-    def logout(self):
+    def logout(self) -> None:
         """Log the user out."""
         session.clear()
 
 
-    @property
-    def id(self):
-        return self._id
-
-    def to_dict(self):
+    def to_dict(self) -> dict:
         """Return a dictionary representation of the user."""
         return {
             'user_id': self.id,  # ✅ Uses the property
             'email': self.email,
             'username': self.username
         }
+
+    @property
+    def id(self):
+        return self._id
 

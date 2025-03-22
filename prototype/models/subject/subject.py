@@ -8,11 +8,11 @@ import random
 class Subject:
     def __init__(self, id: str, code_name: str, difficulty: int = 1, user_id: int = None):
         self._id = id
-        self._user_id = user_id
         self._code_name = code_name
         self._difficulty = min(max(difficulty, 1), 5)  
+        self._user_id = user_id
 
-    def spawnEnemy(self, quests: list):
+    def spawnEnemy(self, quests: list) -> list[Enemy]:
         """Creates a list of enemies based on quests' difficulties."""
         all_enemy_types = list(EnemyType)
         chosen_enemies = []

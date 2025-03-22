@@ -10,6 +10,7 @@ class Player(User):
         self._level = max(1, level)  # Ensures level is at least 1
         self._exp = max(0, exp)  # Ensures exp is never negative
         self._title = title
+        self._badges = []
 
     def gain_exp(self, amount: int) -> None:
         """Gain experience and level up if necessary."""
@@ -23,13 +24,13 @@ class Player(User):
 
         print(f"Player {self.username} gained {amount} EXP. Level: {self.level}, Exp: {self.exp}, NextLvlUpXP: {PlayerManager.get_exp_threshold(self.level)}, Title: {self.title}")
 
-    def level_up(self):
+    def level_up(self) -> None:
         """Increase player level and reset exp after leveling up."""
         self.level += 1
         self.exp = 0  # Reset exp after level-up
         print(f"🎉 {self.username} leveled up to {self.level}! New title: {self.title}")
 
-    def _update_title(self):
+    def _update_title(self) -> None:
         """Update title based on level."""
         title_map = {
             20: Title.LEGEND.value,
@@ -39,7 +40,7 @@ class Player(User):
         }
         self._title = next((title for lvl, title in title_map.items() if self.level >= lvl), Title.NOOBIE.value)
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         """Convert player to dictionary."""
         return {
             'user_id': self.id,
@@ -75,3 +76,7 @@ class Player(User):
     @property
     def title(self):
         return self._title
+    
+    @property
+    def badges(self):    
+        return self._badges
