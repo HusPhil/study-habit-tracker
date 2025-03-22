@@ -12,7 +12,7 @@ class Subject:
         self._difficulty = min(max(difficulty, 1), 5)  
         self._user_id = user_id
 
-    def spawnEnemy(self, quests: list) -> list[Enemy]:
+    def spawn_enemies(self, quests: list) -> list[Enemy]:
         """Creates a list of enemies based on quests' difficulties."""
         all_enemy_types = list(EnemyType)
         chosen_enemies = []
@@ -43,6 +43,10 @@ class Subject:
     def user_id(self):
         return self._user_id
     
+    @user_id.setter
+    def user_id(self, value):
+        self._user_id = value
+
     @property
     def code_name(self):
         return self._code_name

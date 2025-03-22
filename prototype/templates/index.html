@@ -328,14 +328,6 @@
             
             const battleOverlay = document.getElementById('battleOverlay');
 
-            document.addEventListener("keydown", function (event) {
-                if (battleOverlay.style.display == "flex" && event.code === "Space") {
-                    event.preventDefault();
-                    const attackButton = document.getElementById("attack-button");
-                    attackButton.classList.add("pressed"); // Prevent spacebar activation
-                } 
-            });
-
             modalSystem.init();
             // pre-select the first subject card
             const firstSubjectCard = document.querySelector('.subject-card');
@@ -347,6 +339,9 @@
 
         // Battle-related functionality
         async function selectOpponent(subjectId) {
+            
+            await updateSubjectsUI();
+            
             console.log("selecting opponent", subjectId);
             selectedSubjectId = subjectId;
             document.querySelectorAll('.subject-card').forEach(card => {
@@ -360,14 +355,16 @@
             }
             selectedSubjectCard.classList.add('selected');
             selectedSubjectCodeName = selectedSubjectCard.getAttribute('data-subject-code-name');
+            
             document.getElementById('opponent-title').textContent = `[ ${selectedSubjectCodeName} ] - Select Goals`;
-
+            document.getElementById('modal-indicator-subject-id').value = selectedSubjectId;
+            
             await updateQuestsUI(selectedSubjectId);
             await updateFlashcardsUI(selectedSubjectId)
             await updateNotesUI(selectedSubjectId)
             
+        
 
-            document.getElementById('modal-indicator-subject-id').value = selectedSubjectId;
         }
 
         function showError(message) {

@@ -1,5 +1,5 @@
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask_socketio import SocketIO
 
 
@@ -10,13 +10,16 @@ class SessionManager:
     def start_session(session, user_id: int, socketio: SocketIO):
         """Start a session and store it in active_sessions."""
         SessionManager.active_sessions[user_id] = session  # ✅ Store session
-        socketio.start_background_task(SessionManager.session_countdown, session.id, user_id, session.duration, socketio)
 
+
+        stop_time = datetime.now() + timedelta(minutes=session.duration)
+        
         return {
             "message": "Session started",
             "session_id": session.id,
             "user_id": user_id,
             "duration": session.duration,
+            "stop_time": stop_time
         }
 
     @staticmethod

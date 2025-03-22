@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, redirect, url_for, session
+from flask import Blueprint, request, jsonify, redirect, url_for, session, abort
 from typing import Dict
 from models import Subject, Quest, Session  # Import the Subject model
 from models.enemy.enemy import Enemy
@@ -11,6 +11,12 @@ from models.session.session import SessionManager
 from models.subject.subject_manager import SubjectManager
 from models.quest.quest_manager import QuestManager
 
+from models.note.note import Note
+from models.note.note_manager import NoteManager
+
+from models.flashcard.flashcard import Flashcard
+from models.flashcard.flashcard_manager import FlashcardManager
+
 from extensions import socketio
 import time
 
@@ -20,20 +26,27 @@ study_routes = Blueprint("study_routes", __name__)  # Define Blueprint
 @study_routes.route("/start_session", methods=["POST"])
 def start_session():
     try:
-        data = request.json
-        subject = SubjectManager.get(data["subject_id"])
+        print("START SESSION")
+
+        data = request.get_json()
+        
+        subject_data = SubjectManager.get(data["subject_id"])
+        subject: Subject = Subject(id=subject_data["subject_id"], code_name=subject_data["code_name"], difficulty=subject_data["difficulty"], user_id=subject_data["user_id"])
+        if not subject:
+            print("Subject not found")
+            return jsonify({"error": "Subject not found"}), 404
+        
         selected_quests: list = data["selected_quests"]
-        battle_duration = int(data["battle_duration"])
+        battle_duration_mins = int(data["battle_duration"])
         user_id = data["user_id"]
 
-        print("selectedQuests", selected_quests)
-
-        enemies: list[Enemy] = subject.spawnEnemy(selected_quests)  
+        enemies: list[Enemy] = subject.spawn_enemies(selected_quests)  
+        print("enemies", enemies)
         
         session = Session(
             id=int(time.time()), 
             subject_id=subject.id, 
-            duration=battle_duration, 
+            duration=battle_duration_mins, 
             goals=selected_quests
         )
         
@@ -44,13 +57,12 @@ def start_session():
 
         print("enemies", enemies, session_data)
 
-        # if session_data.get("error"):
-        #     return jsonify({"error": f"Invalid request: {str(e)}"})   
-
         return jsonify({
             "session_data": session_data, 
             "enemies": [enemy.to_dict() for enemy in enemies],
         })
+
+        raise NotImplementedError
     
     except Exception as e:
         return jsonify({"error": f"Invalid request: {str(e)}"}), 400
@@ -215,16 +227,20 @@ def get_subject_notes():
 def create_quest():
     try:
         # Get JSON or form data safely
-        data = request.get_json(silent=True) or request.form
+        data = request.form
+
+        print(data)
 
         # Validate required fields
-        description = data.get("description", "").strip()
-        difficulty = data.get("difficulty")
-        subject_id = data.get("subject_id")
+        description = data["description"].strip()
+        difficulty = data["questDifficulty"]
+        subject_id = data["subject_id"]
 
         if not description:
+            print("Description is required")
             return jsonify({"error": "Description is required"}), 400
         if difficulty is None or subject_id is None:
+            print("Difficulty and subject_id are required")
             return jsonify({"error": "Difficulty and subject_id are required"}), 400
         
         # Convert to correct types
@@ -235,7 +251,13 @@ def create_quest():
             return jsonify({"error": "Invalid data type for difficulty or subject_id"}), 400
 
         # Create the new quest
-        newQuest: Quest = QuestManager.create_quest(description=description, difficulty=difficulty, subject_id=subject_id)
+
+        newQuest_data = QuestManager.create(description=description, difficulty=difficulty, subject_id=subject_id)
+
+        newQuest = Quest(id=newQuest_data["quest_id"],
+                         description=newQuest_data["description"], subject_id=newQuest_data["subject_id"], 
+                         status=newQuest_data["status"], difficulty=newQuest_data["difficulty"])
+        print(newQuest)
 
         # Log for debugging
         print(f"✅ New Quest Created: {newQuest.to_dict()}")
@@ -284,3 +306,101 @@ def update_quest_status(quest_id):
         })
     except Exception as e:
         return jsonify({"error": f"Invalid request: {str(e)}"}), 400
+
+
+@study_routes.route("/note/create", methods=["POST"])
+def create_note():
+    try:
+        # Get JSON or form data safely
+        data = request.form
+
+        print(data)
+
+        # Validate required fields
+        description = data["note_description"].strip()
+        link = data["note_link"]
+        subject_id = data["subject_id"]
+
+        if not description:
+            print("Description is required")
+            return jsonify({"error": "Description is required"}), 400
+        if link is None or subject_id is None:
+            print("Difficulty and subject_id are required")
+            return jsonify({"error": "Difficulty and subject_id are required"}), 400
+        
+        # Convert to correct types
+        try:
+            subject_id = int(subject_id)
+        except ValueError:
+            return jsonify({"error": "Invalid data type for difficulty or subject_id"}), 400
+
+        # Create the new quest
+
+        newNote_data = NoteManager.create(description=description, link=link, subject_id=subject_id)
+        #  id: int, description: str, subject_id: int, link
+
+        newNote = Note(id=newNote_data["note_id"], description=newNote_data["description"], 
+                        subject_id=newNote_data["subject_id"], link=newNote_data["link"],)
+        print(newNote)
+
+        # Log for debugging
+        print(f"✅ New Note Created: {newNote.to_dict()}")
+
+        return jsonify({"note": newNote.to_dict()}), 201  # Use 201 for resource creation
+
+    except Exception as e:
+        print(f"❌ Error creating note: {str(e)}")  # Log error
+        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
+
+
+
+
+@study_routes.route("/flashcard/create", methods=["POST"])
+def create_flashcard():
+    try:
+        # Get JSON or form data safely
+        data = request.form
+
+        print(data)
+
+        # Validate required fields
+        description = data["flashcard_description"].strip()
+        link = data["flashcard_link"]
+        subject_id = data["subject_id"]
+
+        if not description:
+            print("Description is required")
+            return jsonify({"error": "Description is required"}), 400
+        if link is None or subject_id is None:
+            print("Difficulty and subject_id are required")
+            return jsonify({"error": "Difficulty and subject_id are required"}), 400
+        
+        # Convert to correct types
+        try:
+            subject_id = int(subject_id)
+        except ValueError:
+            return jsonify({"error": "Invalid data type for difficulty or subject_id"}), 400
+
+        # Create the new quest
+
+        newFlashcard_data = FlashcardManager.create(description=description, link=link, subject_id=subject_id)
+        #  id: int, description: str, subject_id: int, link
+
+        newFlashcard = Flashcard(id=newFlashcard_data["flashcard_id"], description=newFlashcard_data["description"], 
+                        subject_id=newFlashcard_data["subject_id"], link=newFlashcard_data["link"],)
+        print(newFlashcard)
+
+        # Log for debugging
+        print(f"✅ New Note Created: {newFlashcard.to_dict()}")
+
+        return jsonify({"note": newFlashcard.to_dict()}), 201  # Use 201 for resource creation
+
+    except Exception as e:
+        print(f"❌ Error creating note: {str(e)}")  # Log error
+        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
+
+
+# @study_routes.route("/player/get_stats", methods=["POST"])
+# def get_player_stats():    
+#     try:
+        

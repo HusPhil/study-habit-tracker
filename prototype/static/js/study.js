@@ -2,7 +2,13 @@ function addQuest(event) {
     event.preventDefault();
     const form = document.getElementById('addQuestModalForm');
     const formData = new FormData(form);
-    const prevSelectedId = formData.get("subject_id")
+    const prevSelectedId = document.getElementById('modal-indicator-subject-id').value;
+
+    formData.append('subject_id', prevSelectedId);
+
+    formData.entries().forEach(([key, value]) => {
+        console.log(`${key}: ${value}`);
+    })
     // Send POST request
     fetch('/api/quest/create', { // Replace with your actual endpoint
         method: 'POST',
@@ -14,15 +20,10 @@ function addQuest(event) {
         }
         throw new Error('Network response was not ok.');
     })
-    .then(data => {
+    .then(async data => {
         console.log('Success:', data);
-        // updateQuestsUI(data.subject_id);
-        // updateSubjectsUI();
+        await updateSubjectsUI();
         selectOpponent(prevSelectedId);
-        // Wait for UI updates before re-selecting subject
-        waitForElementUpdate('#subject-cards', () => {
-            selectOpponent(prevSelectedId);
-        });
         modalSystem.hide('addQuestModal');
         form.reset();
     })
@@ -32,6 +33,89 @@ function addQuest(event) {
         // Handle error (e.g., show error message)
     });
 }
+function addNote(event) {
+    event.preventDefault();
+    const form = document.getElementById('addNoteModalForm');
+    const formData = new FormData(form);
+    const prevSelectedId = document.getElementById('modal-indicator-subject-id').value;
+
+    formData.append('subject_id', prevSelectedId);
+
+    // Debugging output
+    for (const [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }   
+    // Send POST request
+    fetch('/api/note/create', { // Replace with your actual endpoint
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json(); // Parse JSON response
+        }
+        throw new Error('Network response was not ok.');
+    })
+    .then(async data => {
+        console.log('Success:', data);
+        selectOpponent(prevSelectedId);
+        modalSystem.hide('addNoteModal');
+        form.reset();
+    })
+    .catch((error) => {
+        alert('Failed to create quest');
+        console.error('Error:', error);
+        // Handle error (e.g., show error message)
+    });
+}
+
+function addFlashcard(event) {
+    event.preventDefault();
+    const form = document.getElementById('addFlashcardModalForm');
+    const formData = new FormData(form);
+    const prevSelectedId = document.getElementById('modal-indicator-subject-id').value;
+
+    formData.append('subject_id', prevSelectedId);
+
+    // Debugging output
+    for (const [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }   
+    // Send POST request
+    fetch('/api/flashcard/create', { // Replace with your actual endpoint
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json(); // Parse JSON response
+        }
+        throw new Error('Network response was not ok.');
+    })
+    .then(async data => {
+        console.log('Success:', data);
+        selectOpponent(prevSelectedId);
+        modalSystem.hide('addFlashcardModal');
+        form.reset();
+    })
+    .catch((error) => {
+        alert('Failed to create quest');
+        console.error('Error:', error);
+        // Handle error (e.g., show error message)
+    });
+}
+
+function updateSubjectCardDocs(subjectId, doctype, {newLength}) {
+    let subjectCard = document.querySelector(`[data-subject-id="${subjectId}"]`);
+    
+    if (subjectCard) {
+        let docCount = subjectCard.querySelector(`[data-doc-type="${doctype}"]`);
+        if (docCount) {
+            docCount.textContent = `${newLength}`;
+        }
+    }
+    
+}
 
 async function updateQuestsUI(subjectId) {
     try {
@@ -40,6 +124,8 @@ async function updateQuestsUI(subjectId) {
 
         const quests = await response.json();
         const questList = document.getElementById('quest-list');
+
+        console.log(quests)
         selectedSubjectQuests = quests;
         const fragment = document.createDocumentFragment();
                 function getDifficultyColor(difficulty) {
@@ -52,7 +138,7 @@ async function updateQuestsUI(subjectId) {
                     return `hsl(${hue}, 70%, 50%)`; // Returns color from Green (easy) to Red (hard)
                 }
 
-                quests.reverse().forEach(quest => {
+                selectedSubjectQuests.reverse().forEach(quest => {
                     const li = document.createElement('li');
                     li.className = 'quest-item';
                     li.style.cssText = `
@@ -98,7 +184,6 @@ async function updateFlashcardsUI(subjectId) {
             li.className = 'flashcard-item';
             li.style.cssText = `
                 transition: all 0.3s ease;
-                margin: 10px 0;
                 padding: 15px;
                 border-radius: 8px;
                 background: rgba(44, 62, 80, 0.9);
@@ -178,7 +263,6 @@ async function updateNotesUI(subjectId) {
             li.className = 'note-item';
             li.style.cssText = `
                 transition: all 0.3s ease;
-                margin: 10px 0;
                 padding: 15px;
                 border-radius: 8px;
                 background: rgba(44, 62, 80, 0.9);
@@ -270,54 +354,44 @@ function loadBattleModalQuests() {
 
 async function updateSubjectsUI() {
     try {
-        // Get user ID safely
-        const userInput = document.getElementById('current_user_id');
-        if (!userInput) throw new Error("User ID input field not found");
-
-        const user_id = userInput.value.trim();
-        if (!user_id) throw new Error("User ID is missing");
-
-        // Fetch updated subject list
+        // ✅ Fetch updated subject list
+        const user_id = document.getElementById('current_user_id').value;
         const response = await fetch(`/api/subject/get_all_by_user_id?user_id=${encodeURIComponent(user_id)}`);
         if (!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`);
 
         const subjects = await response.json();
         console.log("Updated subjects:", subjects);
 
-        console.log(subjects[0])
-
-        // Select the container and clear it
+        // ✅ Select the container and clear it
         const subjectCardsContainer = document.getElementById("subject-cards");
-        if (!subjectCardsContainer) throw new Error("Subject cards container not found");
+        subjectCardsContainer.innerHTML = ""; 
 
-        subjectCardsContainer.innerHTML = ""; // Clear existing subjects
-
-        // Efficiently rebuild subject cards using DocumentFragment
+        // ✅ Efficiently rebuild subject cards using DocumentFragment
         const fragment = document.createDocumentFragment();
 
         subjects.forEach(subject => {
-            // Create the main subject card div
+            // ✅ Create the main subject card div
             const subjectCard = document.createElement("div");
             subjectCard.classList.add("subject-card");
             subjectCard.dataset.subjectId = subject.id;
             subjectCard.dataset.subjectCodeName = subject.code_name;
             subjectCard.onclick = () => selectOpponent(subject.id);
 
-            // Add subject name
+            // ✅ Add subject name
             const subjectName = document.createElement("div");
             subjectName.classList.add("subject-name");
             subjectName.textContent = subject.code_name;
 
-            // Add difficulty stars
+            // ✅ Add difficulty stars
             const difficultyStars = document.createElement("div");
             difficultyStars.classList.add("difficulty-stars");
-            difficultyStars.textContent = "★".repeat(subject.difficulty); // ✅ Corrected star rendering
+            difficultyStars.textContent = "⭐".repeat(subject.difficulty);
 
-            // Create stats container
+            // ✅ Create stats container
             const subjectStats = document.createElement("div");
             subjectStats.classList.add("subject-stats");
 
-            // Helper function to add a stat row
+            // ✅ Helper function to add a stat row
             function addStatRow(label, value) {
                 const statRow = document.createElement("div");
                 statRow.classList.add("stat-row");
@@ -325,25 +399,24 @@ async function updateSubjectsUI() {
                 subjectStats.appendChild(statRow);
             }
 
-            // Add stats
-
-            addStatRow("Notes", subject.notes?.length || 0);
-            addStatRow("Flashcards", subject.flashcards?.length || 0);
-            addStatRow("Quests", subject.quests?.length || 0);
+            // ✅ Add stats
+            addStatRow("Notes", subject.notes.length);
+            addStatRow("Flashcards", subject.flashcards.length);
+            addStatRow("Quests", subject.quests.length);
             if (subject.last_battle) {
                 addStatRow("Last Battle", subject.last_battle);
             }
 
-            // Append all elements to subject card
+            // ✅ Append all elements to subject card
             subjectCard.appendChild(subjectName);
             subjectCard.appendChild(difficultyStars);
             subjectCard.appendChild(subjectStats);
 
-            // Append the subject card to the fragment
+            // ✅ Append the subject card to the fragment
             fragment.appendChild(subjectCard);
         });
 
-        // Create and add "Add Subject" button **outside the loop**
+        // ✅ Create and add "Add Subject" button **outside the loop**
         const addSubjectCard = document.createElement("div");
         addSubjectCard.classList.add("subject-card", "add-subject-card");
         addSubjectCard.setAttribute("data-dialog-target", "addSubjectModal");
@@ -356,26 +429,21 @@ async function updateSubjectsUI() {
         addSubjectName.classList.add("subject-name");
         addSubjectName.textContent = "New Subject";
 
-        // Append elements to "Add Subject" button
+        // ✅ Append elements to "Add Subject" button
         addSubjectCard.appendChild(addIcon);
         addSubjectCard.appendChild(addSubjectName);
 
-        // Append the "Add Subject" button to the fragment
+        // ✅ Append the "Add Subject" button to the fragment
         fragment.appendChild(addSubjectCard);
 
-        // Efficiently append all subject cards at once
+        // ✅ Efficiently append all subject cards at once
         subjectCardsContainer.appendChild(fragment);
 
-        // Ensure modalSystem exists before calling it
-        if (typeof modalSystem !== "undefined" && modalSystem.init) {
-            modalSystem.init();
-        } else {
-            console.warn("modalSystem is not available");
-        }
+        modalSystem.init()
 
     } catch (error) {
         console.error("Failed to update subjects UI:", error);
-        alert(error.message || "Failed to load subjects. Please try again.");
+        alert("Failed to load subjects. Please try again.");
     }
 }
 

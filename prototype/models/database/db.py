@@ -51,7 +51,6 @@ class Database:
             self.initialized = True
 
     def setup_database(self):
-        print("natawag ang DB setup")
         with self.pool.get_connection() as conn:
             c = conn.cursor()
             

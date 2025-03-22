@@ -3,8 +3,8 @@ from flask import session
 
 
 class User:
-    def __init__(self, user_id: int, email: str, username: str, password: str):
-        self._id = user_id  # Encapsulated but accessible via `.id`
+    def __init__(self, id: int, email: str, username: str, password: str):
+        self._id = id  # Encapsulated but accessible via `.id`
         self.username = username
         self.email = email      
         self.__password = password  # Keep password private
@@ -33,3 +33,6 @@ class User:
     def id(self):
         return self._id
 
+    @id.setter
+    def id(self, value):
+        self._id = value

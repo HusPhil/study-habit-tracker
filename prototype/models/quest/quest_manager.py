@@ -21,7 +21,8 @@ class QuestManager:
             )
 
             # Retrieve the newly created quest
-            result = db.execute("SELECT * FROM quests WHERE description AND subject_id = ?", (description, subject_id))
+            result = db.execute("SELECT * FROM quests WHERE description = ? AND subject_id = ?", (description, subject_id))
+            print(result)
             if result:
                 return result[0]  # Return new quest data as a dict
 

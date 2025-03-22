@@ -189,6 +189,25 @@
     width: 100%;
 }
 
+#note-list, #flashcard-list {
+    margin: 0;
+}   
+
+
+.note-item, .flashcard-item {
+    margin: 10px 0;
+}
+
+.note-item:first-child, .flashcard-item:first-child {
+    margin-top: 0;
+}
+
+.note-item:last-child, .flashcard-item:last-child {
+    margin-bottom: 0;
+}
+
+
+
 #battle-quest-list input[type="checkbox"] {
     width: 15px; /* ✅ Fixed size */
     height: 15px; /* ✅ Fixed size */
