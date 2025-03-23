@@ -51,7 +51,6 @@ class Database:
             self.initialized = True
 
     def setup_database(self):
-        print("natawag ang DB setup")
         with self.pool.get_connection() as conn:
             c = conn.cursor()
             
@@ -98,25 +97,17 @@ class Database:
             ''')
             c.execute('CREATE INDEX IF NOT EXISTS idx_quests_subject ON quests(subject_id)')
 
-            # Badges table
             c.execute('''
-                      CREATE TABLE IF NOT EXISTS badges (    
-                            badge_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                            title TEXT NOT NULL,
-                            rarity TEXT NOT NULL
-                        )
-                        ''')
-            
-            # Player badges association table
-            c.execute('''
-                CREATE TABLE IF NOT EXISTS player_badges (
-                    player_id INTEGER,
-                    badge_id INTEGER,
-                    FOREIGN KEY (player_id) REFERENCES users (user_id) ON DELETE CASCADE,
-                    FOREIGN KEY (badge_id) REFERENCES badges (badge_id) ON DELETE CASCADE,
-                    PRIMARY KEY (player_id, badge_id)
+                CREATE TABLE IF NOT EXISTS badges (    
+                    badge_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT NOT NULL,
+                    rarity TEXT NOT NULL,
+                    description TEXT NOT NULL,
+                    user_id INTEGER,
+                    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
                 )
             ''')
+                    
 
             c.execute('''
                 CREATE TABLE IF NOT EXISTS notes (

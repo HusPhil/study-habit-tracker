@@ -1,4 +1,5 @@
 <div id="study-zone">
+    <input type="text" name="subject_id" id="modal-indicator-subject-id" hidden>
     <div class="quest-section">
         <div class="section-header">
             <div class="title-area">
@@ -9,7 +10,7 @@
         </div>
         
         <div class="input-group" id="add-quest-btn-container">
-            <button id="add-quest-btn" onclick="checkSubjectAndAddQuest()" class="add-quest-btn" data-dialog-target="addQuestModal">
+            <button id="add-quest-btn" class="add-quest-btn" data-dialog-target="addQuestModal">
                 New Quest
             </button>
         </div>
@@ -29,13 +30,12 @@
         <div class="section-header">
             <div class="title-area">
                 <div class="title-text">
-                    <h1>Spell Tomes</h1>
+                    <h1>Notes</h1>
                 </div>
             </div>
         </div>
         <div class="input-group">
-            <input type="text" id="note-text-input" placeholder="Add new tome reference...">
-            <button onclick="addTome()">Add Tome</button>
+            <button class="add-quest-btn" data-dialog-target="addNoteModal">New Notes</button>
         </div>
         <div class="quest-list-container">
             <ul id="note-list" class="scrollable-list">
@@ -55,8 +55,7 @@
             </div>
         </div>
         <div class="input-group">
-            <input type="text" id="flashcard" placeholder="Create new memory crystal...">
-            <button onclick="addCrystal()">Forge Crystal</button>
+            <button class="add-quest-btn" data-dialog-target="addFlashcardModal">New Flashcard</button>
         </div>
         <div class="quest-list-container">
             <ul id="flashcard-list" class="scrollable-list">
@@ -72,7 +71,6 @@
 {% from "components/modal.html" import modal %}
 {% call modal('addQuestModal', 'Add a new Quest') %}
 <form id="addQuestModalForm" method="POST" onsubmit="addQuest(event)">
-    <input type="text" name="subject_id" id="modal-indicator-subject-id" hidden>
     <div class="form-group">
         <label>Description</label>
         <input type="text" name="description" required placeholder="SoftEng">
@@ -81,6 +79,46 @@
         <label>Difficulty</label>
         {% from "components/utils/star_rating.html" import star_rating %}
         {{ star_rating(name="questDifficulty", size="medium") }}
+    </div>
+    <div class="form-actions">
+        <button type="button" class="btn-secondary">Cancel</button>
+        <button type="submit" class="btn-primary">Create</button>
+    </div>
+    <input type="text" name="user_id" value="{{ session['user_id'] }}" hidden>
+</form>
+{% endcall %}
+
+
+{% from "components/modal.html" import modal %}
+{% call modal('addNoteModal', 'Add a new Note') %}
+<form id="addNoteModalForm" method="POST" onsubmit="addNote(event)">
+    <div class="form-group">
+        <label>Description</label>
+        <input type="text" name="note_description" required placeholder="My Note #1">
+    </div>
+    <div class="form-group">
+        <label>Link</label>
+        <input type="text" name="note_link" required placeholder="https://docs.google.com/document/d/1GVix-03jztL3T7LsFbgW3cl21xb94wll6h4CR9mhjaM">
+    </div>
+    <div class="form-actions">
+        <button type="button" class="btn-secondary">Cancel</button>
+        <button type="submit" class="btn-primary">Create</button>
+    </div>
+    <input type="text" name="user_id" value="{{ session['user_id'] }}" hidden>
+</form>
+{% endcall %}
+
+
+{% from "components/modal.html" import modal %}
+{% call modal('addFlashcardModal', 'Add a new Flashcard') %}
+<form id="addFlashcardModalForm" method="POST" onsubmit="addFlashcard(event)">
+    <div class="form-group">
+        <label>Description</label>
+        <input type="text" name="flashcard_description" required placeholder="My Flashcard #1">
+    </div>
+    <div class="form-group">
+        <label>Link</label>
+        <input type="text" name="flashcard_link" required placeholder="https://app.vaia.com/studyset/27112555?ref=l6pVaI1nVBQGQm2tQcTEQ9WoQA6D4Voh&ref_type=studyset_share">
     </div>
     <div class="form-actions">
         <button type="button" class="btn-secondary">Cancel</button>
