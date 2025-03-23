@@ -370,6 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Player XP:", data.player_stats.exp);
             console.log("Player Level:", data.player_stats.level);
             console.log("Player Title:", data.player_stats.title);
+            console.log("Player Badge:", data.default_badge);
 
             updatePlayerStatsUI(data.player_stats)
             console.log(data.subject_id, typeof data.subject_id)

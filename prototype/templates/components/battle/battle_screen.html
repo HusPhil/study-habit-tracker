@@ -6,10 +6,45 @@
                 <div id="player-avatar">
                     <img id="player-avatar-img" src="{{ url_for('static', filename='assets/images/avatar_icons/players/con1.png') }}" alt="Player Avatar">
                 </div>
-                <div>
+                <div class="player-stats">
                     <p id="player-name"><strong>Name:</strong> {{ player.username }}</p>
                     <p id="player-level"><strong>Level:</strong> {{ player.level }}</p>
                     <p id="player-exp"><strong>Experience:</strong> {{ player.exp }}</p>
+                </div>
+            </div>
+            
+            <div class="achievements-scroll">
+                <div class="scroll-header">
+                    <h3 class="medieval-title">⚔️ Battle Achievements ⚔️</h3>
+                </div>
+                <div class="badges-flex">
+                    <div class="badge-frame common">
+                        <div class="badge-content">
+                            <img src="{{ url_for('static', filename='assets/images/achievements/novice_adventurer.png') }}" alt="Novice Badge">
+                            <div class="badge-info">
+                                <span class="badge-title">Novice</span>
+                                <span class="badge-desc">First Steps</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="badge-frame rare">
+                        <div class="badge-content">
+                            <img src="{{ url_for('static', filename='assets/images/achievements/brave_warrior.png') }}" alt="Warrior Badge">
+                            <div class="badge-info">
+                                <span class="badge-title">Warrior</span>
+                                <span class="badge-desc">Battle Master</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="badge-frame epic">
+                        <div class="badge-content">
+                            <img src="{{ url_for('static', filename='assets/images/achievements/win.png') }}" alt="Champion Badge">
+                            <div class="badge-info">
+                                <span class="badge-title">Champion</span>
+                                <span class="badge-desc">Legendary</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

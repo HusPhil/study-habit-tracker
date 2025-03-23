@@ -10,7 +10,12 @@ class Enemy:
         self._description = description
         self._health = health
 
-    def drop_badge(self):
+    @staticmethod
+    def drop_badge(sure_drop: dict):
+
+        if sure_drop:
+            return Badge(sure_drop["title"], sure_drop["rarity"])
+
         """Randomly selects a badge upon enemy defeat."""
         badge_pool = [
             Badge("Dragon Slayer", "Legendary"),  # Rare

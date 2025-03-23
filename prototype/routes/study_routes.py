@@ -17,8 +17,10 @@ from models.note.note_manager import NoteManager
 from models.flashcard.flashcard import Flashcard
 from models.flashcard.flashcard_manager import FlashcardManager
 
+from models.badge.badge_manager import BadgeManager
+
 from extensions import socketio
-import time
+import time, logging
 
 study_routes = Blueprint("study_routes", __name__)  # Define Blueprint
 
@@ -69,38 +71,70 @@ def start_session():
 
 @study_routes.route("/stop_session", methods=["POST"])
 def stop_session():
-    user_id = session.get("user_id")  # Ensure we get an integer user_id
-    if user_id is None:
-        return jsonify({"error": "User ID not found in session"}), 400
+    """Stops an active study session and processes rewards."""
+    try:
+        user_id = session.get("user_id")  # Ensure we get an integer user_id
+        if user_id is None:
+            return error_response("User ID not found in session", 400)
 
-    current_session: Session = SessionManager.active_sessions.get(user_id)
-    if not current_session:
-        return jsonify({"error": "No active session found for this user"}), 404
+        current_session: Session = SessionManager.active_sessions.get(user_id)
+        if not current_session:
+            return error_response("No active session found for this user", 404)
 
-    session_data = current_session.stop(user_id=user_id, socketio=socketio)
-    data = request.get_json()
+        session_data = current_session.stop(user_id=user_id, socketio=socketio)
+        data = request.get_json() or {}  # Ensure we have a valid dictionary
+        
+        remaining_enemies = data.get("remaining_enemies")
+        total_enemies = data.get("total_enemies")
 
-    remaining_enemies = data["remaining_enemies"]
+        if remaining_enemies is None or total_enemies is None:
+            return error_response("Missing enemy count data", 400)
 
-    player = Player(**PlayerManager.get(user_id))
+        player = Player(**PlayerManager.get(user_id))
+        logging.info(f"Stopping session for user {user_id}, Accumulated EXP: {current_session.accumulated_exp}")
 
-    print("current_session.accumulated_exp", current_session.accumulated_exp)
+        adventurer_badge = None
+        # Badge reward for new players
+        if player.exp <= 0 and player.level <= 1:
+            adventurer_badge = Enemy.drop_badge({"title": "Novice Adventurer", "rarity": "Common"})
+            BadgeManager.create(user_id=user_id, rarity=adventurer_badge.rarity, title=adventurer_badge.title)
 
-    if player.exp <= 0 and player.level <= 1:
-        pass
+        # Calculate experience gain
+        exp_data = PlayerManager.calculate_exp(total_enemies=total_enemies, remaining_enemies=remaining_enemies)
+        player.gain_exp(exp_data["net_exp"])
 
-    player.gain_exp(PlayerManager.calculate_exp(total_enemies=data["total_enemies"], remaining_enemies=remaining_enemies)["net_exp"])
+        # If all enemies are defeated, complete quests
+        if remaining_enemies <= 0:
+            complete_quests(player, session_data, current_session)
 
-    if remaining_enemies <= 0:
-        selected_quests = session_data['selected_quests']
-        quest_ids = [quest['id'] for quest in selected_quests]
+        # Save updated player data
+        PlayerManager.save(player.to_dict())
+
+        return jsonify({
+            "message": "Session stopped successfully",
+            "player_stats": player.to_dict(),
+            "default_badge": adventurer_badge.to_string() if adventurer_badge else None, 
+            "subject_id": session_data.get("subject_id")
+        })
+    
+    except Exception as e:
+        logging.error(f"Error stopping session: {str(e)}", exc_info=True)
+        return error_response("An unexpected error occurred", 500)
+
+
+def complete_quests(player, session_data, current_session):
+    """Handles quest completion logic when all enemies are defeated."""
+    selected_quests = session_data.get("selected_quests", [])
+    quest_ids = [quest["id"] for quest in selected_quests if "id" in quest]
+    
+    if quest_ids:
         player.gain_exp(current_session.accumulated_exp)
         QuestManager.delete_quests(quest_ids)
 
 
-    PlayerManager.save(player.to_dict())
-    return jsonify({"message": "Session stopped successfully", "player_stats": player.to_dict(), "subject_id": session_data["subject_id"]})
-
+def error_response(message, status_code):
+    """Helper function to return standardized error responses."""
+    return jsonify({"error": message}), status_code
 @study_routes.route("/subject/get_by_id", methods=["GET"])
 def get_subject():
     try:
