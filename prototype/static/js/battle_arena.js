@@ -371,6 +371,9 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Player Level:", data.player_stats.level);
             console.log("Player Title:", data.player_stats.title);
             console.log("Player Badge:", data.default_badge);
+            if(data.default_badge)  {
+                alert("You have unlocked a new badge! " + data.default_badge.title);
+            }
 
             updatePlayerStatsUI(data.player_stats)
             console.log(data.subject_id, typeof data.subject_id)

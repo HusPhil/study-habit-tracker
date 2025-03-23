@@ -18,6 +18,7 @@ from models.flashcard.flashcard import Flashcard
 from models.flashcard.flashcard_manager import FlashcardManager
 
 from models.badge.badge_manager import BadgeManager
+from models.badge.badge import Badge
 
 from extensions import socketio
 import time, logging
@@ -96,8 +97,8 @@ def stop_session():
         adventurer_badge = None
         # Badge reward for new players
         if player.exp <= 0 and player.level <= 1:
-            adventurer_badge = Enemy.drop_badge({"title": "Novice Adventurer", "rarity": "Common"})
-            BadgeManager.create(user_id=user_id, rarity=adventurer_badge.rarity, title=adventurer_badge.title)
+            adventurer_badge = Enemy.drop_badge({"title": "Novice", "rarity": "Common", "description": "First Steps"})
+            BadgeManager.create(user_id=user_id, title="Novice", rarity="Common", description="First Steps")
 
         # Calculate experience gain
         exp_data = PlayerManager.calculate_exp(total_enemies=total_enemies, remaining_enemies=remaining_enemies)
@@ -445,6 +446,23 @@ def create_flashcard():
         return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
 
 
+@study_routes.route("/badges/get_all_by_player_id", methods=["GET"])
+def get_player_badges():
+     
+    try:
+        player_id = request.args.get('player_id', type=int)
+        if player_id is None:
+            return jsonify({"error": "player_id parameter is required"}), 400
+
+        badges = BadgeManager.get_user_badges(player_id)
+        return jsonify({"badges": [Badge(
+            badge["title"], badge["rarity"], 
+            badge["description"]).to_string() 
+            for badge in badges]
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
 # @study_routes.route("/player/get_stats", methods=["POST"])
 # def get_player_stats():    
 #     try:

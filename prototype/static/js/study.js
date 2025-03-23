@@ -449,6 +449,55 @@ async function updateSubjectsUI() {
     }
 }
 
+async function updateBadgesUI() {
+    try {
+        // ✅ Fetch updated badges list
+        const user_id = document.getElementById('current_user_id').value;
+        const response = await fetch(`/api/badges/get_all_by_player_id?player_id=${encodeURIComponent(user_id)}`);
+        if (!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`);
+        
+        const data = await response.json();  // ✅ `data` contains `{badges: [...]}`
+
+        if (!data.badges || !Array.isArray(data.badges)) {
+            throw new Error("Invalid API response: Expected an array under 'badges'");
+        }
+
+        const badges = data.badges;  // ✅ Extract actual badge array
+        console.log("Updated badges:", badges);
+
+        // ✅ Select badge container
+        const badgeContainer = document.getElementById("badge-container");
+        if (!badgeContainer) {
+            console.error("Badge container not found.");
+            return;
+        }
+        badgeContainer.innerHTML = ""; // Clear previous badges
+
+        // ✅ Create badge elements
+        badges.forEach(badge => {
+            const badgeFrame = document.createElement("div");
+            badgeFrame.className = `badge-frame ${badge.rarity.toLowerCase()}`;
+
+            badgeFrame.innerHTML = `
+                <div class="badge-content">
+                    <img src="/static/assets/images/achievements/${badge.file_name}" 
+                         alt="${badge.title} Badge">
+                    <div class="badge-info">
+                        <span class="badge-title">${badge.title}</span>
+                        <span class="badge-desc">${badge.description}</span>
+                    </div>
+                </div>
+            `;
+
+            badgeContainer.appendChild(badgeFrame);
+        });
+
+    } catch (error) {
+        console.error("Failed to update badges UI:", error);
+        alert("Failed to load badges. Please try again.");
+    }
+}
+
 
 
 

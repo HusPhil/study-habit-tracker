@@ -102,6 +102,7 @@ class Database:
                     badge_id INTEGER PRIMARY KEY AUTOINCREMENT,
                     title TEXT NOT NULL,
                     rarity TEXT NOT NULL,
+                    description TEXT NOT NULL,
                     user_id INTEGER,
                     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
                 )

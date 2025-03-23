@@ -14,16 +14,19 @@ class Enemy:
     def drop_badge(sure_drop: dict):
 
         if sure_drop:
-            return Badge(sure_drop["title"], sure_drop["rarity"])
+            return Badge(sure_drop["title"], sure_drop["rarity"], sure_drop["description"])
 
         """Randomly selects a badge upon enemy defeat."""
+
+
         badge_pool = [
-            Badge("Dragon Slayer", "Legendary"),  # Rare
-            Badge("Brave Warrior", "Epic"),
-            Badge("Skilled Fighter", "Rare"),
-            Badge("Apprentice", "Common"),
-            Badge("Novice Adventurer", "Common"),
+            Badge("Novice", "Common", "First Steps"),  
+            Badge("Apprentice", "Uncommon", "New Learner"),
+            Badge("Warrior", "Rare", "Battle Ready"),
+            Badge("Champion", "Epic", "Great Victory"),
+            Badge("Legend", "Legendary", "Ultimate Honor"),
         ]
+
         
         # Weighted probability for badges (higher index = rarer)
         probabilities = [0.05, 0.15, 0.25, 0.30, 0.25]  # Adjusted based on rarity

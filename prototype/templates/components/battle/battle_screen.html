@@ -17,34 +17,8 @@
                 <div class="scroll-header">
                     <h3 class="medieval-title">⚔️ Battle Achievements ⚔️</h3>
                 </div>
-                <div class="badges-flex">
-                    <div class="badge-frame common">
-                        <div class="badge-content">
-                            <img src="{{ url_for('static', filename='assets/images/achievements/novice_adventurer.png') }}" alt="Novice Badge">
-                            <div class="badge-info">
-                                <span class="badge-title">Novice</span>
-                                <span class="badge-desc">First Steps</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="badge-frame rare">
-                        <div class="badge-content">
-                            <img src="{{ url_for('static', filename='assets/images/achievements/brave_warrior.png') }}" alt="Warrior Badge">
-                            <div class="badge-info">
-                                <span class="badge-title">Warrior</span>
-                                <span class="badge-desc">Battle Master</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="badge-frame epic">
-                        <div class="badge-content">
-                            <img src="{{ url_for('static', filename='assets/images/achievements/win.png') }}" alt="Champion Badge">
-                            <div class="badge-info">
-                                <span class="badge-title">Champion</span>
-                                <span class="badge-desc">Legendary</span>
-                            </div>
-                        </div>
-                    </div>
+                <div id="badge-container" class="badges-flex">
+                    <!-- populated using js -->
                 </div>
             </div>
         </div>
