@@ -8,7 +8,7 @@ class LinkableContent(Content):
 
     def __init__(self, description: str, subject_id: int, link: str, *args, **kwargs):
         super().__init__(description, subject_id, *args, **kwargs)  # Pass extra args for multiple inheritance
-        self.link = link
+        self._link = link
 
 
     @staticmethod
@@ -25,3 +25,7 @@ class LinkableContent(Content):
         )
         
         return bool(url_pattern.match(link))
+    
+    @property
+    def link(self):
+        return self._link

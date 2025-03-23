@@ -1,12 +1,27 @@
-from flask import Blueprint, request, jsonify, redirect, url_for, session
+from flask import Blueprint, request, jsonify, redirect, url_for, session, abort
 from typing import Dict
 from models import Subject, Quest, Session  # Import the Subject model
 from models.enemy.enemy import Enemy
-from models.player.player_manager import PlayerManager
+
 from models.player.player import Player
+from models.player.player_manager import PlayerManager
+
 from models.session.session import SessionManager
+
+from models.subject.subject_manager import SubjectManager
+from models.quest.quest_manager import QuestManager
+
+from models.note.note import Note
+from models.note.note_manager import NoteManager
+
+from models.flashcard.flashcard import Flashcard
+from models.flashcard.flashcard_manager import FlashcardManager
+
+from models.badge.badge_manager import BadgeManager
+from models.badge.badge import Badge
+
 from extensions import socketio
-import time
+import time, logging
 
 study_routes = Blueprint("study_routes", __name__)  # Define Blueprint
 
@@ -14,20 +29,27 @@ study_routes = Blueprint("study_routes", __name__)  # Define Blueprint
 @study_routes.route("/start_session", methods=["POST"])
 def start_session():
     try:
-        data = request.json
-        subject = Subject.get(data["subject_id"])
+        print("START SESSION")
+
+        data = request.get_json()
+        
+        subject_data = SubjectManager.get(data["subject_id"])
+        subject: Subject = Subject(id=subject_data["subject_id"], code_name=subject_data["code_name"], difficulty=subject_data["difficulty"], user_id=subject_data["user_id"])
+        if not subject:
+            print("Subject not found")
+            return jsonify({"error": "Subject not found"}), 404
+        
         selected_quests: list = data["selected_quests"]
-        battle_duration = int(data["battle_duration"])
+        battle_duration_mins = int(data["battle_duration"])
         user_id = data["user_id"]
 
-        print("selectedQuests", selected_quests)
-
-        enemies: list[Enemy] = subject.spawnEnemy(selected_quests)  
+        enemies: list[Enemy] = subject.spawn_enemies(selected_quests)  
+        print("enemies", enemies)
         
         session = Session(
             id=int(time.time()), 
             subject_id=subject.id, 
-            duration=battle_duration, 
+            duration=battle_duration_mins, 
             goals=selected_quests
         )
         
@@ -38,38 +60,82 @@ def start_session():
 
         print("enemies", enemies, session_data)
 
-        # if session_data.get("error"):
-        #     return jsonify({"error": f"Invalid request: {str(e)}"})   
-
         return jsonify({
             "session_data": session_data, 
             "enemies": [enemy.to_dict() for enemy in enemies],
         })
+
+        raise NotImplementedError
     
     except Exception as e:
         return jsonify({"error": f"Invalid request: {str(e)}"}), 400
 
 @study_routes.route("/stop_session", methods=["POST"])
 def stop_session():
-    user_id = session.get("user_id")  # Ensure we get an integer user_id
-    if user_id is None:
-        return jsonify({"error": "User ID not found in session"}), 400
+    """Stops an active study session and processes rewards."""
+    try:
+        user_id = session.get("user_id")  # Ensure we get an integer user_id
+        if user_id is None:
+            return error_response("User ID not found in session", 400)
 
-    current_session: Session = SessionManager.active_sessions.get(user_id)
-    if not current_session:
-        return jsonify({"error": "No active session found for this user"}), 404
+        current_session: Session = SessionManager.active_sessions.get(user_id)
+        if not current_session:
+            return error_response("No active session found for this user", 404)
 
-    session_data = current_session.stop(user_id=user_id, socketio=socketio)
+        session_data = current_session.stop(user_id=user_id, socketio=socketio)
+        data = request.get_json() or {}  # Ensure we have a valid dictionary
+        
+        remaining_enemies = data.get("remaining_enemies")
+        total_enemies = data.get("total_enemies")
 
-    data = request.get_json()
+        if remaining_enemies is None or total_enemies is None:
+            return error_response("Missing enemy count data", 400)
 
-    remaining_enemies = data["remaining_enemies"]
+        player = Player(**PlayerManager.get(user_id))
+        logging.info(f"Stopping session for user {user_id}, Accumulated EXP: {current_session.accumulated_exp}")
 
-    player = Player(**PlayerManager.get(user_id))
-    player.gain_exp(PlayerManager.calculate_exp(total_enemies=data["total_enemies"], remaining_enemies=remaining_enemies)["net_exp"])
-    PlayerManager.save(player.to_dict())
-    return jsonify({"message": "Session stopped successfully"})
+        adventurer_badge = None
+        # Badge reward for new players
+        if player.exp <= 0 and player.level <= 1:
+            adventurer_badge = Enemy.drop_badge({"title": "Novice", "rarity": "Common", "description": "First Steps"})
+            BadgeManager.create(user_id=user_id, title="Novice", rarity="Common", description="First Steps")
 
+        # Calculate experience gain
+        exp_data = PlayerManager.calculate_exp(total_enemies=total_enemies, remaining_enemies=remaining_enemies)
+        player.gain_exp(exp_data["net_exp"])
+
+        # If all enemies are defeated, complete quests
+        if remaining_enemies <= 0:
+            complete_quests(player, session_data, current_session)
+
+        # Save updated player data
+        PlayerManager.save(player.to_dict())
+
+        return jsonify({
+            "message": "Session stopped successfully",
+            "player_stats": player.to_dict(),
+            "default_badge": adventurer_badge.to_string() if adventurer_badge else None, 
+            "subject_id": session_data.get("subject_id")
+        })
+    
+    except Exception as e:
+        logging.error(f"Error stopping session: {str(e)}", exc_info=True)
+        return error_response("An unexpected error occurred", 500)
+
+
+def complete_quests(player, session_data, current_session):
+    """Handles quest completion logic when all enemies are defeated."""
+    selected_quests = session_data.get("selected_quests", [])
+    quest_ids = [quest["id"] for quest in selected_quests if "id" in quest]
+    
+    if quest_ids:
+        player.gain_exp(current_session.accumulated_exp)
+        QuestManager.delete_quests(quest_ids)
+
+
+def error_response(message, status_code):
+    """Helper function to return standardized error responses."""
+    return jsonify({"error": message}), status_code
 @study_routes.route("/subject/get_by_id", methods=["GET"])
 def get_subject():
     try:
@@ -77,7 +143,7 @@ def get_subject():
         if not subject_id:
             return jsonify({"error": "subject_id parameter is required"}), 400
             
-        subject = Subject.get(subject_id)
+        subject = SubjectManager.get(subject_id)
         if not subject:
             return jsonify({"error": "Subject not found"}), 404
             
@@ -90,7 +156,7 @@ def get_subject():
 @study_routes.route("/subject/create", methods=["POST"])
 def create_subject():
     try:
-        Subject.create(
+        SubjectManager.create(
             user_id=request.form["user_id"],
             code_name=request.form["code_name"],
             description=request.form["description"],
@@ -100,6 +166,36 @@ def create_subject():
 
     except Exception as e:
         return jsonify({"error": f"Invalid request: {str(e)}"}), 400
+    
+@study_routes.route("/subject/get_all_by_user_id", methods=["GET"])
+def get_all_by_user_id():
+    try:
+        print("GETTING ALL THE SUBJECTS")
+
+        # Validate user_id parameter
+        user_id = int(request.args.get('user_id'))
+        if user_id is None:
+            return jsonify({"error": "Valid user_id parameter is required"}), 400
+
+        # Fetch subjects from SubjectManager
+        subjects = []
+        print("user_id", user_id, type (user_id))
+        subjects = SubjectManager.get_all_with_details(int(user_id))
+
+        # # Convert subjects to JSON format
+        # subjects_data = [Subject(
+        #     id=subject["subject_id"],
+        #     code_name=subject["code_name"],
+        #     difficulty=subject["difficulty"],
+        #     user_id=subject["user_id"]
+        # ).to_dict() for subject in subjects]
+
+        # print("Fetched Subjects:", subjects_data)  # Debugging log
+        return jsonify(subjects)
+    
+    except Exception as e:
+        print("Error retrieving subjects:", str(e))  # Log error for debugging
+        return jsonify({"error": str(e)}), 500
 
 @study_routes.route("/subject/get_quests", methods=["GET"])
 def get_subject_quests():
@@ -108,12 +204,23 @@ def get_subject_quests():
     if not subject_id:
         return jsonify({"error": "Subject ID is required"}), 400
 
-    try:    
-        subject = Subject.get(subject_id)  # ✅ Fetch subject by ID
-        quests = [quest.to_dict() for quest in subject.get_quests()]  # ✅ Convert quests to JSON
-        return jsonify(quests)
+    try:
+        # Convert subject_id to an integer safely
+        subject_id = int(subject_id)
+        
+        # Fetch quests using SubjectManager
+        quests = SubjectManager.get_quests(subject_id)
+
+        # Ensure response is JSON serializable
+        quests_data = [quest.to_dict() for quest in quests]  
+        return jsonify(quests_data)
+
+    except ValueError:
+        return jsonify({"error": "Invalid Subject ID format"}), 400  # Handles non-integer input
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @study_routes.route("/subject/get_flashcards", methods=["GET"])
 def get_subject_flashcards():
@@ -126,18 +233,11 @@ def get_subject_flashcards():
         # Convert subject_id to int (assuming IDs are integers)
         subject_id = int(subject_id)
 
-        # Fetch subject by ID
-        subject = Subject.get(subject_id)
-
-        if not subject:
-            return jsonify({"error": f"Subject with ID {subject_id} not found"}), 404
-
         # Fetch and convert flashcards
-        flashcards = subject.get_flashcards() or []  # Ensure it's a list
-        flashcards_data = [flashcard.to_dict() for flashcard in flashcards]
+        flashcards = SubjectManager.get_flashcards(subject_id) or []  # Ensure it's a list
+        flashcards = [flashcard.to_dict() for flashcard in flashcards]
 
-        print(f"MY FLASHCARDS AT SUBJECT {subject.code_name}", flashcards_data)
-        return jsonify(flashcards_data)
+        return jsonify(flashcards)
 
     except ValueError:
         return jsonify({"error": "Invalid Subject ID format"}), 400  # Handles non-integer subject_id
@@ -150,6 +250,8 @@ def get_subject_flashcards():
 def get_subject_notes():
     subject_id = request.args.get("subject_id")  # ✅ Get subject ID from query params
 
+    print("subject_id", request.args)
+
     if not subject_id:
         return jsonify({"error": "Subject ID is required"}), 400
 
@@ -157,18 +259,11 @@ def get_subject_notes():
         # Convert subject_id to int (assuming IDs are integers)
         subject_id = int(subject_id)
 
-        # Fetch subject by ID
-        subject = Subject.get(subject_id)
-
-        if not subject:
-            return jsonify({"error": f"Subject with ID {subject_id} not found"}), 404
-
         # Fetch and convert flashcards
-        notes = subject.get_notes() or []  # Ensure it's a list
-        notes_data = [note.to_dict() for note in notes]
+        notes = SubjectManager.get_notes(subject_id) or []  # Ensure it's a list        
+        notes = [note.to_dict() for note in notes]
 
-        print(f"MY NOTES AT SUBJECT {subject.code_name}", notes_data)
-        return jsonify(notes_data)
+        return jsonify(notes)
 
     except ValueError:
         return jsonify({"error": "Invalid Subject ID format"}), 400  # Handles non-integer subject_id
@@ -176,39 +271,51 @@ def get_subject_notes():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-
-
-@study_routes.route("/subject/get_all_by_user_id", methods=["GET"])
-def get_all_by_user_id():
-    try:
-        print(request.args)
-        user_id = request.args.get('user_id', type=int)
-        if not user_id:
-            return jsonify({"error": "user_id parameter is required"}), 400
-            
-        subjects = Subject.get_all(user_id)
-        return jsonify([subject.to_dict() for subject in subjects])
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-
-
-
-
 @study_routes.route("/quest/create", methods=["POST"])
 def create_quest():
     try:
-        print(request.form)
-        newQuest = Quest.create(
-            description=request.form["description"],
-            difficulty=request.form["questDifficulty"],
-            subject_id=request.form["subject_id"]
-        )
-        return newQuest.to_dict()
+        # Get JSON or form data safely
+        data = request.form
+
+        print(data)
+
+        # Validate required fields
+        description = data["description"].strip()
+        difficulty = data["questDifficulty"]
+        subject_id = data["subject_id"]
+
+        if not description:
+            print("Description is required")
+            return jsonify({"error": "Description is required"}), 400
+        if difficulty is None or subject_id is None:
+            print("Difficulty and subject_id are required")
+            return jsonify({"error": "Difficulty and subject_id are required"}), 400
+        
+        # Convert to correct types
+        try:
+            difficulty = int(difficulty)
+            subject_id = int(subject_id)
+        except ValueError:
+            return jsonify({"error": "Invalid data type for difficulty or subject_id"}), 400
+
+        # Create the new quest
+
+        newQuest_data = QuestManager.create(description=description, difficulty=difficulty, subject_id=subject_id)
+
+        newQuest = Quest(id=newQuest_data["quest_id"],
+                         description=newQuest_data["description"], subject_id=newQuest_data["subject_id"], 
+                         status=newQuest_data["status"], difficulty=newQuest_data["difficulty"])
+        print(newQuest)
+
+        # Log for debugging
+        print(f"✅ New Quest Created: {newQuest.to_dict()}")
+
+        return jsonify({"quest": newQuest.to_dict()}), 201  # Use 201 for resource creation
+
     except Exception as e:
-        return jsonify({"error": f"Invalid request: {str(e)}"}), 400
+        print(f"❌ Error creating quest: {str(e)}")  # Log error
+        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
+
 
 @study_routes.route("/quest/get_by_subject_id", methods=["GET"])
 def get_quest_by_subject_id():
@@ -217,7 +324,7 @@ def get_quest_by_subject_id():
         if not subject_id:
             return jsonify({"error": "subject_id parameter is required"}), 400
             
-        quests = Quest.get_by_subject_id(subject_id)
+        quests = QuestManager.get_quests_by_subject(subject_id)
         return jsonify({"quests": [quest.to_dict() for quest in quests]})
     except Exception as e:
         return jsonify({"error": f"Invalid request: {str(e)}"}), 400
@@ -247,3 +354,116 @@ def update_quest_status(quest_id):
         })
     except Exception as e:
         return jsonify({"error": f"Invalid request: {str(e)}"}), 400
+
+
+@study_routes.route("/note/create", methods=["POST"])
+def create_note():
+    try:
+        # Get JSON or form data safely
+        data = request.form
+
+        print(data)
+
+        # Validate required fields
+        description = data["note_description"].strip()
+        link = data["note_link"]
+        subject_id = data["subject_id"]
+
+        if not description:
+            print("Description is required")
+            return jsonify({"error": "Description is required"}), 400
+        if link is None or subject_id is None:
+            print("Difficulty and subject_id are required")
+            return jsonify({"error": "Difficulty and subject_id are required"}), 400
+        
+        # Convert to correct types
+        try:
+            subject_id = int(subject_id)
+        except ValueError:
+            return jsonify({"error": "Invalid data type for difficulty or subject_id"}), 400
+
+        # Create the new quest
+
+        newNote_data = NoteManager.create(description=description, link=link, subject_id=subject_id)
+        #  id: int, description: str, subject_id: int, link
+
+        newNote = Note(id=newNote_data["note_id"], description=newNote_data["description"], 
+                        subject_id=newNote_data["subject_id"], link=newNote_data["link"],)
+        print(newNote)
+
+        # Log for debugging
+        print(f"✅ New Note Created: {newNote.to_dict()}")
+
+        return jsonify({"note": newNote.to_dict()}), 201  # Use 201 for resource creation
+
+    except Exception as e:
+        print(f"❌ Error creating note: {str(e)}")  # Log error
+        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
+
+
+@study_routes.route("/flashcard/create", methods=["POST"])
+def create_flashcard():
+    try:
+        # Get JSON or form data safely
+        data = request.form
+
+        print(data)
+
+        # Validate required fields
+        description = data["flashcard_description"].strip()
+        link = data["flashcard_link"]
+        subject_id = data["subject_id"]
+
+        if not description:
+            print("Description is required")
+            return jsonify({"error": "Description is required"}), 400
+        if link is None or subject_id is None:
+            print("Difficulty and subject_id are required")
+            return jsonify({"error": "Difficulty and subject_id are required"}), 400
+        
+        # Convert to correct types
+        try:
+            subject_id = int(subject_id)
+        except ValueError:
+            return jsonify({"error": "Invalid data type for difficulty or subject_id"}), 400
+
+        # Create the new quest
+
+        newFlashcard_data = FlashcardManager.create(description=description, link=link, subject_id=subject_id)
+        #  id: int, description: str, subject_id: int, link
+
+        newFlashcard = Flashcard(id=newFlashcard_data["flashcard_id"], description=newFlashcard_data["description"], 
+                        subject_id=newFlashcard_data["subject_id"], link=newFlashcard_data["link"],)
+        print(newFlashcard)
+
+        # Log for debugging
+        print(f"✅ New Note Created: {newFlashcard.to_dict()}")
+
+        return jsonify({"note": newFlashcard.to_dict()}), 201  # Use 201 for resource creation
+
+    except Exception as e:
+        print(f"❌ Error creating note: {str(e)}")  # Log error
+        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
+
+
+@study_routes.route("/badges/get_all_by_player_id", methods=["GET"])
+def get_player_badges():
+     
+    try:
+        player_id = request.args.get('player_id', type=int)
+        if player_id is None:
+            return jsonify({"error": "player_id parameter is required"}), 400
+
+        badges = BadgeManager.get_user_badges(player_id)
+        return jsonify({"badges": [Badge(
+            badge["title"], badge["rarity"], 
+            badge["description"]).to_string() 
+            for badge in badges]
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
+# @study_routes.route("/player/get_stats", methods=["POST"])
+# def get_player_stats():    
+#     try:
+        

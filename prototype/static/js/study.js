@@ -1,9 +1,14 @@
-
 function addQuest(event) {
     event.preventDefault();
     const form = document.getElementById('addQuestModalForm');
     const formData = new FormData(form);
-    const prevSelectedId = formData.get("subject_id")
+    const prevSelectedId = document.getElementById('modal-indicator-subject-id').value;
+
+    formData.append('subject_id', prevSelectedId);
+
+    formData.entries().forEach(([key, value]) => {
+        console.log(`${key}: ${value}`);
+    })
     // Send POST request
     fetch('/api/quest/create', { // Replace with your actual endpoint
         method: 'POST',
@@ -15,15 +20,10 @@ function addQuest(event) {
         }
         throw new Error('Network response was not ok.');
     })
-    .then(data => {
+    .then(async data => {
         console.log('Success:', data);
-        updateQuestsUI(data.subject_id);
-        updateSubjectsUI();
+        await updateSubjectsUI();
         selectOpponent(prevSelectedId);
-        // ✅ Wait for UI updates before re-selecting subject
-        waitForElementUpdate('#subject-cards', () => {
-            selectOpponent(prevSelectedId);
-        });
         modalSystem.hide('addQuestModal');
         form.reset();
     })
@@ -33,27 +33,112 @@ function addQuest(event) {
         // Handle error (e.g., show error message)
     });
 }
+function addNote(event) {
+    event.preventDefault();
+    const form = document.getElementById('addNoteModalForm');
+    const formData = new FormData(form);
+    const prevSelectedId = document.getElementById('modal-indicator-subject-id').value;
+
+    formData.append('subject_id', prevSelectedId);
+
+    // Debugging output
+    for (const [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }   
+    // Send POST request
+    fetch('/api/note/create', { // Replace with your actual endpoint
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json(); // Parse JSON response
+        }
+        throw new Error('Network response was not ok.');
+    })
+    .then(async data => {
+        console.log('Success:', data);
+        selectOpponent(prevSelectedId);
+        modalSystem.hide('addNoteModal');
+        form.reset();
+    })
+    .catch((error) => {
+        alert('Failed to create quest');
+        console.error('Error:', error);
+        // Handle error (e.g., show error message)
+    });
+}
+
+function addFlashcard(event) {
+    event.preventDefault();
+    const form = document.getElementById('addFlashcardModalForm');
+    const formData = new FormData(form);
+    const prevSelectedId = document.getElementById('modal-indicator-subject-id').value;
+
+    formData.append('subject_id', prevSelectedId);
+
+    // Debugging output
+    for (const [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }   
+    // Send POST request
+    fetch('/api/flashcard/create', { // Replace with your actual endpoint
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json(); // Parse JSON response
+        }
+        throw new Error('Network response was not ok.');
+    })
+    .then(async data => {
+        console.log('Success:', data);
+        selectOpponent(prevSelectedId);
+        modalSystem.hide('addFlashcardModal');
+        form.reset();
+    })
+    .catch((error) => {
+        alert('Failed to create quest');
+        console.error('Error:', error);
+        // Handle error (e.g., show error message)
+    });
+}
+
+function updateSubjectCardDocs(subjectId, doctype, {newLength}) {
+    let subjectCard = document.querySelector(`[data-subject-id="${subjectId}"]`);
+    
+    if (subjectCard) {
+        let docCount = subjectCard.querySelector(`[data-doc-type="${doctype}"]`);
+        if (docCount) {
+            docCount.textContent = `${newLength}`;
+        }
+    }
+    
+}
 
 async function updateQuestsUI(subjectId) {
     try {
         const response = await fetch(`/api/subject/get_quests?subject_id=${encodeURIComponent(subjectId)}`);
-        if (!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`);
+        console.log(response)
 
         const quests = await response.json();
         const questList = document.getElementById('quest-list');
+
+        console.log(quests)
         selectedSubjectQuests = quests;
         const fragment = document.createDocumentFragment();
                 function getDifficultyColor(difficulty) {
-                    // ✅ Ensure difficulty is within expected range (1-5)
+                    // Ensure difficulty is within expected range (1-5)
                     difficulty = Math.max(1, Math.min(difficulty, 5)); 
                 
-                    // ✅ Convert difficulty (1-5) to an appropriate HSL hue (Green → Red)
+                    // Convert difficulty (1-5) to an appropriate HSL hue (Green → Red)
                     const hue = 120 - ((difficulty - 1) / 4) * 120;
                 
-                    return `hsl(${hue}, 70%, 50%)`; // ✅ Returns color from Green (easy) to Red (hard)
+                    return `hsl(${hue}, 70%, 50%)`; // Returns color from Green (easy) to Red (hard)
                 }
 
-                quests.reverse().forEach(quest => {
+                selectedSubjectQuests.reverse().forEach(quest => {
                     const li = document.createElement('li');
                     li.className = 'quest-item';
                     li.style.cssText = `
@@ -64,7 +149,8 @@ async function updateQuestsUI(subjectId) {
                         background: rgba(255, 255, 255, 0.05);
                         border-left: 4px solid ${getDifficultyColor(quest.difficulty)};
                     `;
-                    li.innerHTML = `
+                    li.innerHTML = `           
+                        <input type="text" name="subject_id" value=${quest.subject_id} hidden>
                         <div class="quest-content">
                             <button class="quest-menu-btn" aria-label="Quest options">
                                 <i class="fas fa-ellipsis-vertical"></i>
@@ -87,33 +173,69 @@ async function updateQuestsUI(subjectId) {
 async function updateFlashcardsUI(subjectId) {
     try {
         const response = await fetch(`/api/subject/get_flashcards?subject_id=${encodeURIComponent(subjectId)}`);
-   
-        // if (!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`);
-
         const flashcards = await response.json();
         console.log("Updated flashcards:", flashcards);
-        const flashcardList = document.getElementById('flashcard-list'); // Ensure the correct ID exists in your HTML
+        const flashcardList = document.getElementById('flashcard-list');
+        flashcardList.style.listStyle = 'none';
+        flashcardList.style.padding = '0';
         const fragment = document.createDocumentFragment();
 
         flashcards.reverse().forEach(flashcard => {
             const li = document.createElement('li');
             li.className = 'flashcard-item';
             li.style.cssText = `
-                transition: border-color 0.3s ease;
-                margin: 5px 0;
-                padding: 8px;
-                border-radius: 4px;
-                background: rgba(255, 255, 255, 0.05);
+                transition: all 0.3s ease;
+                padding: 15px;
+                border-radius: 8px;
+                background: rgba(44, 62, 80, 0.9);
+                border: 2px solid #34495e;
+                cursor: pointer;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                color: #ecf0f1;
+                font-family: 'MedievalSharp', cursive;
             `;
 
             li.innerHTML = `
                 <div class="flashcard-content">
-                    <button class="flashcard-menu-btn" aria-label="Flashcard options">
+                    <button class="flashcard-menu-btn" aria-label="Flashcard options" style="
+                        background: none;
+                        border: none;
+                        color: #3498db;
+                        cursor: pointer;
+                        float: right;
+                        padding: 5px;
+                    ">
                         <i class="fas fa-ellipsis-vertical"></i>
                     </button>
                     <span class="flashcard-text">${flashcard.description}</span>
+                    ${flashcard.link ? `<div class="flashcard-link" style="
+                        margin-top: 8px;
+                        font-size: 0.9em;
+                        color: #3498db;
+                    "><i class="fas fa-link"></i> Study Resource</div>` : ''}
                 </div>
             `;
+
+            if (flashcard.link) {
+                li.addEventListener('click', (e) => {
+                    if (!e.target.closest('.flashcard-menu-btn')) {
+                        window.open(flashcard.link, '_blank');
+                    }
+                });
+
+                li.addEventListener('mouseenter', () => {
+                    li.style.transform = 'translateY(-2px)';
+                    li.style.borderColor = '#3498db';
+                    li.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)';
+                });
+
+                li.addEventListener('mouseleave', () => {
+                    li.style.transform = 'translateY(0)';
+                    li.style.borderColor = '#34495e';
+                    li.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+                });
+            }
+
             fragment.appendChild(li);
         });
 
@@ -129,32 +251,70 @@ async function updateFlashcardsUI(subjectId) {
 async function updateNotesUI(subjectId) {
     try {
         const response = await fetch(`/api/subject/get_notes?subject_id=${encodeURIComponent(subjectId)}`);
-
         const notes = await response.json();
         console.log("Updated notes:", notes);
         
-        const notesList = document.getElementById('note-list'); // Ensure this ID exists in your HTML
+        const notesList = document.getElementById('note-list');
+        notesList.style.listStyle = 'none';
+        notesList.style.padding = '0';
         const fragment = document.createDocumentFragment();
 
         notes.reverse().forEach(note => {
             const li = document.createElement('li');
             li.className = 'note-item';
             li.style.cssText = `
-                transition: border-color 0.3s ease;
-                margin: 5px 0;
-                padding: 8px;
-                border-radius: 4px;
-                background: rgba(255, 255, 255, 0.05);
+                transition: all 0.3s ease;
+                padding: 15px;
+                border-radius: 8px;
+                background: rgba(44, 62, 80, 0.9);
+                border: 2px solid #34495e;
+                cursor: pointer;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                color: #ecf0f1;
+                font-family: 'MedievalSharp', cursive;
             `;
 
             li.innerHTML = `
                 <div class="note-content">
-                    <button class="note-menu-btn" aria-label="Note options">
+                    <button class="note-menu-btn" aria-label="Note options" style="
+                        background: none;
+                        border: none;
+                        color: #3498db;
+                        cursor: pointer;
+                        float: right;
+                        padding: 5px;
+                    ">
                         <i class="fas fa-ellipsis-vertical"></i>
                     </button>
                     <span class="note-text">${note.description}</span>
+                    ${note.link ? `<div class="note-link" style="
+                        margin-top: 8px;
+                        font-size: 0.9em;
+                        color: #3498db;
+                    "><i class="fas fa-link"></i> Study Resource</div>` : ''}
                 </div>
             `;
+
+            if (note.link) {
+                li.addEventListener('click', (e) => {
+                    if (!e.target.closest('.note-menu-btn')) {
+                        window.open(note.link, '_blank');
+                    }
+                });
+
+                li.addEventListener('mouseenter', () => {
+                    li.style.transform = 'translateY(-2px)';
+                    li.style.borderColor = '#3498db';
+                    li.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.3)';
+                });
+
+                li.addEventListener('mouseleave', () => {
+                    li.style.transform = 'translateY(0)';
+                    li.style.borderColor = '#34495e';
+                    li.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+                });
+            }
+
             fragment.appendChild(li);
         });
 
@@ -183,6 +343,7 @@ function loadBattleModalQuests() {
                 data-difficulty="${quest.difficulty}">
                 <input type="hidden" name="quest_difficulty_${quest.id}" value="${quest.difficulty}">
                 <input type="hidden" name="quest_description_${quest.id}" value="${quest.description}">
+                <input type="hidden" name="quest_subject_id_${quest.id}" value="${quest.subject_id}">
                 <span class="quest-text">${quest.description}</span>
             </div>
         `;
@@ -288,18 +449,68 @@ async function updateSubjectsUI() {
     }
 }
 
+async function updateBadgesUI() {
+    try {
+        // ✅ Fetch updated badges list
+        const user_id = document.getElementById('current_user_id').value;
+        const response = await fetch(`/api/badges/get_all_by_player_id?player_id=${encodeURIComponent(user_id)}`);
+        if (!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`);
+        
+        const data = await response.json();  // ✅ `data` contains `{badges: [...]}`
+
+        if (!data.badges || !Array.isArray(data.badges)) {
+            throw new Error("Invalid API response: Expected an array under 'badges'");
+        }
+
+        const badges = data.badges;  // ✅ Extract actual badge array
+        console.log("Updated badges:", badges);
+
+        // ✅ Select badge container
+        const badgeContainer = document.getElementById("badge-container");
+        if (!badgeContainer) {
+            console.error("Badge container not found.");
+            return;
+        }
+        badgeContainer.innerHTML = ""; // Clear previous badges
+
+        // ✅ Create badge elements
+        badges.forEach(badge => {
+            const badgeFrame = document.createElement("div");
+            badgeFrame.className = `badge-frame ${badge.rarity.toLowerCase()}`;
+
+            badgeFrame.innerHTML = `
+                <div class="badge-content">
+                    <img src="/static/assets/images/achievements/${badge.file_name}" 
+                         alt="${badge.title} Badge">
+                    <div class="badge-info">
+                        <span class="badge-title">${badge.title}</span>
+                        <span class="badge-desc">${badge.description}</span>
+                    </div>
+                </div>
+            `;
+
+            badgeContainer.appendChild(badgeFrame);
+        });
+
+    } catch (error) {
+        console.error("Failed to update badges UI:", error);
+        alert("Failed to load badges. Please try again.");
+    }
+}
+
+
 
 
 function waitForElementUpdate(selector, callback) {
     const targetNode = document.querySelector(selector);
 
     if (!targetNode) {
-        console.warn(`❌ Element not found: ${selector}`);
+        console.warn(` Element not found: ${selector}`);
         return;
     }
 
     const observer = new MutationObserver((mutationsList, observer) => {
-        console.log("✅ DOM changes detected!");
+        console.log(" DOM changes detected!");
         observer.disconnect(); // Stop observing once changes are detected
         callback(); // Execute the callback function
     });
@@ -307,29 +518,6 @@ function waitForElementUpdate(selector, callback) {
     observer.observe(targetNode, { childList: true, subtree: true });
 }
 
-
-function addCrystal() {
-    const input = document.getElementById('flashcard');
-    const crystalUrl = input.value.trim();
-    
-    if (!crystalUrl) return;
-
-    fetch('/api/crystals', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url: crystalUrl })
-    })
-    .then(response => response.json())
-    .then(crystal => {
-        const crystalsList = document.getElementById('crystals-list');
-        const li = document.createElement('li');
-        li.innerHTML = `<a href="${crystal.url}" target="_blank">${crystal.title}</a>`;
-        crystalsList.appendChild(li);
-        input.value = '';
-    });
-}
 
 // Handle quest completion
 document.addEventListener('DOMContentLoaded', () => {

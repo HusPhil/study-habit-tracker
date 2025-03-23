@@ -36,12 +36,14 @@ function startBattle(event) {
     selectedQuestOrder.forEach((questId, index) => {
         const difficulty = formData.get(`quest_difficulty_${questId}`); 
         const description = formData.get(`quest_description_${questId}`); 
+        const subject_id = formData.get(`quest_subject_id_${questId}`); 
         
         console.log("desc:", description, questId);
         const quest = {
             "id": parseInt(questId),
             "difficulty": parseInt(difficulty),
-            "description": description
+            "description": description,
+            "subject_id": subject_id,
         }
         selectedQuests.push(quest);
     });

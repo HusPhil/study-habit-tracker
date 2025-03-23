@@ -19,34 +19,36 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.player-info {
+.player-stats-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 15px;
+    background: rgba(44, 62, 80, 0.7);
+    border-radius: 10px;
+}
+
+.player-profile {
     display: flex;
     align-items: center;
     gap: 20px;
     padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    border: 2px solid #34495e;
+}
+
+/* Player Info Styles */
+.player-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background: rgba(44, 62, 80, 0.7);
     border-radius: 10px;
-    width: auto;
-}
-
-.player-info strong {
-    color: #ffd700;
-    margin-right: 8px;
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 0.9em;
-    letter-spacing: 1px;
-}
-
-.stats {
-    flex: 1;
-}
-
-/* Banner Styles */
-.banner {
-    font-family: 'MedievalSharp', cursive;
-    color: #ffd700;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    margin-bottom: 15px;
+    border: 2px solid #34495e;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
 }
 
 /* Player Avatar Styles */
@@ -109,6 +111,281 @@
     );
 }
 
+.player-stats p {
+    color: #ecf0f1;
+    margin: 10px 0;
+    font-family: 'MedievalSharp', cursive;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    font-size: 1.1em;
+}
+
+.player-stats strong {
+    color: #ffd700;
+    margin-right: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Achievements Scroll Styles */
+.achievements-scroll {
+    position: relative;
+    padding: 25px;
+    border-radius: 10px;
+    background: rgba(44, 62, 80, 0.9);
+    border: 2px solid #34495e;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+.achievements-scroll::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), transparent);
+    border-radius: 10px 10px 0 0;
+}
+
+.scroll-header {
+    text-align: center;
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.medieval-title {
+    font-family: 'MedievalSharp', cursive;
+    color: #ffd700;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7),
+                 0 0 10px rgba(255, 215, 0, 0.3);
+    margin: 0;
+    font-size: 1.6em;
+    letter-spacing: 2px;
+}
+
+.badges-flex {
+    display: flex;
+    gap: 25px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 10px;
+}
+
+.badge-frame {
+    position: relative;
+    width: 140px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    transform-origin: center center;
+}
+
+.badge-frame::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.badge-content {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.badge-content img {
+    width: 70px;
+    height: 70px;
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.badge-frame:hover {
+    transform: scale(1.05);
+}
+
+.badge-frame:hover::after {
+    opacity: 1;
+}
+
+.badge-frame:hover img {
+    transform: rotate(5deg);
+}
+
+.badge-frame.common {
+    border-color: #95a5a6;
+    box-shadow: 0 0 10px rgba(149, 165, 166, 0.2);
+}
+
+.badge-frame.common:hover {
+    box-shadow: 0 0 15px rgba(149, 165, 166, 0.4);
+}
+
+.badge-frame.rare {
+    border-color: #3498db;
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
+}
+
+.badge-frame.rare:hover {
+    box-shadow: 0 0 20px rgba(52, 152, 219, 0.5);
+}
+
+.badge-frame.epic {
+    border-color: #e74c3c;
+    box-shadow: 0 0 15px rgba(231, 76, 60, 0.2);
+}
+
+.badge-frame.epic:hover {
+    box-shadow: 0 0 25px rgba(231, 76, 60, 0.5);
+}
+
+.badge-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.badge-title {
+    font-family: 'MedievalSharp', cursive;
+    color: #ffd700;
+    font-size: 1.1em;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8),
+                 0 0 8px rgba(255, 215, 0, 0.3);
+    font-weight: bold;
+}
+
+.badge-desc {
+    font-family: 'MedievalSharp', cursive;
+    color: #ecf0f1;
+    font-size: 0.9em;
+    font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .player-info {
+        padding: 15px;
+    }
+    
+    .badges-flex {
+        gap: 15px;
+    }
+    
+    .badge-frame {
+        width: calc(33.33% - 10px);
+        min-width: 110px;
+    }
+    
+    .badge-content img {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .badge-frame:hover {
+        transform: scale(1.03);
+    }
+}
+
+@media (max-width: 480px) {
+    .player-info {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .player-stats {
+        width: 100%;
+    }
+    
+    .badge-frame {
+        width: calc(50% - 10px);
+    }
+    
+    .medieval-title {
+        font-size: 1.3em;
+    }
+    
+    .badge-frame:hover {
+        transform: scale(1.02);
+    }
+}
+
+@media (min-width: 768px) {
+    .badge-frame {
+        width: 150px;
+    }
+    
+    .badge-content img {
+        width: 70px;
+        height: 70px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .player-stats-container {
+        flex-direction: row;
+    }
+    
+    .player-profile {
+        width: 300px;
+    }
+    
+    .badges-container {
+        flex-grow: 1;
+    }
+}
+
+@media (max-width: 767px) {
+    .badges-flex {
+        gap: 10px;
+    }
+    
+    .badge-frame {
+        width: calc(33.33% - 10px);
+        min-width: 100px;
+    }
+    
+    .badge-content img {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .badge-title {
+        font-size: 0.8em;
+    }
+    
+    .badge-desc {
+        font-size: 0.7em;
+    }
+}
+
+@keyframes shimmer {
+    0% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+    100% { opacity: 0.3; }
+}
+
+/* Banner Styles */
+.banner {
+    font-family: 'MedievalSharp', cursive;
+    color: #ffd700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 15px;
+}
+
 /* Battle Button */
 .battle-btn {
     background: linear-gradient(45deg, #c0392b, #e74c3c);
@@ -133,9 +410,12 @@
 /* Subject Cards */
 #subject-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    padding: 20px 0;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    padding: 20px;
+    background: var(--card-bg);
+    border-radius: 10px;
+    border: 2px solid var(--border-color);
 }
 
 .subject-card {
@@ -153,8 +433,6 @@
     overflow: hidden;
 }
 
-
-
 .subject-card::before {
     content: '';
     position: absolute;
@@ -164,24 +442,6 @@
     height: 4px;
     background: linear-gradient(90deg, #ffd700, #f1c40f);
 }
-
-.subject-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-}
-
-/* Subject Cards */
-#subject-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 15px;
-    padding: 20px;
-    background: var(--card-bg);
-    border-radius: 10px;
-    border: 2px solid var(--border-color);
-}
-
-
 
 .subject-card:hover {
     transform: translateY(-5px);

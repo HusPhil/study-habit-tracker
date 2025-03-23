@@ -5,14 +5,18 @@ import os, time
 from models.player.player_manager import PlayerManager
 from models.player.player import Player
 from models.subject.subject import Subject
+from models.subject.subject_manager import SubjectManager
 from routes.study_routes import study_routes
 from routes.authentication_routes import auth_routes
 from routes.test_routes import test_routes
 from models.database.db import db
 from extensions import socketio
 from flask_socketio import join_room, leave_room
+from flasgger import Swagger
 
 app = Flask(__name__)
+swagger = Swagger(app)
+
 app.secret_key = os.urandom(24)  # For session management
 app.register_blueprint(study_routes, url_prefix="/api")
 app.register_blueprint(test_routes, url_prefix="/test")
@@ -47,14 +51,24 @@ def index():
     if not player:
         return redirect(url_for('auth.login'))
         
-    subjects = Subject.get_all(session['user_id'])
+    subjects = []
 
-    print("subjects", subjects)
-    
+    for subject in SubjectManager.get_all(session['user_id']):
+        subjects.append(Subject(
+            id=subject["subject_id"],
+            code_name=subject["code_name"],
+            difficulty=subject["difficulty"],
+            user_id=subject["user_id"]
+        ))
+
     return render_template("index.html",
         player=player,
         subjects=subjects
     )
+
+@app.errorhandler(400)
+def handle_bad_request(e):
+    return jsonify({"error": "Bad Request", "message": e.description}), 400
 
 if __name__ == "__main__":
     app.run(debug=True)

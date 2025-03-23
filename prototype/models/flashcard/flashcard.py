@@ -8,7 +8,7 @@ class Flashcard(TrackableContent, LinkableContent):
     def __init__(self, id: int, description: str, subject_id: int, link: str, status: int = 0):
 
         super().__init__(description=description, subject_id=subject_id, status=status, link=link)
-        self.id = id 
+        self._id = id 
 
 
     def to_dict(self):
@@ -20,3 +20,7 @@ class Flashcard(TrackableContent, LinkableContent):
             "link": self.link,
             "status": self.status,
         }
+
+    @property
+    def id(self):
+        return self._id
