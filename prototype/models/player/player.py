@@ -20,14 +20,11 @@ class Player(User):
         while self.exp >= PlayerManager.get_exp_threshold(self.level):
             self.level_up()
 
-        print(f"Player {self.username} gained {amount} EXP. Level: {self.level}, Exp: {self.exp}, NextLvlUpXP: {PlayerManager.get_exp_threshold(self.level)}, Title: {self.title}")
-
     def level_up(self) -> None:
         """Increase player level and reset exp after leveling up."""
         self.level += 1
         self.exp = 0  # Reset exp after level-up
-        print(f"🎉 {self.username} leveled up to {self.level}! New title: {self.title}")
-
+        
     def _update_title(self) -> None:
         """Update title based on level."""
         title_map = {
@@ -51,6 +48,7 @@ class Player(User):
 
     @property
     def level(self):
+        
         return self._level
 
     @level.setter

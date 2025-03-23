@@ -15,20 +15,8 @@ class Session:
     def start(self, user_id: int, socketio):
         """Start the session using session_manager with safety checks."""
 
-        if not self.id:
-            return {"error": "Invalid session: Missing session ID"}
-        
-        if user_id in SessionManager.active_sessions:
-            return {"error": f"A session {self.id} is already running"}
-
-        if not isinstance(self.duration, int) or self.duration <= 0:
-            return {"error": "Session duration must be a positive integer"}
-
-        if not isinstance(self.goals, list):
-            return {"error": "Goals must be a list"}
-
-        if socketio is None:
-            return {"error": "SocketIO instance is required"}
+        if self._validate_session(user_id, socketio, "start"):
+            return self._validate_session(user_id, socketio, "start")
 
         try:
             result = SessionManager.start_session(
@@ -49,16 +37,10 @@ class Session:
 
     def stop(self, user_id: int, socketio):
         """Stop the session using session_manager with safety checks."""
+
+        if self._validate_session(user_id, socketio, "stop"):
+            return self._validate_session(user_id, socketio, "stop")
         
-        if not self.id:
-            return {"error": "Invalid session: Missing session ID"}
-
-        # if self.id not in SessionManager.active_sessions:
-        #     return {"error": f"Session {self.id} is not active or has already ended"}
-
-        if socketio is None:
-            return {"error": "SocketIO instance is required"}
-
         try:
             result = SessionManager.stop_session(self.id, user_id, socketio)
             
@@ -68,8 +50,36 @@ class Session:
             return {**result, "selected_quests": self.goals, "subject_id": self.subject_id} 
         except Exception as e:
             return {"error": f"Failed to stop session: {str(e)}"}
+        
+    def _validate_session(self, user_id, socketio, action: str) -> dict:
+        """Validate session conditions for starting or stopping a session.
+        
+        Args:
+            user_id (int): The ID of the user.
+            socketio (SocketIO): The SocketIO instance.
+            action (str): Either 'start' or 'stop' to determine validation logic.
 
+        Returns:
+            dict | None: A dictionary with an error message if validation fails, or None if valid.
+        """
+        
+        errors = {
+            "id": "Invalid session: Missing session ID" if not self.id else None,
+            "duration": "Session duration must be a positive integer" 
+                        if not isinstance(self.duration, int) or self.duration <= 0 else None,
+            "goals": "Goals must be a list" if not isinstance(self.goals, list) else None,
+            "socketio": "SocketIO instance is required" if socketio is None else None,
+        }
+        
+        if action == "start":
+            errors["duplicate"] = f"A session {self.id} is already running" if user_id in SessionManager.active_sessions else None
+        elif action == "stop":
+            errors["not_active"] = "No active session found for this user" if user_id not in SessionManager.active_sessions else None
 
+        # Filter out None values and return the first error found
+        return { "error": next((msg for msg in errors.values() if msg), None) } if any(errors.values()) else None
+
+    
     @property
     def id(self):
         return self._id
