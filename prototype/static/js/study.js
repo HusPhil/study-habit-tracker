@@ -149,7 +149,8 @@ async function updateQuestsUI(subjectId) {
                         background: rgba(255, 255, 255, 0.05);
                         border-left: 4px solid ${getDifficultyColor(quest.difficulty)};
                     `;
-                    li.innerHTML = `
+                    li.innerHTML = `           
+                        <input type="text" name="subject_id" value=${quest.subject_id} hidden>
                         <div class="quest-content">
                             <button class="quest-menu-btn" aria-label="Quest options">
                                 <i class="fas fa-ellipsis-vertical"></i>
@@ -342,6 +343,7 @@ function loadBattleModalQuests() {
                 data-difficulty="${quest.difficulty}">
                 <input type="hidden" name="quest_difficulty_${quest.id}" value="${quest.difficulty}">
                 <input type="hidden" name="quest_description_${quest.id}" value="${quest.description}">
+                <input type="hidden" name="quest_subject_id_${quest.id}" value="${quest.subject_id}">
                 <span class="quest-text">${quest.description}</span>
             </div>
         `;
@@ -467,29 +469,6 @@ function waitForElementUpdate(selector, callback) {
     observer.observe(targetNode, { childList: true, subtree: true });
 }
 
-
-function addCrystal() {
-    const input = document.getElementById('flashcard');
-    const crystalUrl = input.value.trim();
-    
-    if (!crystalUrl) return;
-
-    fetch('/api/crystals', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url: crystalUrl })
-    })
-    .then(response => response.json())
-    .then(crystal => {
-        const crystalsList = document.getElementById('crystals-list');
-        const li = document.createElement('li');
-        li.innerHTML = `<a href="${crystal.url}" target="_blank">${crystal.title}</a>`;
-        crystalsList.appendChild(li);
-        input.value = '';
-    });
-}
 
 // Handle quest completion
 document.addEventListener('DOMContentLoaded', () => {

@@ -95,7 +95,7 @@ class SubjectManager:
             quests = []
 
             for r in results:
-                q = Quest(id=r['quest_id'], description=r['description'], status=r['status'], difficulty=r['difficulty'])
+                q = Quest(id=r['quest_id'], description=r['description'], status=r['status'], difficulty=r['difficulty'], subject_id=r["subject_id"])
                 quests.append(q)
 
             return quests  # ✅ Return a list of Quest objects

@@ -2,7 +2,6 @@ import time
 from datetime import datetime, timedelta
 from flask_socketio import SocketIO
 
-
 class SessionManager:
     active_sessions = {}  # ✅ Store active sessions globally
 
@@ -10,7 +9,6 @@ class SessionManager:
     def start_session(session, user_id: int, socketio: SocketIO):
         """Start a session and store it in active_sessions."""
         SessionManager.active_sessions[user_id] = session  # ✅ Store session
-
 
         stop_time = datetime.now() + timedelta(minutes=session.duration)
         
@@ -28,6 +26,7 @@ class SessionManager:
         print(f"Stopping session {session_id}")
         session = SessionManager.active_sessions.pop(user_id, None)  # ✅ Remove from tracking
         print("Popped session:", session)
+
         if session:
             socketio.emit("session_ended", {"session_id": session_id})
             return {"message": "Session ended", "session_id": session_id}

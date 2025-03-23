@@ -31,6 +31,46 @@ class QuestManager:
             raise DatabaseError(f"Error creating quest: {str(e)}")
 
     @staticmethod
+    def delete(id: int) -> dict:
+        """Delete a quest from the database and return confirmation."""
+        try:
+            # Check if the quest exists
+            existing_quest = db.execute("SELECT * FROM quests WHERE id = ?", (id,))
+            if not existing_quest:
+                raise DatabaseError(f"Quest with id {id} not found")
+
+            # Delete the quest
+            db.execute("DELETE FROM quests WHERE id = ?", (id,))
+
+            return {"message": f"Quest with id {id} deleted successfully"}
+        
+        except DatabaseError as e:
+            raise DatabaseError(f"Error deleting quest: {str(e)}")
+
+    @staticmethod
+    def delete_quests(ids: list[int]) -> dict:
+        """Delete multiple quests from the database and return confirmation."""
+        try:
+            if not ids:
+                raise ValueError("Quest ID list cannot be empty")
+
+            # Convert list of IDs to a format that SQL can process (tuple)
+            placeholders = ", ".join("?" * len(ids))
+
+            # Check if the quests exist
+            existing_quests = db.execute(f"SELECT quest_id FROM quests WHERE quest_id IN ({placeholders})", tuple(ids))
+            if not existing_quests:
+                raise DatabaseError("No matching quests found for deletion")
+
+            # Delete the quests
+            db.execute(f"DELETE FROM quests WHERE quest_id IN ({placeholders})", tuple(ids))
+
+            return {"message": f"Deleted {len(existing_quests)} quest(s) successfully"}
+        
+        except DatabaseError as e:
+            raise DatabaseError(f"Error deleting quests: {str(e)}")
+
+    @staticmethod
     def get_quests_by_subject(subject_id: int) -> list:
         """Fetch all quests for a subject and return them as a list of dictionaries."""
         try:

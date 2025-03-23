@@ -14,9 +14,7 @@ class Player(User):
 
     def gain_exp(self, amount: int) -> None:
         """Gain experience and level up if necessary."""
-        if amount < 0:
-            raise ValueError("Experience gained cannot be negative.")
-
+        
         self.exp += amount
         
         while self.exp >= PlayerManager.get_exp_threshold(self.level):

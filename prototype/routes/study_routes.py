@@ -78,15 +78,28 @@ def stop_session():
         return jsonify({"error": "No active session found for this user"}), 404
 
     session_data = current_session.stop(user_id=user_id, socketio=socketio)
-
     data = request.get_json()
 
     remaining_enemies = data["remaining_enemies"]
 
     player = Player(**PlayerManager.get(user_id))
+
+    print("current_session.accumulated_exp", current_session.accumulated_exp)
+
+    if player.exp <= 0 and player.level <= 1:
+        pass
+
     player.gain_exp(PlayerManager.calculate_exp(total_enemies=data["total_enemies"], remaining_enemies=remaining_enemies)["net_exp"])
+
+    if remaining_enemies <= 0:
+        selected_quests = session_data['selected_quests']
+        quest_ids = [quest['id'] for quest in selected_quests]
+        player.gain_exp(current_session.accumulated_exp)
+        QuestManager.delete_quests(quest_ids)
+
+
     PlayerManager.save(player.to_dict())
-    return jsonify({"message": "Session stopped successfully"})
+    return jsonify({"message": "Session stopped successfully", "player_stats": player.to_dict(), "subject_id": session_data["subject_id"]})
 
 @study_routes.route("/subject/get_by_id", methods=["GET"])
 def get_subject():
@@ -351,8 +364,6 @@ def create_note():
     except Exception as e:
         print(f"❌ Error creating note: {str(e)}")  # Log error
         return jsonify({"error": f"Unexpected error: {str(e)}"}), 500
-
-
 
 
 @study_routes.route("/flashcard/create", methods=["POST"])

@@ -1,6 +1,6 @@
 class Badge:
     
-    def __init__(self, title: str, rarity):
+    def __init__(self, title: str, rarity: str):
         self._title = title
         self._rarity = rarity
 

@@ -1,5 +1,7 @@
 from flask_socketio import SocketIO
 from .session_manager import SessionManager
+from models.subject.subject_manager import SubjectManager
+
 
 class Session:
 
@@ -38,6 +40,9 @@ class Session:
             if user_id not in SessionManager.active_sessions:
                 return {"error": "Session failed to startss"}
             
+            subject_data = SubjectManager.get(self.subject_id)
+            self.accumulated_exp = (int(subject_data["difficulty"]) * self.duration) // 10
+            
             return result
         except Exception as e:
             return {"error": f"Failed to start session: {str(e)}"}
@@ -60,7 +65,7 @@ class Session:
             if self.id in SessionManager.active_sessions:
                 return {"error": "Session failed to stop properly"}
 
-            return result 
+            return {**result, "selected_quests": self.goals, "subject_id": self.subject_id} 
         except Exception as e:
             return {"error": f"Failed to stop session: {str(e)}"}
 

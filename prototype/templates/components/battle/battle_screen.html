@@ -1,15 +1,15 @@
 <div id="battle-screen">
     <div class="player-box">
         <div class="stats">
-            <h2 class="banner">{{ player.title }}</h2>
+            <h2 id="player-title" class="banner">{{ player.title }}</h2>
             <div class="player-info">
                 <div id="player-avatar">
                     <img id="player-avatar-img" src="{{ url_for('static', filename='assets/images/avatar_icons/players/con1.png') }}" alt="Player Avatar">
                 </div>
                 <div>
-                    <p><strong>Name:</strong> {{ player.username }}</p>
-                    <p><strong>Level:</strong> {{ player.level }}</p>
-                    <p><strong>Experience:</strong> {{ player.exp }}</p>
+                    <p id="player-name"><strong>Name:</strong> {{ player.username }}</p>
+                    <p id="player-level"><strong>Level:</strong> {{ player.level }}</p>
+                    <p id="player-exp"><strong>Experience:</strong> {{ player.exp }}</p>
                 </div>
             </div>
         </div>

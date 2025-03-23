@@ -359,8 +359,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ "remaining_enemies": remainingEnemies, "total_enemies": enemies.length })
-        });
+        })
+        .then(response => response.json())  // Convert response to JSON
+        .then(async data => {
+            console.log("Message:", data.message);  // Extract message
+            console.log("Player Stats:", data.player_stats);  // Extract player stats
+
+            // Example: Access specific player stats
+            console.log("Player Email:", data.player_stats.email);
+            console.log("Player XP:", data.player_stats.exp);
+            console.log("Player Level:", data.player_stats.level);
+            console.log("Player Title:", data.player_stats.title);
+
+            updatePlayerStatsUI(data.player_stats)
+            console.log(data.subject_id, typeof data.subject_id)
+            await selectOpponent(data.subject_id)
+
+        })
     }   
+
+    function updatePlayerStatsUI({ exp, level, title, username }) {
+        const playerTitle = document.getElementById('player-title');
+        const playerName = document.getElementById('player-name');
+        const playerLevel = document.getElementById('player-level');
+        const playerExp = document.getElementById('player-exp');
+    
+        if (playerTitle) playerTitle.textContent = title;
+        if (playerName) playerName.innerHTML = `<strong>Name:</strong> ${username}`;
+        if (playerLevel) playerLevel.innerHTML = `<strong>Level:</strong> ${level}`;
+        if (playerExp) playerExp.innerHTML = `<strong>Experience:</strong> ${exp}`;
+    }
+    
+
 
     // Expose functions to the global scope
     window.initializeBattle = initializeBattle;
