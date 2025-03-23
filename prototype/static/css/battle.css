@@ -111,27 +111,6 @@
     );
 }
 
-.player-stats {
-    flex-grow: 1;
-    padding: 15px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 8px;
-    border: 2px solid #34495e;
-    position: relative;
-}
-
-.player-stats::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%);
-    border-radius: 10px;
-    z-index: -1;
-}
-
 .player-stats p {
     color: #ecf0f1;
     margin: 10px 0;
