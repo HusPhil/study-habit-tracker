@@ -1,4 +1,4 @@
-# 📖 Study Quest - Gamified Study Tracker 🎮📚
+# 📖 CramQuest - Study Habit Tracker 🎮📚
 
 A **Flask-based** study habit tracking application that **gamifies learning** through an RPG-inspired system.
 
